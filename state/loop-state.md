@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오 구현 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -51,6 +51,10 @@
 - Goal 007에서 JSON 시나리오를 명령어로 실행하는 CLI를 추가했다.
 - PR #5는 CI 성공 후 main에 squash merge했다.
 - Goal 008에서 여러 시나리오를 한 번에 실행하고 Markdown 리포트를 저장하는 batch 기능을 추가했다.
+- PR #6은 CI 성공 확인 후 main에 병합했다.
+- Goal 009에서 문 열림, 비상정지, ClearAlarm 복구 시나리오를 추가했다.
+- Goal 009 로컬 검증 결과 Release 빌드 성공, 테스트 30개 통과, batch 시나리오 5개 통과를 확인했다.
+- Goal 009 Draft PR #7을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -78,6 +82,9 @@
 | 2026-06-25 | Goal 007: Scenario CLI 실행기 | 로컬 빌드 성공, 콘솔 테스트 27개 통과, CLI 시나리오 2개 실행 성공, Draft PR #5 생성, CI 성공 |
 | 2026-06-25 | PR #5 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 008: CLI batch 실행 + Markdown 리포트 | 로컬 빌드 성공, 콘솔 테스트 27개 통과, batch 실행과 리포트 생성 성공, Draft PR #6 생성, CI 성공 |
+| 2026-06-25 | PR #6 병합 | CI 성공 확인 후 main에 squash merge |
+| 2026-06-25 | Goal 009: 알람/복구 시나리오 | 문 열림, 비상정지, ClearAlarm 복구 시나리오 추가, 로컬 테스트 30개 통과, batch 5개 통과 |
+| 2026-06-25 | Goal 009 PR #7 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -88,7 +95,8 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/3` | `goal/005-io-state-bridge` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/4` | `goal/006-scenario-json` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/5` | `goal/007-scenario-cli` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/6` | `goal/008-cli-batch-report` | Draft, 미병합 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/6` | `goal/008-cli-batch-report` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/7` | `goal/009-alarm-recovery-scenarios` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -106,11 +114,14 @@
 | 2026-06-25 | `goal/007-scenario-cli` | pull_request | 성공 |
 | 2026-06-25 | `goal/008-cli-batch-report` | push | 성공 |
 | 2026-06-25 | `goal/008-cli-batch-report` | pull_request | 성공 |
+| 2026-06-25 | `goal/009-alarm-recovery-scenarios` | push | 성공 |
+| 2026-06-25 | `goal/009-alarm-recovery-scenarios` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. PR #6을 검토하고 main 병합 여부를 결정한다.
-2. 알람/복구 시나리오 추가 또는 Core 검증 정리 중 다음 작업을 결정한다.
+1. PR #7 병합 여부를 결정한다.
+2. 다음 후보는 Core 검증 정리 문서 또는 알람 코드 체계다.
+3. 포트폴리오 설명 관점에서는 Core 검증 정리 문서를 우선 권장한다.
 
 ## 금지할 것
 

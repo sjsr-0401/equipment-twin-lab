@@ -1326,3 +1326,77 @@ BuildMarkdownReport()
 - Batch 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
 - 리포트 생성: `BuildMarkdownReport()`
 - CI batch 실행: `.github/workflows/ci.yml`
+
+## 32. 2026-06-25 Goal 009 결과
+
+알람/복구 시나리오를 추가했다.
+
+추가한 시나리오:
+
+- `scenarios/door-open-alarm.json`
+- `scenarios/emergency-stop-alarm.json`
+- `scenarios/clear-alarm-recovery.json`
+
+검증 결과:
+
+- .NET restore 성공
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 30개 통과
+- CLI batch 시나리오 5개 통과
+- Draft PR #7 생성
+- GitHub Actions push/pull_request 성공
+
+Batch 통과 시나리오:
+
+- `clear-alarm-recovery` → `Idle`
+- `door-open-alarm` → `Alarmed`
+- `emergency-stop-alarm` → `Alarmed`
+- `loading-timeout` → `Alarmed`
+- `normal-cycle` → `Complete`
+
+막힌 점:
+
+- 현재 막힌 점 없음.
+
+보류한 판단:
+
+- 알람 코드 체계는 아직 없다.
+- 알람 이력/발생 시간 리포트는 아직 단순하다.
+- 실제 장비처럼 작업자 확인, Reset 조건, Door close 확인을 세분화하지 않았다.
+
+소프트웨어 아키텍처:
+
+```text
+Alarm Scenario JSON
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+    ↓
+ReadSafetyEvent()
+    ↓
+EquipmentStateMachine
+    ↓
+Alarmed 또는 Idle
+```
+
+유지보수 포인트:
+
+- 알람 상태 전이: `src/EquipmentTwin.Core/EquipmentStateMachine.cs`
+- Safety 입력 우선순위: `src/EquipmentTwin.Core/EquipmentCellController.cs`
+- IO 이름과 방향: `src/EquipmentTwin.Core/Io/EquipmentIoMap.cs`
+- 시나리오 실행: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- 시나리오 파일: `scenarios/`
+- 회귀 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+PR:
+
+- `https://github.com/sjsr-0401/equipment-twin-lab/pull/7`
+
+다음 권장 작업:
+
+1. PR #7 병합 여부를 결정한다.
+2. Core 검증 정리 문서를 작성한다.
+3. 이후 알람 코드 체계와 복구 조건을 세분화한다.

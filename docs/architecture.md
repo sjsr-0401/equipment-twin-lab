@@ -186,6 +186,7 @@ DI_LOAD_PRESENT = true
 - IO와 상태머신 연결
 - 안전 입력 우선순위
 - JSON 시나리오 실행
+- 알람/복구 시나리오 실행
 
 유지보수 포인트:
 
@@ -204,6 +205,9 @@ DI_LOAD_PRESENT = true
 - `src/EquipmentTwin.Core/Scenarios/ScenarioStepRunResult.cs`
 - `scenarios/normal-cycle.json`
 - `scenarios/loading-timeout.json`
+- `scenarios/door-open-alarm.json`
+- `scenarios/emergency-stop-alarm.json`
+- `scenarios/clear-alarm-recovery.json`
 
 역할:
 
@@ -318,7 +322,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 시나리오 분기/반복 없음
 - CLI batch filtering 없음
 - 리포트 artifact 업로드 없음
-- 알람 복구 절차는 단순화됨
+- 알람 복구 절차는 `ClearAlarm` 수준으로 단순화됨
 
 ## 다음 아키텍처 목표
 
@@ -337,3 +341,46 @@ StateMachine + Virtual IO + ManualClock
 ```
 
 이렇게 하면 “정상 공정”, “센서 지연”, “비상정지”, “문 열림”, “Timeout” 같은 시나리오를 파일로 반복 실행할 수 있다.
+
+## 8. 알람/복구 시나리오
+
+파일:
+
+- `scenarios/door-open-alarm.json`
+- `scenarios/emergency-stop-alarm.json`
+- `scenarios/clear-alarm-recovery.json`
+
+역할:
+
+- 문 열림이나 비상정지 입력이 들어오면 `Alarmed` 상태로 전환되는지 확인한다.
+- 알람 상태에서 진공, 스테이지 이동 같은 정상 공정 출력이 꺼지는지 확인한다.
+- 적색 램프와 부저가 켜지는지 확인한다.
+- Door close 이후 `ClearAlarm`으로 `Idle` 상태로 돌아오는 기본 복구 흐름을 확인한다.
+
+아키텍처 흐름:
+
+```text
+Alarm Scenario JSON
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+    ↓
+ReadSafetyEvent()
+    ↓
+EquipmentStateMachine
+    ↓
+Alarmed 또는 Idle
+```
+
+유지보수 포인트:
+
+- Safety 입력 우선순위는 `EquipmentCellController.ReadSafetyEvent()`를 본다.
+- 알람 상태 전이는 `EquipmentStateMachine.ApplyAlarmEvent()`와 `MoveToAlarm()`을 본다.
+- 알람 출력 정책은 `EquipmentCellController.SyncOutputsForCurrentState()`를 본다.
+- 새 알람 시나리오는 `scenarios/`에 JSON을 추가하고 `tests/EquipmentTwin.Core.Tests/Program.cs`에 회귀 테스트를 추가한다.
+
+주의:
+
+- 이 검증은 실제 장비 안전 인증이나 실제 인터록 검증이 아니다.
+- 현재는 소프트웨어 모델이 의도한 상태 전이와 출력 정책을 지키는지 확인하는 단계다.

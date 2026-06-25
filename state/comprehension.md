@@ -487,6 +487,89 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 
 ## 초보자 설명 템플릿
 
+## 2026-06-25 추가 이해 요약: 알람/복구 시나리오
+
+### 오늘 한 일
+
+- PR #6을 CI 성공 확인 후 main에 병합했다.
+- 새 브랜치 `goal/009-alarm-recovery-scenarios`를 만들었다.
+- 문 열림 알람 시나리오를 추가했다.
+- 비상정지 알람 시나리오를 추가했다.
+- 문 열림 알람 이후 ClearAlarm 복구 시나리오를 추가했다.
+- 테스트를 27개에서 30개로 늘렸다.
+- CLI batch 검증 대상이 2개에서 5개 시나리오로 늘었다.
+
+### 왜 필요한가
+
+장비 SW는 정상 공정만 검증하면 부족하다.
+
+현업 장비에서는 문 열림, 비상정지, Timeout 같은 예외 상황에서 위험 출력이 꺼지고 알람 상태로 멈추는지가 더 중요하다. 이번 작업은 이런 흐름을 JSON 파일로 남겨서 매번 같은 방식으로 반복 검증할 수 있게 만든 것이다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+Alarm Scenario JSON
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+    ↓
+ReadSafetyEvent()
+    ↓
+EquipmentStateMachine
+    ↓
+Alarmed 또는 Idle
+```
+
+`ScenarioRunner`는 JSON에 적힌 step을 실행한다. `EquipmentCellController`는 `DI_DOOR_CLOSED`, `DI_EMERGENCY_STOP_PRESSED` 같은 safety 입력을 먼저 읽고, 상태머신에 `DoorOpened` 또는 `EmergencyStop` 이벤트를 전달한다.
+
+상태가 `Alarmed`가 되면 출력은 아래처럼 바뀐다.
+
+- `DO_VACUUM_ON`: 꺼짐
+- `DO_STAGE_MOVE_REQUESTED`: 꺼짐
+- `DO_TOWER_LAMP_RED`: 켜짐
+- `DO_BUZZER_ON`: 켜짐
+
+### 유지보수 포인트
+
+- 알람 상태 전이: `src/EquipmentTwin.Core/EquipmentStateMachine.cs`
+- Safety 입력 우선순위: `src/EquipmentTwin.Core/EquipmentCellController.cs`
+- IO 이름과 방향: `src/EquipmentTwin.Core/Io/EquipmentIoMap.cs`
+- 알람 시나리오 파일: `scenarios/`
+- 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+### 막힌 점과 해결 방법
+
+- 현재 막힌 점 없음.
+
+### 보류한 판단
+
+- 알람 코드 체계는 아직 없다.
+- 알람 이력/발생 시간 리포트는 아직 단순하다.
+- 작업자 확인, Reset 조건, Door close 확인 같은 실제 복구 절차는 아직 단순화되어 있다.
+- 현재 `ClearAlarm`은 MVP용 단순 복구 명령이다.
+
+### 확인 방법
+
+```powershell
+dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore --configuration Release
+dotnet run --project src\EquipmentTwin.Cli --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
+```
+
+현재 로컬 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 테스트 30개 통과
+- batch 시나리오 5개 통과
+
+### 내가 이해해야 할 개념
+
+알람 시나리오는 “실제 장비가 안전하다”를 증명하는 것이 아니다.
+
+지금 증명하는 것은 소프트웨어 모델 안에서 safety 입력이 정상 공정 입력보다 먼저 처리되고, 알람 상태에서 위험 출력이 꺼지며, 복구 명령 후 Idle로 돌아온다는 것이다.
+
 작업이 끝날 때마다 아래 형식으로 정리한다.
 
 ### 오늘 한 일

@@ -30,6 +30,9 @@ var tests = new (string Name, Action Body)[]
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
+    ("Scenario runner handles door open alarm file", ScenarioRunnerHandlesDoorOpenAlarmFile),
+    ("Scenario runner handles emergency stop alarm file", ScenarioRunnerHandlesEmergencyStopAlarmFile),
+    ("Scenario runner handles clear alarm recovery file", ScenarioRunnerHandlesClearAlarmRecoveryFile),
     ("Scenario runner reports expectation failure", ScenarioRunnerReportsExpectationFailure)
 };
 
@@ -414,6 +417,48 @@ static void ScenarioRunnerHandlesLoadingTimeoutFile()
     AssertEqual(EquipmentState.Alarmed, result.FinalState, "Timeout scenario must end at Alarmed.");
     AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on after timeout scenario.");
     AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on after timeout scenario.");
+}
+
+static void ScenarioRunnerHandlesDoorOpenAlarmFile()
+{
+    var scenario = LoadScenario("door-open-alarm.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Alarmed, result.FinalState, "Door open alarm scenario must end at Alarmed.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after door open alarm.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on after door open alarm.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on after door open alarm.");
+}
+
+static void ScenarioRunnerHandlesEmergencyStopAlarmFile()
+{
+    var scenario = LoadScenario("emergency-stop-alarm.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Alarmed, result.FinalState, "Emergency stop scenario must end at Alarmed.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after emergency stop.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on after emergency stop.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on after emergency stop.");
+}
+
+static void ScenarioRunnerHandlesClearAlarmRecoveryFile()
+{
+    var scenario = LoadScenario("clear-alarm-recovery.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Idle, result.FinalState, "Clear alarm recovery scenario must end at Idle.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after ClearAlarm.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be off after ClearAlarm.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after ClearAlarm.");
 }
 
 static void ScenarioRunnerReportsExpectationFailure()
