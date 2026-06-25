@@ -191,6 +191,66 @@ dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 - Timeout 우선순위를 DoorOpened/EmergencyStop과 어떻게 정렬할지
 - IO 입력 변화와 Timeout 정책을 어떻게 연결할지
 
+## 2026-06-25 추가 이해 요약: 상태머신 + IO 연결
+
+### 오늘 한 일
+
+- PR #2를 CI 성공 확인 후 main에 병합했다.
+- 새 브랜치 `goal/005-io-state-bridge`를 만들었다.
+- `EquipmentCellController`를 추가했다.
+- IO 입력을 상태머신 이벤트로 변환했다.
+- 상태별 출력 동기화를 추가했다.
+- 테스트를 17개에서 23개로 늘렸다.
+
+### 왜 필요한가
+
+상태머신과 IO가 따로 있으면 아직 “장비처럼 동작한다”고 말하기 어렵다.
+
+이번 작업으로 센서 입력이 장비 상태를 바꾸고, 장비 상태가 출력 신호를 바꾸는 기본 흐름이 생겼다.
+
+### 제조 장비 SW와 어떤 관련이 있는가
+
+실제 장비에서는 PLC 입력이 들어오면 장비 시퀀스가 진행된다.
+
+예:
+
+- 자재 감지 센서 ON → Loading 완료
+- 정렬 완료 센서 ON → Aligning 완료
+- 검사 완료 신호 ON → Inspecting 완료
+- 배출 완료 신호 ON → Unloading 완료
+
+또한 상태에 따라 출력이 바뀐다.
+
+- Loading/Inspecting/Unloading → Vacuum ON
+- Aligning → Stage move request ON
+- Alarmed → Red lamp, buzzer ON
+
+### 내가 이해해야 할 개념
+
+`EquipmentCellController`는 실제 PLC가 아니라 “상태머신과 가상 IO 사이의 연결부”다.
+
+이 연결부가 있어야 나중에 Unity 시뮬레이터, 시나리오 파일, 실제 PLC 어댑터를 붙일 수 있다.
+
+### 확인 방법
+
+```powershell
+dotnet build --no-restore
+dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
+```
+
+현재 로컬 결과:
+
+- 빌드 성공
+- 경고 0개
+- 오류 0개
+- 테스트 23개 통과
+
+### 아직 모르는 것
+
+- 출력 정책이 실제 장비 기준으로 충분히 현실적인지
+- 상태별 출력 동기화를 설정 파일로 뺄지
+- 여러 센서가 동시에 들어왔을 때 우선순위를 더 명확히 테이블로 분리할지
+
 ## 초보자 설명 템플릿
 
 작업이 끝날 때마다 아래 형식으로 정리한다.

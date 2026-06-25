@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층 구현 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -41,6 +41,8 @@
 - PR #1은 CI 성공 후 main에 squash merge했다.
 - Goal 004에서 Clock/Timeout 모델을 추가했다.
 - ManualClock으로 실제 대기 없이 Timeout 상황을 테스트할 수 있다.
+- PR #2는 CI 성공 후 main에 squash merge했다.
+- Goal 005에서 가상 IO 입력을 상태머신 이벤트로 변환하는 연결 계층을 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -48,7 +50,7 @@
 - Goal 하나당 최대 반복 횟수
 - 자동 병합 허용 범위
 - Unity 버전
-- 상태머신과 IO의 연결 방식
+- 공정 시나리오 파일 형식
 - Timeout 이후 복구 절차 상세 설계
 
 ## 완료한 작업
@@ -60,13 +62,15 @@
 | 2026-06-25 | Goal 003: GitHub Actions CI | 로컬 빌드/테스트 통과, GitHub Actions push/PR 실행 성공 |
 | 2026-06-25 | PR #1 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 004: Clock/Timeout 모델 | 로컬 빌드 성공, 콘솔 테스트 17개 통과, Draft PR #2 생성, CI 성공 |
+| 2026-06-25 | PR #2 병합 | CI 성공 확인 후 main에 squash merge |
+| 2026-06-25 | Goal 005: 상태머신 + IO 연결 | 로컬 빌드 성공, 콘솔 테스트 23개 통과 |
 
 ## 열린 PR
 
 | PR | 브랜치 | 상태 |
 |---|---|---|
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | Draft, 미병합 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | 병합 완료 |
 
 ## 최근 CI 결과
 
@@ -79,9 +83,10 @@
 
 ## 다음 안전한 작업
 
-1. PR #2를 검토하고 main 병합 여부를 결정한다.
-2. 상태머신과 IO를 연결한다.
+1. Goal 005 브랜치를 GitHub에 푸시하고 PR을 만든다.
+2. GitHub Actions 실행 결과를 확인한다.
 3. 가상 공정 시나리오 파일을 만든다.
+4. Unity 프로젝트 생성 전 Core 검증을 정리한다.
 
 ## 금지할 것
 

@@ -11,6 +11,7 @@ public static class EquipmentIoMap
     public const string LoadPresent = "DI_LOAD_PRESENT";
     public const string AlignmentDone = "DI_ALIGNMENT_DONE";
     public const string InspectionDone = "DI_INSPECTION_DONE";
+    public const string UnloadComplete = "DI_UNLOAD_COMPLETE";
 
     public const string VacuumOn = "DO_VACUUM_ON";
     public const string StageMoveRequested = "DO_STAGE_MOVE_REQUESTED";
@@ -26,6 +27,7 @@ public static class EquipmentIoMap
         io.DefineInput(LoadPresent, "Material or wafer present sensor.", initialValue: false);
         io.DefineInput(AlignmentDone, "Alignment complete sensor.", initialValue: false);
         io.DefineInput(InspectionDone, "Inspection complete signal.", initialValue: false);
+        io.DefineInput(UnloadComplete, "Unload complete signal.", initialValue: false);
 
         io.DefineOutput(VacuumOn, "Vacuum command output.", initialValue: false);
         io.DefineOutput(StageMoveRequested, "Stage move request output.", initialValue: false);

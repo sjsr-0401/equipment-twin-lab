@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.7 — Clock/Timeout 모델 추가
+> 상태: 초안 v0.8 — 상태머신과 IO 연결 계층 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,10 +990,9 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. PR #2 병합 여부 결정
-2. 상태머신과 IO 연결
-3. 공정 시나리오 파일 추가
-4. Unity 프로젝트 생성 전 Core 검증 강화
+1. Goal 005 PR 생성 및 CI 확인
+2. 공정 시나리오 파일 추가
+3. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
 
@@ -1069,3 +1068,55 @@ Alarmed 상태로 전환
 - 실제 장비 안전 회로를 구현한 것이 아니다.
 - 실제 PLC 타이머가 아니다.
 - Timeout 우선순위와 복구 절차는 다음 단계에서 더 구체화해야 한다.
+
+## 27. 2026-06-25 Goal 005 결과
+
+상태머신과 가상 IO를 연결하는 계층을 추가했다.
+
+추가된 핵심 파일:
+
+- `EquipmentCellController.cs`
+- `EquipmentCellStepResult.cs`
+
+추가된 IO:
+
+- `DI_UNLOAD_COMPLETE`
+
+핵심 흐름:
+
+```text
+StartCycle()
+→ Idle에서 Loading 전환
+→ DI_LOAD_PRESENT ON
+→ LoadComplete 이벤트
+→ Aligning 전환
+→ DI_ALIGNMENT_DONE ON
+→ AlignmentComplete 이벤트
+→ Inspecting 전환
+→ DI_INSPECTION_DONE ON
+→ InspectionComplete 이벤트
+→ Unloading 전환
+→ DI_UNLOAD_COMPLETE ON
+→ Complete 전환
+```
+
+안전 입력 우선순위:
+
+```text
+DoorOpened / EmergencyStop
+→ 정상 공정 입력보다 먼저 처리
+→ Alarmed 전환
+```
+
+검증 결과:
+
+- .NET 8 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 23개 통과
+
+한계:
+
+- 실제 PLC 통신을 구현한 것이 아니다.
+- 실제 안전 회로를 구현한 것이 아니다.
+- 상태별 출력 정책은 MVP 수준이며, 추후 설정 파일이나 시나리오로 분리할 수 있다.
