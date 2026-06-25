@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증이다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -54,6 +54,14 @@ scenarios/normal-cycle.json
 scenarios/loading-timeout.json
 → Loading 상태 Timeout 알람 실행
 ```
+
+현재 시나리오 목록:
+
+- `scenarios/normal-cycle.json`: 정상 사이클
+- `scenarios/loading-timeout.json`: Loading Timeout 알람
+- `scenarios/door-open-alarm.json`: 문 열림 알람
+- `scenarios/emergency-stop-alarm.json`: 비상정지 알람
+- `scenarios/clear-alarm-recovery.json`: 문 열림 알람 이후 ClearAlarm 복구
 
 ## 프로젝트 구조
 

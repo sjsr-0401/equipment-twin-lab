@@ -1,0 +1,33 @@
+{
+  "name": "door-open-alarm",
+  "description": "Starts a cycle and verifies that opening the door moves the equipment into Alarmed state.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading",
+      "expectSignals": {
+        "DO_VACUUM_ON": true,
+        "DO_TOWER_LAMP_RED": false,
+        "DO_BUZZER_ON": false
+      }
+    },
+    {
+      "name": "Door opens",
+      "action": "SetInput",
+      "signal": "DI_DOOR_CLOSED",
+      "value": false
+    },
+    {
+      "name": "Poll door safety input",
+      "action": "PollInputs",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    }
+  ]
+}

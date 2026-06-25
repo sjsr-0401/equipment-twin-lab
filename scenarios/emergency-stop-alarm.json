@@ -1,0 +1,28 @@
+{
+  "name": "emergency-stop-alarm",
+  "description": "Starts a cycle and verifies that emergency stop moves the equipment into Alarmed state.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading"
+    },
+    {
+      "name": "Emergency stop pressed",
+      "action": "SetInput",
+      "signal": "DI_EMERGENCY_STOP_PRESSED",
+      "value": true
+    },
+    {
+      "name": "Poll emergency stop input",
+      "action": "PollInputs",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    }
+  ]
+}
