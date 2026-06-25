@@ -419,6 +419,72 @@ dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
 dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
 ```
 
+## 2026-06-25 추가 이해 요약: CLI batch 실행 + Markdown 리포트
+
+### 오늘 한 일
+
+- PR #5를 CI 성공 확인 후 main에 병합했다.
+- 새 브랜치 `goal/008-cli-batch-report`를 만들었다.
+- CLI에 `batch` 명령을 추가했다.
+- `scenarios/` 폴더의 모든 JSON 시나리오를 한 번에 실행하게 했다.
+- `--report` 옵션으로 Markdown 리포트를 저장하게 했다.
+- CI에서 batch 실행과 리포트 생성을 검증하게 했다.
+
+### 왜 필요한가
+
+시나리오가 늘어나면 하나씩 실행하는 방식은 유지보수가 어렵다.
+
+Batch 실행은 “전체 장비 시뮬레이션 검증 세트”를 한 번에 돌리는 기능이다. 이 기능이 있으면 포트폴리오에서 자동 검증 루프를 설명하기 쉬워진다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+Command Line batch
+    ↓
+EquipmentTwin.Cli
+    ↓
+ResolveScenarioPaths()
+    ↓
+ExecuteScenario() repeated
+    ↓
+BuildMarkdownReport()
+```
+
+중요한 점은 Core 로직을 바꾸지 않았다는 것이다. Batch는 CLI 계층에서 ScenarioRunner를 반복 호출하는 구조다.
+
+### 유지보수 포인트
+
+- Batch 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
+- 리포트 생성: `BuildMarkdownReport()`
+- CI batch 실행: `.github/workflows/ci.yml`
+- 생성 리포트 위치: `artifacts/scenario-report.md`
+
+### 막힌 점과 해결 방법
+
+- 현재 막힌 점 없음.
+- `artifacts/`는 이미 `.gitignore`에 포함되어 있어 생성된 리포트가 Git에 섞이지 않는다.
+
+### 보류한 판단
+
+- JSON/HTML 리포트 export는 아직 만들지 않았다.
+- GitHub Actions artifact 업로드는 아직 넣지 않았다.
+- 시나리오 필터링/tag 기능은 아직 넣지 않았다.
+
+### 확인 방법
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
+```
+
+현재 로컬 결과:
+
+- 빌드 성공
+- 경고 0개
+- 오류 0개
+- 테스트 27개 통과
+- batch 실행 성공
+- Markdown 리포트 생성 성공
+
 ## 초보자 설명 템플릿
 
 작업이 끝날 때마다 아래 형식으로 정리한다.

@@ -37,3 +37,6 @@ jobs:
 
       - name: Run timeout scenario through CLI
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/loading-timeout.json --default-timeouts
+
+      - name: Run scenario batch through CLI
+        run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts/scenario-report.md

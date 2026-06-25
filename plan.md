@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v1.0 — Scenario CLI 실행기 추가
+> 상태: 초안 v1.1 — CLI batch 실행과 Markdown 리포트 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,8 +990,8 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. PR #5 병합 여부 결정
-2. CLI batch 실행 또는 리포트 기능 여부 결정
+1. PR #6 병합 여부 결정
+2. 알람/복구 시나리오 추가 여부 결정
 3. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
@@ -1271,3 +1271,58 @@ EquipmentCellController
 - CLI 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
 - 시나리오 실행 로직: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
 - CI CLI 검증: `.github/workflows/ci.yml`
+
+## 31. 2026-06-25 Goal 008 결과
+
+CLI batch 실행과 Markdown 리포트 저장 기능을 추가했다.
+
+실행 예시:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
+```
+
+검증 결과:
+
+- .NET restore 성공
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 27개 통과
+- 정상 시나리오 CLI 실행 성공
+- Loading Timeout 시나리오 CLI 실행 성공
+- batch 실행 성공
+- Markdown 리포트 생성 성공
+- Draft PR #6 생성
+- GitHub Actions push 이벤트 성공
+- GitHub Actions pull_request 이벤트 성공
+
+막힌 점:
+
+- 현재 막힌 점 없음.
+
+보류한 판단:
+
+- JSON/HTML 리포트 export는 아직 만들지 않는다.
+- GitHub Actions artifact 업로드는 아직 넣지 않는다.
+- 시나리오 필터링/tag 기능은 아직 넣지 않는다.
+
+아키텍처:
+
+```text
+Command Line batch
+    ↓
+EquipmentTwin.Cli
+    ↓
+ResolveScenarioPaths()
+    ↓
+ExecuteScenario() repeated
+    ↓
+BuildMarkdownReport()
+```
+
+유지보수 포인트:
+
+- Batch 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
+- 리포트 생성: `BuildMarkdownReport()`
+- CI batch 실행: `.github/workflows/ci.yml`
