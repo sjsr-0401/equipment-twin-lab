@@ -990,7 +990,7 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. Goal 008 PR 생성 및 CI 확인
+1. PR #6 병합 여부 결정
 2. 알람/복구 시나리오 추가 여부 결정
 3. Unity 프로젝트 생성 전 Core 검증 강화
 
@@ -1293,6 +1293,9 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - Loading Timeout 시나리오 CLI 실행 성공
 - batch 실행 성공
 - Markdown 리포트 생성 성공
+- Draft PR #6 생성
+- GitHub Actions push 이벤트 성공
+- GitHub Actions pull_request 이벤트 성공
 
 막힌 점:
 
