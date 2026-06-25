@@ -990,7 +990,7 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. Goal 004 PR 생성 및 CI 확인
+1. PR #2 병합 여부 결정
 2. 상태머신과 IO 연결
 3. 공정 시나리오 파일 추가
 4. Unity 프로젝트 생성 전 Core 검증 강화
@@ -1060,6 +1060,9 @@ Alarmed 상태로 전환
 - 경고 0개
 - 오류 0개
 - 콘솔 테스트 17개 통과
+- Draft PR #2 생성
+- GitHub Actions push 이벤트 성공
+- GitHub Actions pull_request 이벤트 성공
 
 한계:
 

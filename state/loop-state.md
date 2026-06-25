@@ -59,13 +59,14 @@
 | 2026-06-25 | Goal 002: 가상 IO 모델 | 빌드 성공, 콘솔 테스트 11개 통과, Draft PR #1 생성 |
 | 2026-06-25 | Goal 003: GitHub Actions CI | 로컬 빌드/테스트 통과, GitHub Actions push/PR 실행 성공 |
 | 2026-06-25 | PR #1 병합 | CI 성공 확인 후 main에 squash merge |
-| 2026-06-25 | Goal 004: Clock/Timeout 모델 | 로컬 빌드 성공, 콘솔 테스트 17개 통과 |
+| 2026-06-25 | Goal 004: Clock/Timeout 모델 | 로컬 빌드 성공, 콘솔 테스트 17개 통과, Draft PR #2 생성, CI 성공 |
 
 ## 열린 PR
 
 | PR | 브랜치 | 상태 |
 |---|---|---|
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | Draft, 미병합 |
 
 ## 최근 CI 결과
 
@@ -73,13 +74,14 @@
 |---|---|---|---|
 | 2026-06-25 | `goal/002-virtual-io` | push | 성공 |
 | 2026-06-25 | `goal/002-virtual-io` | pull_request | 성공 |
+| 2026-06-25 | `goal/004-clock-timeout` | push | 성공 |
+| 2026-06-25 | `goal/004-clock-timeout` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 004 브랜치를 GitHub에 푸시하고 PR을 만든다.
-2. GitHub Actions 실행 결과를 확인한다.
-3. 상태머신과 IO를 연결한다.
-4. 가상 공정 시나리오 파일을 만든다.
+1. PR #2를 검토하고 main 병합 여부를 결정한다.
+2. 상태머신과 IO를 연결한다.
+3. 가상 공정 시나리오 파일을 만든다.
 
 ## 금지할 것
 
