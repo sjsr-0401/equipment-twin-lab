@@ -60,7 +60,16 @@ goals/
 
 logs/
   일일 작업 로그
+
+docs/
+  아키텍처와 유지보수 설명
 ```
+
+## 아키텍처 설명
+
+현재 코드 구조와 유지보수 방법은 아래 문서에 정리한다.
+
+[docs/architecture.md](docs/architecture.md)
 
 ## 실행 방법
 

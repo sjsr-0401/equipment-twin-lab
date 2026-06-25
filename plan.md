@@ -1123,3 +1123,37 @@ DoorOpened / EmergencyStop
 - 실제 PLC 통신을 구현한 것이 아니다.
 - 실제 안전 회로를 구현한 것이 아니다.
 - 상태별 출력 정책은 MVP 수준이며, 추후 설정 파일이나 시나리오로 분리할 수 있다.
+
+## 28. 작업로그와 아키텍처 설명 규칙
+
+앞으로 모든 Goal은 코드 결과만 남기지 않고, 사용자가 유지보수할 수 있게 아래 내용을 함께 기록한다.
+
+필수 기록:
+
+- 막힌 점
+- 해결 방법
+- 실패하거나 보류한 시도
+- 어떤 계층을 바꿨는지
+- 왜 그런 구조로 짰는지
+- 유지보수할 때 봐야 할 파일
+- 테스트가 증명한 것과 증명하지 못한 것
+
+현재 아키텍처 문서:
+
+```text
+docs/architecture.md
+```
+
+현재 계층:
+
+```text
+Scenario / Unity / User Command
+        ↓
+EquipmentCellController
+        ↓
+EquipmentStateMachine
+        ↓
+VirtualIoController
+```
+
+이 규칙의 목적은 “에이전트가 만든 코드”가 아니라 “사용자가 설명하고 유지보수할 수 있는 코드”를 만드는 것이다.
