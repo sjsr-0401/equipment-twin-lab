@@ -245,18 +245,22 @@ ExpectState Aligning
 - 정상/실패 결과를 콘솔에 출력한다.
 - 최종 장비 상태와 IO Snapshot을 보여준다.
 - 실패 시 non-zero exit code를 반환해서 CI에서 잡을 수 있게 한다.
+- 여러 시나리오를 batch로 실행하고 Markdown 리포트를 저장한다.
 
 예:
 
 ```powershell
 dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
 dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
+dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
 ```
 
 유지보수 포인트:
 
 - CLI 인자 처리는 `CliOptions.Parse()`를 본다.
 - 출력 형식은 `PrintResult()`를 본다.
+- Batch 출력 형식은 `PrintBatchResult()`를 본다.
+- Markdown 리포트 형식은 `BuildMarkdownReport()`를 본다.
 - 실제 실행은 `ScenarioRunner`에 위임한다.
 
 주의:
@@ -312,7 +316,8 @@ dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --d
 - 실제 카메라 없음
 - Unity 화면 없음
 - 시나리오 분기/반복 없음
-- CLI batch 실행 없음
+- CLI batch filtering 없음
+- 리포트 artifact 업로드 없음
 - 알람 복구 절차는 단순화됨
 
 ## 다음 아키텍처 목표
