@@ -1,4 +1,5 @@
 using EquipmentTwin.Core;
+using EquipmentTwin.Core.Io;
 
 var tests = new (string Name, Action Body)[]
 {
@@ -6,7 +7,13 @@ var tests = new (string Name, Action Body)[]
     ("Invalid transition is rejected", InvalidTransitionIsRejected),
     ("Door opened during inspection creates alarm", DoorOpenedDuringInspectionCreatesAlarm),
     ("Clear alarm returns to Idle", ClearAlarmReturnsToIdle),
-    ("History records accepted and rejected transitions", HistoryRecordsAcceptedAndRejectedTransitions)
+    ("History records accepted and rejected transitions", HistoryRecordsAcceptedAndRejectedTransitions),
+    ("Default IO map exposes expected inputs and outputs", DefaultIoMapExposesExpectedInputsAndOutputs),
+    ("Equipment software can write outputs", EquipmentSoftwareCanWriteOutputs),
+    ("Equipment software cannot write inputs", EquipmentSoftwareCannotWriteInputs),
+    ("Simulator can set inputs", SimulatorCanSetInputs),
+    ("Simulator cannot set outputs", SimulatorCannotSetOutputs),
+    ("IO history records value changes", IoHistoryRecordsValueChanges)
 };
 
 var failures = 0;
@@ -90,6 +97,69 @@ static void HistoryRecordsAcceptedAndRejectedTransitions()
     AssertTrue(machine.History[1].Accepted, "Second transition must be accepted.");
 }
 
+static void DefaultIoMapExposesExpectedInputsAndOutputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var snapshot = io.Snapshot();
+
+    AssertTrue(io.IsDefined(EquipmentIoMap.DoorClosed), "DoorClosed input must exist.");
+    AssertTrue(io.IsDefined(EquipmentIoMap.VacuumOn), "VacuumOn output must exist.");
+    AssertEqual(9, snapshot.Count, "Default IO point count mismatch.");
+    AssertEqual(true, io.Read(EquipmentIoMap.DoorClosed), "DoorClosed must start true.");
+    AssertEqual(false, io.Read(EquipmentIoMap.VacuumOn), "VacuumOn must start false.");
+}
+
+static void EquipmentSoftwareCanWriteOutputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+
+    io.WriteOutput(EquipmentIoMap.VacuumOn, true);
+
+    AssertEqual(true, io.Read(EquipmentIoMap.VacuumOn), "Vacuum output must be true after command.");
+}
+
+static void EquipmentSoftwareCannotWriteInputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+
+    AssertThrows<InvalidOperationException>(
+        () => io.WriteOutput(EquipmentIoMap.LoadPresent, true),
+        "Writing an input with WriteOutput must fail.");
+}
+
+static void SimulatorCanSetInputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+
+    io.SetInput(EquipmentIoMap.LoadPresent, true);
+
+    AssertEqual(true, io.Read(EquipmentIoMap.LoadPresent), "LoadPresent input must be true after simulator update.");
+}
+
+static void SimulatorCannotSetOutputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+
+    AssertThrows<InvalidOperationException>(
+        () => io.SetInput(EquipmentIoMap.BuzzerOn, true),
+        "Setting an output with SetInput must fail.");
+}
+
+static void IoHistoryRecordsValueChanges()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+
+    io.SetInput(EquipmentIoMap.LoadPresent, true, source: "TestSensor");
+    io.WriteOutput(EquipmentIoMap.VacuumOn, true, source: "TestSequence");
+    io.WriteOutput(EquipmentIoMap.VacuumOn, true, source: "RepeatedCommand");
+
+    AssertEqual(2, io.History.Count, "History should record only actual value changes.");
+    AssertEqual(EquipmentIoMap.LoadPresent, io.History[0].Name, "First IO history item mismatch.");
+    AssertEqual("TestSensor", io.History[0].Source, "First IO history source mismatch.");
+    AssertEqual(EquipmentIoMap.VacuumOn, io.History[1].Name, "Second IO history item mismatch.");
+    AssertEqual("TestSequence", io.History[1].Source, "Second IO history source mismatch.");
+}
+
 static EquipmentStateMachine MoveToInspection()
 {
     var machine = new EquipmentStateMachine();
@@ -129,4 +199,19 @@ static void AssertEqual<T>(T expected, T actual, string message)
     {
         throw new InvalidOperationException($"{message} Expected: {expected}, Actual: {actual}");
     }
+}
+
+static void AssertThrows<TException>(Action action, string message)
+    where TException : Exception
+{
+    try
+    {
+        action();
+    }
+    catch (TException)
+    {
+        return;
+    }
+
+    throw new InvalidOperationException(message);
 }

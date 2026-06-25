@@ -6,7 +6,8 @@
 
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
-- 단계: 첫 MVP 구현 완료
+- GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
+- 단계: 장비 상태머신, 가상 IO 모델, CI 구성 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -32,6 +33,11 @@
 - 자동화는 처음부터 완전 자동이 아니라, 문서화 → 검증 → 저위험 자동화 순서로 도입한다.
 - 첫 구현은 C#/.NET 8 기반 장비 상태머신으로 시작한다.
 - 현재 정상 시퀀스와 알람 전이 테스트가 통과한다.
+- 공개 GitHub 저장소를 생성했고 `main` 브랜치에 초기 커밋을 푸시했다.
+- Goal 002에서 가상 IO 모델을 추가했다.
+- 가상 IO는 Input/Output 방향을 구분하고 잘못된 방향 접근을 거부한다.
+- Goal 003에서 GitHub Actions CI를 추가했다.
+- CI는 push/PR마다 restore, build, console test를 실행한다.
 
 ## 아직 확정하지 않은 것
 
@@ -39,21 +45,38 @@
 - Goal 하나당 최대 반복 횟수
 - 자동 병합 허용 범위
 - Unity 버전
-- 실제 GitHub 원격 저장소 생성 여부
+- 상태머신과 IO의 연결 방식
+- Clock/Timeout 모델
+- CI 통과 후 PR #1 병합 여부
 
 ## 완료한 작업
 
 | 날짜 | Goal | 결과 |
 |---|---|---|
 | 2026-06-25 | Goal 001: 장비 상태머신 MVP | 빌드 성공, 콘솔 테스트 5개 통과 |
+| 2026-06-25 | Goal 002: 가상 IO 모델 | 빌드 성공, 콘솔 테스트 11개 통과, Draft PR #1 생성 |
+| 2026-06-25 | Goal 003: GitHub Actions CI | 로컬 빌드/테스트 통과, GitHub Actions push/PR 실행 성공 |
+
+## 열린 PR
+
+| PR | 브랜치 | 상태 |
+|---|---|---|
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | Draft, 미병합 |
+
+## 최근 CI 결과
+
+| 날짜 | 브랜치 | 이벤트 | 결과 |
+|---|---|---|---|
+| 2026-06-25 | `goal/002-virtual-io` | push | 성공 |
+| 2026-06-25 | `goal/002-virtual-io` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. GitHub 원격 저장소를 만들지 결정한다.
-2. CI를 붙인다.
-3. 가상 IO 모델을 추가한다.
+1. GitHub Actions 실행 결과를 확인한다.
+2. PR #1을 검토하고 main 병합 여부를 결정한다.
+3. Clock/Timeout 모델을 추가한다.
 4. 상태머신과 IO를 연결한다.
-5. Unity 프로젝트 생성 전까지 Core 테스트를 늘린다.
+5. 가상 공정 시나리오 파일을 만든다.
 
 ## 금지할 것
 

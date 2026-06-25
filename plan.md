@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.4 — 대표 프로젝트 저장소 폴더 생성 및 첫 MVP 구현 완료
+> 상태: 초안 v0.6 — GitHub Actions CI 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -951,3 +951,76 @@ Idle → Loading → Aligning → Inspecting → Unloading → Complete
 - 실제 PLC/IO 모델
 - Unity 3D 시뮬레이터
 - 실제 카메라 검사
+
+## 24. 2026-06-25 Goal 002 결과
+
+GitHub 공개 저장소를 만들었다.
+
+```text
+https://github.com/sjsr-0401/equipment-twin-lab
+```
+
+두 번째 구현은 가상 IO 모델이다.
+
+핵심 구분:
+
+```text
+Input  = 센서/PLC가 바꾸고 장비 SW가 읽는 값
+Output = 장비 SW가 쓰고 장치가 반응하는 값
+```
+
+추가된 기본 IO 예시:
+
+- `DI_DOOR_CLOSED`
+- `DI_EMERGENCY_STOP_PRESSED`
+- `DI_LOAD_PRESENT`
+- `DI_ALIGNMENT_DONE`
+- `DI_INSPECTION_DONE`
+- `DO_VACUUM_ON`
+- `DO_STAGE_MOVE_REQUESTED`
+- `DO_TOWER_LAMP_RED`
+- `DO_BUZZER_ON`
+
+검증 결과:
+
+- .NET 8 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 11개 통과
+
+다음 후보 작업:
+
+1. PR #1 병합 여부 결정
+2. Clock/Timeout 모델 추가
+3. 상태머신과 IO 연결
+4. 공정 시나리오 파일 추가
+5. Unity 프로젝트 생성 전 Core 검증 강화
+
+## 25. 2026-06-25 Goal 003 결과
+
+GitHub Actions CI를 추가했다.
+
+워크플로 파일:
+
+```text
+.github/workflows/ci.yml
+```
+
+CI가 실행하는 검증:
+
+```text
+dotnet restore EquipmentTwinLab.sln --ignore-failed-sources
+dotnet build EquipmentTwinLab.sln --no-restore --configuration Release
+dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
+```
+
+의미:
+
+- PR마다 최소 빌드/테스트가 자동으로 확인된다.
+- 에이전트가 만든 변경을 GitHub에서 반복 검증할 수 있다.
+- 아직 자동 병합은 하지 않는다.
+
+확인 결과:
+
+- `goal/002-virtual-io` push 이벤트 CI 성공
+- PR #1 pull_request 이벤트 CI 성공
