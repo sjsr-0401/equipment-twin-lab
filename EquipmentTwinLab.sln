@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{72CBD503
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentTwin.Core.Tests", "tests\EquipmentTwin.Core.Tests\EquipmentTwin.Core.Tests.csproj", "{B9A6742C-F5DB-4C8E-97B6-5E1BFF4F535C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentTwin.Cli", "src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj", "{61A20808-DFAC-41E6-8B65-29C31FAABF76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +30,14 @@ Global
 		{B9A6742C-F5DB-4C8E-97B6-5E1BFF4F535C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9A6742C-F5DB-4C8E-97B6-5E1BFF4F535C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9A6742C-F5DB-4C8E-97B6-5E1BFF4F535C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A20808-DFAC-41E6-8B65-29C31FAABF76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A20808-DFAC-41E6-8B65-29C31FAABF76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A20808-DFAC-41E6-8B65-29C31FAABF76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A20808-DFAC-41E6-8B65-29C31FAABF76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AE0A84A7-5D48-40AD-9403-85639CA90142} = {675FFDEB-CF56-48D6-AF27-B87E7AA6936E}
 		{B9A6742C-F5DB-4C8E-97B6-5E1BFF4F535C} = {72CBD503-F8DF-4E93-ACE4-7A90DD02AAEF}
+		{61A20808-DFAC-41E6-8B65-29C31FAABF76} = {675FFDEB-CF56-48D6-AF27-B87E7AA6936E}
 	EndGlobalSection
 EndGlobal

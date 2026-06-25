@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -94,6 +94,20 @@ dotnet build --no-restore
 dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 ```
 
+## 시나리오 직접 실행
+
+정상 사이클:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
+```
+
+Loading Timeout:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
+```
+
 ## 자동 검증
 
 GitHub Actions CI가 push/PR마다 아래 검증을 실행한다.
@@ -102,6 +116,8 @@ GitHub Actions CI가 push/PR마다 아래 검증을 실행한다.
 dotnet restore EquipmentTwinLab.sln --ignore-failed-sources
 dotnet build EquipmentTwinLab.sln --no-restore --configuration Release
 dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/normal-cycle.json
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/loading-timeout.json --default-timeouts
 ```
 
 ## GitHub

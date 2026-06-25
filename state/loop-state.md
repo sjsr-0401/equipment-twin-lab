@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기 구현 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -47,6 +47,8 @@
 - 현재 코드 구조는 `docs/architecture.md`에 정리한다.
 - PR #3은 CI 성공 후 main에 squash merge했다.
 - Goal 006에서 JSON 시나리오 모델과 ScenarioRunner를 추가했다.
+- PR #4는 CI 성공 후 main에 squash merge했다.
+- Goal 007에서 JSON 시나리오를 명령어로 실행하는 CLI를 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -54,7 +56,7 @@
 - Goal 하나당 최대 반복 횟수
 - 자동 병합 허용 범위
 - Unity 버전
-- CLI 실행기 형식
+- CLI batch 실행 방식
 - Timeout 이후 복구 절차 상세 설계
 
 ## 완료한 작업
@@ -70,6 +72,8 @@
 | 2026-06-25 | Goal 005: 상태머신 + IO 연결 | 로컬 빌드 성공, 콘솔 테스트 23개 통과, Draft PR #3 생성, CI 성공 |
 | 2026-06-25 | PR #3 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 006: 공정 시나리오 JSON Runner | 로컬 빌드 성공, 콘솔 테스트 27개 통과, Draft PR #4 생성, CI 성공 |
+| 2026-06-25 | PR #4 병합 | CI 성공 확인 후 main에 squash merge |
+| 2026-06-25 | Goal 007: Scenario CLI 실행기 | 로컬 빌드 성공, 콘솔 테스트 27개 통과, CLI 시나리오 2개 실행 성공, Draft PR #5 생성, CI 성공 |
 
 ## 열린 PR
 
@@ -78,7 +82,8 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/3` | `goal/005-io-state-bridge` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/4` | `goal/006-scenario-json` | Draft, 미병합 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/4` | `goal/006-scenario-json` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/5` | `goal/007-scenario-cli` | Draft, 미병합 |
 
 ## 최근 CI 결과
 
@@ -92,12 +97,13 @@
 | 2026-06-25 | `goal/005-io-state-bridge` | pull_request | 성공 |
 | 2026-06-25 | `goal/006-scenario-json` | push | 성공 |
 | 2026-06-25 | `goal/006-scenario-json` | pull_request | 성공 |
+| 2026-06-25 | `goal/007-scenario-cli` | push | 성공 |
+| 2026-06-25 | `goal/007-scenario-cli` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. PR #4를 검토하고 main 병합 여부를 결정한다.
-2. ScenarioRunner를 CLI에서 실행할지, 다음 Core 기능을 먼저 추가할지 결정한다.
-3. Unity 프로젝트 생성 전 Core 검증을 정리한다.
+1. PR #5를 검토하고 main 병합 여부를 결정한다.
+2. CLI batch 실행 또는 Core 검증 정리 중 다음 작업을 결정한다.
 
 ## 금지할 것
 
