@@ -19,7 +19,13 @@ var tests = new (string Name, Action Body)[]
     ("Timeout before limit does not alarm", TimeoutBeforeLimitDoesNotAlarm),
     ("Timeout at limit moves equipment to alarm", TimeoutAtLimitMovesEquipmentToAlarm),
     ("Unconfigured state does not timeout", UnconfiguredStateDoesNotTimeout),
-    ("Timeout policy rejects invalid rules", TimeoutPolicyRejectsInvalidRules)
+    ("Timeout policy rejects invalid rules", TimeoutPolicyRejectsInvalidRules),
+    ("Cell controller starts cycle and sets outputs", CellControllerStartsCycleAndSetsOutputs),
+    ("Cell controller advances sequence from IO inputs", CellControllerAdvancesSequenceFromIoInputs),
+    ("Cell controller prioritizes safety inputs", CellControllerPrioritizesSafetyInputs),
+    ("Cell controller reports no change when sensor is missing", CellControllerReportsNoChangeWhenSensorIsMissing),
+    ("Cell controller applies timeout policy", CellControllerAppliesTimeoutPolicy),
+    ("Clear alarm resets normal outputs", ClearAlarmResetsNormalOutputs)
 };
 
 var failures = 0;
@@ -109,8 +115,9 @@ static void DefaultIoMapExposesExpectedInputsAndOutputs()
     var snapshot = io.Snapshot();
 
     AssertTrue(io.IsDefined(EquipmentIoMap.DoorClosed), "DoorClosed input must exist.");
+    AssertTrue(io.IsDefined(EquipmentIoMap.UnloadComplete), "UnloadComplete input must exist.");
     AssertTrue(io.IsDefined(EquipmentIoMap.VacuumOn), "VacuumOn output must exist.");
-    AssertEqual(9, snapshot.Count, "Default IO point count mismatch.");
+    AssertEqual(10, snapshot.Count, "Default IO point count mismatch.");
     AssertEqual(true, io.Read(EquipmentIoMap.DoorClosed), "DoorClosed must start true.");
     AssertEqual(false, io.Read(EquipmentIoMap.VacuumOn), "VacuumOn must start false.");
 }
@@ -247,6 +254,125 @@ static void TimeoutPolicyRejectsInvalidRules()
     AssertThrows<InvalidOperationException>(
         () => policy.SetTimeout(EquipmentState.Alarmed, TimeSpan.FromSeconds(1)),
         "Alarmed timeout rule must be rejected.");
+}
+
+static void CellControllerStartsCycleAndSetsOutputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    var result = cell.StartCycle();
+
+    AssertTrue(result.Accepted, "StartCycle must be accepted from Idle.");
+    AssertEqual(EquipmentState.Loading, machine.CurrentState, "StartCycle must move equipment to Loading.");
+    AssertEqual(true, io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be on while Loading.");
+    AssertEqual(false, io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must stay off during normal Loading.");
+}
+
+static void CellControllerAdvancesSequenceFromIoInputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+
+    io.SetInput(EquipmentIoMap.LoadPresent, true);
+    var loadResult = cell.PollInputs();
+    AssertEqual(EquipmentEvent.LoadComplete, loadResult.Event, "LoadPresent must create LoadComplete.");
+    AssertEqual(EquipmentState.Aligning, machine.CurrentState, "LoadPresent must move equipment to Aligning.");
+    AssertEqual(true, io.Read(EquipmentIoMap.StageMoveRequested), "Stage move output must be on while Aligning.");
+
+    io.SetInput(EquipmentIoMap.AlignmentDone, true);
+    var alignResult = cell.PollInputs();
+    AssertEqual(EquipmentEvent.AlignmentComplete, alignResult.Event, "AlignmentDone must create AlignmentComplete.");
+    AssertEqual(EquipmentState.Inspecting, machine.CurrentState, "AlignmentDone must move equipment to Inspecting.");
+    AssertEqual(false, io.Read(EquipmentIoMap.StageMoveRequested), "Stage move output must be off while Inspecting.");
+
+    io.SetInput(EquipmentIoMap.InspectionDone, true);
+    var inspectResult = cell.PollInputs();
+    AssertEqual(EquipmentEvent.InspectionComplete, inspectResult.Event, "InspectionDone must create InspectionComplete.");
+    AssertEqual(EquipmentState.Unloading, machine.CurrentState, "InspectionDone must move equipment to Unloading.");
+
+    io.SetInput(EquipmentIoMap.UnloadComplete, true);
+    var unloadResult = cell.PollInputs();
+    AssertEqual(EquipmentEvent.UnloadComplete, unloadResult.Event, "UnloadComplete input must create UnloadComplete event.");
+    AssertEqual(EquipmentState.Complete, machine.CurrentState, "UnloadComplete must move equipment to Complete.");
+    AssertEqual(false, io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after Complete.");
+}
+
+static void CellControllerPrioritizesSafetyInputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.LoadPresent, true);
+    io.SetInput(EquipmentIoMap.EmergencyStopPressed, true);
+
+    var result = cell.PollInputs();
+
+    AssertEqual(EquipmentEvent.EmergencyStop, result.Event, "EmergencyStop must be processed before LoadPresent.");
+    AssertEqual(EquipmentState.Alarmed, machine.CurrentState, "EmergencyStop must move equipment to Alarmed.");
+    AssertEqual(true, io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on while Alarmed.");
+    AssertEqual(true, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on while Alarmed.");
+    AssertEqual(false, io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off while Alarmed.");
+}
+
+static void CellControllerReportsNoChangeWhenSensorIsMissing()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    var result = cell.PollInputs();
+
+    AssertFalse(result.Changed, "PollInputs must report no change when no matching sensor is active.");
+    AssertEqual(null, result.Event, "No event must be reported when no matching sensor is active.");
+    AssertEqual(EquipmentState.Loading, machine.CurrentState, "State must stay Loading without LoadPresent.");
+}
+
+static void CellControllerAppliesTimeoutPolicy()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine(clock);
+    var cell = new EquipmentCellController(machine, io);
+    var policy = new StateTimeoutPolicy();
+    policy.SetTimeout(EquipmentState.Loading, TimeSpan.FromSeconds(30));
+
+    cell.StartCycle();
+    clock.Advance(TimeSpan.FromSeconds(30));
+
+    var result = cell.PollInputs(policy);
+
+    AssertEqual(EquipmentEvent.Timeout, result.Event, "Timeout policy must create Timeout event.");
+    AssertTrue(result.Timeout?.TimedOut == true, "Timeout result must be marked timed out.");
+    AssertEqual(EquipmentState.Alarmed, machine.CurrentState, "Timeout must move equipment to Alarmed.");
+    AssertEqual(true, io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on after timeout.");
+    AssertEqual(true, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on after timeout.");
+}
+
+static void ClearAlarmResetsNormalOutputs()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.DoorClosed, false);
+    cell.PollInputs();
+    io.SetInput(EquipmentIoMap.DoorClosed, true);
+
+    var result = cell.ClearAlarm();
+
+    AssertTrue(result.Accepted, "ClearAlarm must be accepted from Alarmed.");
+    AssertEqual(EquipmentState.Idle, machine.CurrentState, "ClearAlarm must return to Idle.");
+    AssertEqual(false, io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be off after ClearAlarm.");
+    AssertEqual(false, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after ClearAlarm.");
 }
 
 static EquipmentStateMachine MoveToInspection()

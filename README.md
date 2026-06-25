@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델이다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층이다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -33,6 +33,16 @@ Clock/Timeout 모델은 실제로 기다리지 않고도 “정해진 시간 안
 Loading 상태에서 30초 안에 LoadComplete가 오지 않으면 Alarmed 전환
 ```
 
+IO-상태 연결 계층은 센서 입력을 상태머신 이벤트로 바꾼다.
+
+예:
+
+```text
+DI_LOAD_PRESENT = true
+→ LoadComplete 이벤트
+→ Loading 상태에서 Aligning 상태로 전환
+```
+
 ## 프로젝트 구조
 
 ```text
@@ -50,7 +60,16 @@ goals/
 
 logs/
   일일 작업 로그
+
+docs/
+  아키텍처와 유지보수 설명
 ```
+
+## 아키텍처 설명
+
+현재 코드 구조와 유지보수 방법은 아래 문서에 정리한다.
+
+[docs/architecture.md](docs/architecture.md)
 
 ## 실행 방법
 
