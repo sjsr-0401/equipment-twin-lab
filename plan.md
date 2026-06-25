@@ -1345,6 +1345,8 @@ BuildMarkdownReport()
 - 오류 0개
 - 콘솔 테스트 30개 통과
 - CLI batch 시나리오 5개 통과
+- Draft PR #7 생성
+- GitHub Actions push/pull_request 성공
 
 Batch 통과 시나리오:
 
@@ -1388,3 +1390,13 @@ Alarmed 또는 Idle
 - 시나리오 실행: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
 - 시나리오 파일: `scenarios/`
 - 회귀 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+PR:
+
+- `https://github.com/sjsr-0401/equipment-twin-lab/pull/7`
+
+다음 권장 작업:
+
+1. PR #7 병합 여부를 결정한다.
+2. Core 검증 정리 문서를 작성한다.
+3. 이후 알람 코드 체계와 복구 조건을 세분화한다.

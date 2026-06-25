@@ -44,6 +44,9 @@
 - `dotnet build EquipmentTwinLab.sln --no-restore --configuration Release`: 성공
 - 콘솔 테스트: 30개 통과
 - CLI batch: 5개 시나리오 통과
+- Draft PR #7 생성 완료
+- GitHub Actions push 이벤트: 성공
+- GitHub Actions pull_request 이벤트: 성공
 
 Batch 통과 시나리오:
 
@@ -107,6 +110,6 @@ Alarmed 또는 Idle
 
 ## 다음 작업
 
-권장 다음 작업은 `Core 검증 정리 문서`다.
+권장 다음 작업은 PR #7을 병합한 뒤 `Core 검증 정리 문서`를 작성하는 것이다.
 
 이유는 현재 Core에 상태머신, IO, Timeout, Scenario, CLI batch까지 들어갔으므로, 면접/포트폴리오에서 설명할 수 있는 형태로 “무엇을 검증했고 무엇을 검증하지 않았는지”를 정리할 타이밍이기 때문이다.
