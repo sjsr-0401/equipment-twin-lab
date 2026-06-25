@@ -1347,6 +1347,7 @@ BuildMarkdownReport()
 - CLI batch 시나리오 5개 통과
 - Draft PR #7 생성
 - GitHub Actions push/pull_request 성공
+- PR #7 main 병합 완료
 
 Batch 통과 시나리오:
 
@@ -1397,6 +1398,6 @@ PR:
 
 다음 권장 작업:
 
-1. PR #7 병합 여부를 결정한다.
-2. Core 검증 정리 문서를 작성한다.
-3. 이후 알람 코드 체계와 복구 조건을 세분화한다.
+1. Core 검증 정리 문서를 작성한다.
+2. 이후 알람 코드 체계와 복구 조건을 세분화한다.
+3. Unity 프로젝트 생성 전 현재 Core가 무엇을 검증하는지 포트폴리오용으로 정리한다.
