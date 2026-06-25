@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.6 — GitHub Actions CI 추가
+> 상태: 초안 v0.7 — Clock/Timeout 모델 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,11 +990,10 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. PR #1 병합 여부 결정
-2. Clock/Timeout 모델 추가
-3. 상태머신과 IO 연결
-4. 공정 시나리오 파일 추가
-5. Unity 프로젝트 생성 전 Core 검증 강화
+1. Goal 004 PR 생성 및 CI 확인
+2. 상태머신과 IO 연결
+3. 공정 시나리오 파일 추가
+4. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
 
@@ -1024,3 +1023,46 @@ dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csp
 
 - `goal/002-virtual-io` push 이벤트 CI 성공
 - PR #1 pull_request 이벤트 CI 성공
+
+## 26. 2026-06-25 Goal 004 결과
+
+Clock/Timeout 모델을 추가했다.
+
+추가된 핵심 파일:
+
+- `IClock.cs`
+- `SystemClock.cs`
+- `ManualClock.cs`
+- `StateTimeoutPolicy.cs`
+- `TimeoutCheckResult.cs`
+
+핵심 개념:
+
+```text
+SystemClock = 실제 실행 시간
+ManualClock = 테스트/시뮬레이션에서 직접 움직이는 시간
+StateTimeoutPolicy = 상태별 허용 시간
+CheckTimeout = 현재 상태가 너무 오래 지속됐는지 검사
+```
+
+예시:
+
+```text
+Loading 상태 진입
+30초 동안 LoadComplete 없음
+CheckTimeout 실행
+Alarmed 상태로 전환
+```
+
+검증 결과:
+
+- .NET 8 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 17개 통과
+
+한계:
+
+- 실제 장비 안전 회로를 구현한 것이 아니다.
+- 실제 PLC 타이머가 아니다.
+- Timeout 우선순위와 복구 절차는 다음 단계에서 더 구체화해야 한다.
