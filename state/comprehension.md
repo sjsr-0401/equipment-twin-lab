@@ -362,6 +362,63 @@ dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 - 오류 0개
 - 테스트 27개 통과
 
+## 2026-06-25 추가 이해 요약: Scenario CLI 실행기
+
+### 오늘 한 일
+
+- PR #4를 CI 성공 확인 후 main에 병합했다.
+- 새 브랜치 `goal/007-scenario-cli`를 만들었다.
+- `EquipmentTwin.Cli` 콘솔 프로젝트를 추가했다.
+- JSON 시나리오를 명령어로 실행할 수 있게 했다.
+- CI에서 정상 시나리오와 Timeout 시나리오를 CLI로 실행하게 했다.
+
+### 왜 필요한가
+
+테스트 코드 안에서만 시나리오가 실행되면 사용자가 직접 눈으로 확인하기 어렵다.
+
+CLI가 있으면 Unity가 없어도 터미널에서 장비 시나리오를 실행하고 단계별 결과와 최종 IO 상태를 볼 수 있다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+Command Line
+    ↓
+EquipmentTwin.Cli
+    ↓
+EquipmentScenario.FromJson()
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+```
+
+CLI는 Core 로직을 직접 갖지 않는다. Core의 ScenarioRunner를 호출하는 얇은 실행 계층이다.
+
+### 유지보수 포인트
+
+- CLI 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
+- 시나리오 실행 로직: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- 샘플 시나리오: `scenarios/`
+- CI CLI 실행 단계: `.github/workflows/ci.yml`
+
+### 막힌 점과 해결 방법
+
+- 현재 막힌 점 없음.
+- 외부 CLI 파서 패키지를 쓰지 않고 직접 인자 parsing을 구현했다.
+
+### 보류한 판단
+
+- 여러 시나리오 일괄 실행은 아직 넣지 않았다.
+- CLI 결과를 JSON/Markdown 리포트로 저장하는 기능은 아직 넣지 않았다.
+- Unity UI와 연결하는 기능은 아직 보류했다.
+
+### 확인 방법
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
+```
+
 ## 초보자 설명 템플릿
 
 작업이 끝날 때마다 아래 형식으로 정리한다.

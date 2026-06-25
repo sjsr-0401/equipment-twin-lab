@@ -5,7 +5,7 @@
 ## 현재 아키텍처 요약
 
 ```text
-Scenario JSON / Unity / User Command
+Scenario JSON / CLI / Unity / User Command
         ↓
 ScenarioRunner
         ↓
@@ -232,6 +232,39 @@ ExpectState Aligning
 - 분기, 반복, 변수, 복잡한 recipe 기능은 아직 없다.
 - 실제 장비 recipe 시스템이 아니라 시뮬레이션 테스트용이다.
 
+## 7. EquipmentTwin.Cli
+
+파일:
+
+- `src/EquipmentTwin.Cli/Program.cs`
+- `src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj`
+
+역할:
+
+- JSON 시나리오 파일을 명령어로 실행한다.
+- 정상/실패 결과를 콘솔에 출력한다.
+- 최종 장비 상태와 IO Snapshot을 보여준다.
+- 실패 시 non-zero exit code를 반환해서 CI에서 잡을 수 있게 한다.
+
+예:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
+```
+
+유지보수 포인트:
+
+- CLI 인자 처리는 `CliOptions.Parse()`를 본다.
+- 출력 형식은 `PrintResult()`를 본다.
+- 실제 실행은 `ScenarioRunner`에 위임한다.
+
+주의:
+
+- CLI는 Core 로직을 다시 구현하지 않는다.
+- CLI는 사용자/CI가 ScenarioRunner를 쉽게 호출하게 하는 얇은 껍데기다.
+- 실제 장비 운전용 UI나 recipe editor가 아니다.
+
 ## 변경할 때 기준
 
 ### 상태가 추가될 때
@@ -265,6 +298,13 @@ ExpectState Aligning
 4. 정상/실패 테스트 추가
 5. 샘플 JSON 추가 또는 수정
 
+### CLI 옵션이 추가될 때
+
+1. `EquipmentTwin.Cli/Program.cs`의 `CliOptions.Parse()` 수정
+2. `PrintUsage()` 수정
+3. README 실행 예시 수정
+4. 필요하면 CI 실행 단계 추가
+
 ## 현재 한계
 
 - 실제 PLC 통신 없음
@@ -272,6 +312,7 @@ ExpectState Aligning
 - 실제 카메라 없음
 - Unity 화면 없음
 - 시나리오 분기/반복 없음
+- CLI batch 실행 없음
 - 알람 복구 절차는 단순화됨
 
 ## 다음 아키텍처 목표

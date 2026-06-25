@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.9 — 공정 시나리오 JSON Runner 추가
+> 상태: 초안 v1.0 — Scenario CLI 실행기 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,8 +990,8 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. PR #4 병합 여부 결정
-2. Scenario CLI 실행기 여부 결정
+1. Goal 007 PR 생성 및 CI 확인
+2. CLI batch 실행 또는 리포트 기능 여부 결정
 3. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
@@ -1213,3 +1213,58 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 - 새 action 추가: `ScenarioStepAction.cs`, `ScenarioRunner.cs`
 - 시나리오 파일 추가: `scenarios/`
 - 시나리오 테스트 추가: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+## 30. 2026-06-25 Goal 007 결과
+
+Scenario CLI 실행기를 추가했다.
+
+추가된 핵심 파일:
+
+- `src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj`
+- `src/EquipmentTwin.Cli/Program.cs`
+
+실행 예시:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\normal-cycle.json
+dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --default-timeouts
+```
+
+검증 결과:
+
+- .NET 8 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 27개 통과
+- 정상 시나리오 CLI 실행 성공
+- Loading Timeout 시나리오 CLI 실행 성공
+
+막힌 점:
+
+- 현재 막힌 점 없음.
+
+보류한 판단:
+
+- 외부 CLI 파서 패키지는 아직 사용하지 않는다.
+- 여러 시나리오 일괄 실행은 다음 단계 후보로 둔다.
+- CLI 결과 리포트 파일 export는 아직 보류한다.
+
+아키텍처:
+
+```text
+Command Line
+    ↓
+EquipmentTwin.Cli
+    ↓
+EquipmentScenario.FromJson()
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+```
+
+유지보수 포인트:
+
+- CLI 인자 처리: `src/EquipmentTwin.Cli/Program.cs`
+- 시나리오 실행 로직: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- CI CLI 검증: `.github/workflows/ci.yml`
