@@ -73,7 +73,7 @@
 | 2026-06-25 | PR #3 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 006: 공정 시나리오 JSON Runner | 로컬 빌드 성공, 콘솔 테스트 27개 통과, Draft PR #4 생성, CI 성공 |
 | 2026-06-25 | PR #4 병합 | CI 성공 확인 후 main에 squash merge |
-| 2026-06-25 | Goal 007: Scenario CLI 실행기 | 로컬 빌드 성공, 콘솔 테스트 27개 통과, CLI 시나리오 2개 실행 성공 |
+| 2026-06-25 | Goal 007: Scenario CLI 실행기 | 로컬 빌드 성공, 콘솔 테스트 27개 통과, CLI 시나리오 2개 실행 성공, Draft PR #5 생성, CI 성공 |
 
 ## 열린 PR
 
@@ -83,6 +83,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/3` | `goal/005-io-state-bridge` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/4` | `goal/006-scenario-json` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/5` | `goal/007-scenario-cli` | Draft, 미병합 |
 
 ## 최근 CI 결과
 
@@ -96,12 +97,13 @@
 | 2026-06-25 | `goal/005-io-state-bridge` | pull_request | 성공 |
 | 2026-06-25 | `goal/006-scenario-json` | push | 성공 |
 | 2026-06-25 | `goal/006-scenario-json` | pull_request | 성공 |
+| 2026-06-25 | `goal/007-scenario-cli` | push | 성공 |
+| 2026-06-25 | `goal/007-scenario-cli` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 007 브랜치를 GitHub에 푸시하고 PR을 만든다.
-2. GitHub Actions 실행 결과를 확인한다.
-3. CLI batch 실행 또는 Core 검증 정리 중 다음 작업을 결정한다.
+1. PR #5를 검토하고 main 병합 여부를 결정한다.
+2. CLI batch 실행 또는 Core 검증 정리 중 다음 작업을 결정한다.
 
 ## 금지할 것
 
