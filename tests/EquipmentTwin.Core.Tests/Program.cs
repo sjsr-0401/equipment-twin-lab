@@ -13,7 +13,13 @@ var tests = new (string Name, Action Body)[]
     ("Equipment software cannot write inputs", EquipmentSoftwareCannotWriteInputs),
     ("Simulator can set inputs", SimulatorCanSetInputs),
     ("Simulator cannot set outputs", SimulatorCannotSetOutputs),
-    ("IO history records value changes", IoHistoryRecordsValueChanges)
+    ("IO history records value changes", IoHistoryRecordsValueChanges),
+    ("Manual clock advances deterministically", ManualClockAdvancesDeterministically),
+    ("State entered time updates after accepted transition", StateEnteredTimeUpdatesAfterAcceptedTransition),
+    ("Timeout before limit does not alarm", TimeoutBeforeLimitDoesNotAlarm),
+    ("Timeout at limit moves equipment to alarm", TimeoutAtLimitMovesEquipmentToAlarm),
+    ("Unconfigured state does not timeout", UnconfiguredStateDoesNotTimeout),
+    ("Timeout policy rejects invalid rules", TimeoutPolicyRejectsInvalidRules)
 };
 
 var failures = 0;
@@ -158,6 +164,89 @@ static void IoHistoryRecordsValueChanges()
     AssertEqual("TestSensor", io.History[0].Source, "First IO history source mismatch.");
     AssertEqual(EquipmentIoMap.VacuumOn, io.History[1].Name, "Second IO history item mismatch.");
     AssertEqual("TestSequence", io.History[1].Source, "Second IO history source mismatch.");
+}
+
+static void ManualClockAdvancesDeterministically()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    clock.Advance(TimeSpan.FromSeconds(10));
+
+    AssertEqual(new DateTimeOffset(2026, 6, 25, 0, 0, 10, TimeSpan.Zero), clock.UtcNow, "ManualClock time mismatch.");
+    AssertThrows<ArgumentOutOfRangeException>(
+        () => clock.Advance(TimeSpan.FromSeconds(-1)),
+        "ManualClock must reject moving backward.");
+}
+
+static void StateEnteredTimeUpdatesAfterAcceptedTransition()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+    var machine = new EquipmentStateMachine(clock);
+
+    clock.Advance(TimeSpan.FromSeconds(5));
+    machine.Apply(EquipmentEvent.StartLoad);
+
+    AssertEqual(clock.UtcNow, machine.StateEnteredAtUtc, "StateEnteredAtUtc must update on accepted transition.");
+}
+
+static void TimeoutBeforeLimitDoesNotAlarm()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+    var machine = new EquipmentStateMachine(clock);
+    var policy = new StateTimeoutPolicy();
+    policy.SetTimeout(EquipmentState.Loading, TimeSpan.FromSeconds(30));
+
+    machine.Apply(EquipmentEvent.StartLoad);
+    clock.Advance(TimeSpan.FromSeconds(29));
+
+    var result = machine.CheckTimeout(policy);
+
+    AssertFalse(result.TimedOut, "Loading must not timeout before the limit.");
+    AssertEqual(EquipmentState.Loading, machine.CurrentState, "State must stay Loading before timeout.");
+}
+
+static void TimeoutAtLimitMovesEquipmentToAlarm()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+    var machine = new EquipmentStateMachine(clock);
+    var policy = new StateTimeoutPolicy();
+    policy.SetTimeout(EquipmentState.Loading, TimeSpan.FromSeconds(30));
+
+    machine.Apply(EquipmentEvent.StartLoad);
+    clock.Advance(TimeSpan.FromSeconds(30));
+
+    var result = machine.CheckTimeout(policy);
+
+    AssertTrue(result.TimedOut, "Loading must timeout at the limit.");
+    AssertEqual(EquipmentState.Alarmed, machine.CurrentState, "Timeout must move equipment to Alarmed.");
+    AssertEqual(EquipmentEvent.Timeout, machine.History[^1].Event, "Timeout transition must be recorded.");
+    AssertEqual("State 'Loading' timed out after 00:00:30.", machine.LastAlarmReason, "Timeout alarm reason mismatch.");
+}
+
+static void UnconfiguredStateDoesNotTimeout()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+    var machine = new EquipmentStateMachine(clock);
+    var policy = new StateTimeoutPolicy();
+
+    clock.Advance(TimeSpan.FromHours(1));
+
+    var result = machine.CheckTimeout(policy);
+
+    AssertFalse(result.TimedOut, "Idle must not timeout when no timeout rule is configured.");
+    AssertEqual(EquipmentState.Idle, machine.CurrentState, "State must stay Idle without timeout rule.");
+}
+
+static void TimeoutPolicyRejectsInvalidRules()
+{
+    var policy = new StateTimeoutPolicy();
+
+    AssertThrows<ArgumentOutOfRangeException>(
+        () => policy.SetTimeout(EquipmentState.Loading, TimeSpan.Zero),
+        "Zero timeout must be rejected.");
+    AssertThrows<InvalidOperationException>(
+        () => policy.SetTimeout(EquipmentState.Alarmed, TimeSpan.FromSeconds(1)),
+        "Alarmed timeout rule must be rejected.");
 }
 
 static EquipmentStateMachine MoveToInspection()

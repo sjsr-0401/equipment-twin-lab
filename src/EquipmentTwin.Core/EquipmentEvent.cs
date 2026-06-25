@@ -14,5 +14,6 @@ public enum EquipmentEvent
     Reset,
     DoorOpened,
     EmergencyStop,
+    Timeout,
     ClearAlarm
 }

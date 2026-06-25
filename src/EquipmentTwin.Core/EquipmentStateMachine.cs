@@ -19,8 +19,22 @@ public sealed class EquipmentStateMachine
         };
 
     private readonly List<EquipmentTransition> _history = new();
+    private readonly IClock _clock;
+
+    public EquipmentStateMachine()
+        : this(SystemClock.Instance)
+    {
+    }
+
+    public EquipmentStateMachine(IClock clock)
+    {
+        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        StateEnteredAtUtc = _clock.UtcNow;
+    }
 
     public EquipmentState CurrentState { get; private set; } = EquipmentState.Idle;
+
+    public DateTimeOffset StateEnteredAtUtc { get; private set; }
 
     public string? LastAlarmReason { get; private set; }
 
@@ -42,7 +56,7 @@ public sealed class EquipmentStateMachine
 
         if (IsSafetyEvent(equipmentEvent))
         {
-            return ApplySafetyEvent(previous, equipmentEvent);
+            return ApplyAlarmEvent(previous, equipmentEvent);
         }
 
         if (!AllowedTransitions.TryGetValue((CurrentState, equipmentEvent), out var nextState))
@@ -50,7 +64,7 @@ public sealed class EquipmentStateMachine
             return Reject(previous, equipmentEvent, $"'{equipmentEvent}' event is not allowed while equipment is '{CurrentState}'.");
         }
 
-        CurrentState = nextState;
+        MoveTo(nextState);
 
         if (CurrentState == EquipmentState.Idle)
         {
@@ -60,22 +74,45 @@ public sealed class EquipmentStateMachine
         return Accept(previous, equipmentEvent, nextState, $"State changed from '{previous}' to '{nextState}'.");
     }
 
-    private TransitionResult ApplySafetyEvent(EquipmentState previous, EquipmentEvent equipmentEvent)
+    public TimeoutCheckResult CheckTimeout(StateTimeoutPolicy policy)
+    {
+        ArgumentNullException.ThrowIfNull(policy);
+
+        var elapsed = _clock.UtcNow - StateEnteredAtUtc;
+
+        if (!policy.TryGetTimeout(CurrentState, out var timeout))
+        {
+            return new TimeoutCheckResult(CurrentState, false, elapsed, null, null);
+        }
+
+        if (elapsed < timeout)
+        {
+            return new TimeoutCheckResult(CurrentState, false, elapsed, timeout, null);
+        }
+
+        var timedOutState = CurrentState;
+        var message = $"State '{timedOutState}' timed out after {timeout}.";
+        var transition = MoveToAlarm(timedOutState, EquipmentEvent.Timeout, message);
+
+        return new TimeoutCheckResult(timedOutState, true, elapsed, timeout, transition);
+    }
+
+    private TransitionResult ApplyAlarmEvent(EquipmentState previous, EquipmentEvent equipmentEvent)
     {
         if (CurrentState == EquipmentState.Alarmed)
         {
             return Reject(previous, equipmentEvent, $"Equipment is already alarmed. Clear the alarm before applying '{equipmentEvent}'.");
         }
 
-        CurrentState = EquipmentState.Alarmed;
         LastAlarmReason = equipmentEvent switch
         {
             EquipmentEvent.DoorOpened => "Door opened during operation.",
             EquipmentEvent.EmergencyStop => "Emergency stop requested.",
+            EquipmentEvent.Timeout => "Timeout event requested.",
             _ => "Safety event."
         };
 
-        return Accept(previous, equipmentEvent, CurrentState, LastAlarmReason);
+        return MoveToAlarm(previous, equipmentEvent, LastAlarmReason);
     }
 
     private TransitionResult Accept(EquipmentState previous, EquipmentEvent equipmentEvent, EquipmentState nextState, string message)
@@ -94,6 +131,19 @@ public sealed class EquipmentStateMachine
 
     private static bool IsSafetyEvent(EquipmentEvent equipmentEvent)
     {
-        return equipmentEvent is EquipmentEvent.DoorOpened or EquipmentEvent.EmergencyStop;
+        return equipmentEvent is EquipmentEvent.DoorOpened or EquipmentEvent.EmergencyStop or EquipmentEvent.Timeout;
+    }
+
+    private TransitionResult MoveToAlarm(EquipmentState previous, EquipmentEvent equipmentEvent, string reason)
+    {
+        MoveTo(EquipmentState.Alarmed);
+        LastAlarmReason = reason;
+        return Accept(previous, equipmentEvent, CurrentState, reason);
+    }
+
+    private void MoveTo(EquipmentState state)
+    {
+        CurrentState = state;
+        StateEnteredAtUtc = _clock.UtcNow;
     }
 }

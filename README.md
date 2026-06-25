@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신과 가상 IO 모델이다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델이다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -23,6 +23,14 @@ Idle → Loading → Aligning → Inspecting → Unloading → Complete
 ```text
 Input  = 센서/PLC가 장비 SW에게 알려주는 값
 Output = 장비 SW가 밸브/램프/부저 같은 장치에 내리는 명령
+```
+
+Clock/Timeout 모델은 실제로 기다리지 않고도 “정해진 시간 안에 작업 완료 신호가 오지 않는 상황”을 테스트한다.
+
+예:
+
+```text
+Loading 상태에서 30초 안에 LoadComplete가 오지 않으면 Alarmed 전환
 ```
 
 ## 프로젝트 구조
