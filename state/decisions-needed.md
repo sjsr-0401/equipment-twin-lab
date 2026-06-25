@@ -105,5 +105,9 @@
 사용자 결정:
 
 - [ ] GitHub private 저장소 생성
-- [ ] GitHub public 저장소 생성
+- [x] GitHub public 저장소 생성
 - [ ] 당분간 로컬만 사용
+
+결정 결과:
+
+- 공개 저장소 생성 완료: `https://github.com/sjsr-0401/equipment-twin-lab`

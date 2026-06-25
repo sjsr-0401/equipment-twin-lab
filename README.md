@@ -10,13 +10,20 @@
 
 ## 현재 단계
 
-첫 MVP는 장비 상태머신이다.
+현재 MVP는 장비 상태머신과 가상 IO 모델이다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
 ```
 
 알람 상황에서는 어떤 단계에서든 `Alarmed` 상태로 전환된다.
+
+가상 IO는 실제 PLC 없이 입력 센서와 출력 명령을 분리해서 테스트한다.
+
+```text
+Input  = 센서/PLC가 장비 SW에게 알려주는 값
+Output = 장비 SW가 밸브/램프/부저 같은 장치에 내리는 명령
+```
 
 ## 프로젝트 구조
 
@@ -44,3 +51,9 @@ dotnet restore --ignore-failed-sources
 dotnet build --no-restore
 dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 ```
+
+## GitHub
+
+공개 저장소:
+
+<https://github.com/sjsr-0401/equipment-twin-lab>

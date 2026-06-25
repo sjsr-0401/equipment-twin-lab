@@ -54,6 +54,50 @@ dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 - EmergencyStop 이후 복귀 절차를 `ClearAlarm` 하나로 단순화해도 되는지
 - PLC/IO 신호명을 어떤 방식으로 모델링할지
 
+## 2026-06-25 추가 이해 요약: 가상 IO
+
+### 오늘 한 일
+
+- GitHub 공개 저장소 `equipment-twin-lab`를 만들었다.
+- 현재 프로젝트를 GitHub `main` 브랜치에 푸시했다.
+- 새 브랜치 `goal/002-virtual-io`에서 가상 IO 모델을 만들었다.
+- 입력 신호와 출력 신호를 분리했다.
+- 테스트를 5개에서 11개로 늘렸다.
+
+### 왜 필요한가
+
+장비 SW는 PLC와 계속 신호를 주고받는다.
+
+실제 PLC가 없어도 IO 모델이 있으면 “센서가 켜졌을 때 장비가 어떻게 반응해야 하는지”, “장비가 어떤 출력을 켜야 하는지”를 테스트할 수 있다.
+
+### 제조 장비 SW와 어떤 관련이 있는가
+
+- Input: 문 닫힘 센서, 비상정지 입력, 자재 감지 센서처럼 장비 SW가 읽는 값
+- Output: 진공 ON, 스테이지 이동 요청, 적색 램프, 부저처럼 장비 SW가 내보내는 명령
+
+실제 장비에서는 이런 신호가 PLC 주소나 태그와 연결된다.
+
+### 내가 이해해야 할 개념
+
+장비 SW는 Input을 마음대로 바꾸면 안 된다.
+
+Input은 실제 센서나 PLC가 바꾸는 값이다. 반대로 Output은 장비 SW가 명령하는 값이다.
+
+이번 구현은 이 방향을 강제로 구분한다. 그래서 장비 SW가 Input을 쓰려고 하면 실패하고, 시뮬레이터가 Output을 바꾸려고 해도 실패한다.
+
+### 확인 방법
+
+```powershell
+dotnet build --no-restore
+dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
+```
+
+### 아직 모르는 것
+
+- 실제 PLC 주소 체계를 어떻게 표현할지
+- IO 값 변화와 장비 상태머신 이벤트를 어떻게 연결할지
+- 비상정지/문열림 같은 안전 입력을 어떤 우선순위로 처리할지
+
 ## 초보자 설명 템플릿
 
 작업이 끝날 때마다 아래 형식으로 정리한다.
