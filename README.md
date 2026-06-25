@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층이다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -43,6 +43,18 @@ DI_LOAD_PRESENT = true
 → Loading 상태에서 Aligning 상태로 전환
 ```
 
+공정 시나리오 JSON은 위 흐름을 파일로 정의한다.
+
+예:
+
+```text
+scenarios/normal-cycle.json
+→ 정상 장비 사이클 실행
+
+scenarios/loading-timeout.json
+→ Loading 상태 Timeout 알람 실행
+```
+
 ## 프로젝트 구조
 
 ```text
@@ -63,6 +75,9 @@ logs/
 
 docs/
   아키텍처와 유지보수 설명
+
+scenarios/
+  반복 실행 가능한 장비 운전 시나리오 JSON
 ```
 
 ## 아키텍처 설명

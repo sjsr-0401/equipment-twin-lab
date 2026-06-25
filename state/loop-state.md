@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner 구현 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -45,6 +45,8 @@
 - Goal 005에서 가상 IO 입력을 상태머신 이벤트로 변환하는 연결 계층을 추가했다.
 - 앞으로 모든 작업로그에는 막힌 점, 보류한 판단, 아키텍처 설명, 유지보수 포인트를 필수로 남긴다.
 - 현재 코드 구조는 `docs/architecture.md`에 정리한다.
+- PR #3은 CI 성공 후 main에 squash merge했다.
+- Goal 006에서 JSON 시나리오 모델과 ScenarioRunner를 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -52,7 +54,7 @@
 - Goal 하나당 최대 반복 횟수
 - 자동 병합 허용 범위
 - Unity 버전
-- 공정 시나리오 파일 형식
+- CLI 실행기 형식
 - Timeout 이후 복구 절차 상세 설계
 
 ## 완료한 작업
@@ -66,6 +68,8 @@
 | 2026-06-25 | Goal 004: Clock/Timeout 모델 | 로컬 빌드 성공, 콘솔 테스트 17개 통과, Draft PR #2 생성, CI 성공 |
 | 2026-06-25 | PR #2 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 005: 상태머신 + IO 연결 | 로컬 빌드 성공, 콘솔 테스트 23개 통과, Draft PR #3 생성, CI 성공 |
+| 2026-06-25 | PR #3 병합 | CI 성공 확인 후 main에 squash merge |
+| 2026-06-25 | Goal 006: 공정 시나리오 JSON Runner | 로컬 빌드 성공, 콘솔 테스트 27개 통과, Draft PR #4 생성, CI 성공 |
 
 ## 열린 PR
 
@@ -73,7 +77,8 @@
 |---|---|---|
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/2` | `goal/004-clock-timeout` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/3` | `goal/005-io-state-bridge` | Draft, 미병합 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/3` | `goal/005-io-state-bridge` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/4` | `goal/006-scenario-json` | Draft, 미병합 |
 
 ## 최근 CI 결과
 
@@ -85,13 +90,14 @@
 | 2026-06-25 | `goal/004-clock-timeout` | pull_request | 성공 |
 | 2026-06-25 | `goal/005-io-state-bridge` | push | 성공 |
 | 2026-06-25 | `goal/005-io-state-bridge` | pull_request | 성공 |
+| 2026-06-25 | `goal/006-scenario-json` | push | 성공 |
+| 2026-06-25 | `goal/006-scenario-json` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. PR #3을 검토하고 main 병합 여부를 결정한다.
-2. 가상 공정 시나리오 파일을 만든다.
+1. PR #4를 검토하고 main 병합 여부를 결정한다.
+2. ScenarioRunner를 CLI에서 실행할지, 다음 Core 기능을 먼저 추가할지 결정한다.
 3. Unity 프로젝트 생성 전 Core 검증을 정리한다.
-4. 다음 작업부터 `logs/README.md`의 강화된 템플릿을 적용한다.
 
 ## 금지할 것
 

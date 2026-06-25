@@ -291,6 +291,77 @@ VirtualIoController
 - `state/loop-state.md`
 - `goals/NNN-*.md`
 
+## 2026-06-25 추가 이해 요약: 공정 시나리오 JSON Runner
+
+### 오늘 한 일
+
+- PR #3을 CI 성공 확인 후 main에 병합했다.
+- 새 브랜치 `goal/006-scenario-json`를 만들었다.
+- JSON 시나리오 모델을 추가했다.
+- ScenarioRunner를 추가했다.
+- 정상 사이클 JSON과 Loading Timeout JSON을 추가했다.
+- 테스트를 23개에서 27개로 늘렸다.
+
+### 왜 필요한가
+
+코드에 직접 테스트 순서를 써두면 사용자가 시나리오를 바꾸기 어렵다.
+
+JSON 파일로 분리하면 정상 공정, Timeout, 비상정지 같은 흐름을 파일로 만들고 같은 실행기로 반복 검증할 수 있다.
+
+### 제조 장비 SW와 어떤 관련이 있는가
+
+실제 장비에서는 recipe, sequence, test scenario 같은 개념이 중요하다.
+
+이번 구현은 실제 recipe 시스템은 아니지만, 장비 동작 흐름을 데이터 파일로 분리하는 첫 단계다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+Scenario JSON
+    ↓
+EquipmentScenario
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+    ↓
+EquipmentStateMachine + VirtualIoController + ManualClock
+```
+
+시나리오는 “무엇을 할지”를 담고, Runner는 “어떻게 실행할지”를 담당한다.
+
+### 유지보수 포인트
+
+- 시나리오 문법 변경: `ScenarioStep.cs`
+- 새 action 추가: `ScenarioStepAction.cs`, `ScenarioRunner.cs`
+- 샘플 시나리오 추가: `scenarios/`
+- 시나리오 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+### 막힌 점과 해결 방법
+
+- 현재 막힌 점 없음.
+- 외부 JSON 패키지 없이 .NET 기본 `System.Text.Json`으로 처리했다.
+
+### 보류한 판단
+
+- 분기/반복/변수 기능은 아직 넣지 않았다.
+- CLI 실행기는 다음 Goal 후보로 남겼다.
+- Unity에서 시나리오를 선택하는 UI는 아직 만들지 않았다.
+
+### 확인 방법
+
+```powershell
+dotnet build --no-restore
+dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
+```
+
+현재 로컬 결과:
+
+- 빌드 성공
+- 경고 0개
+- 오류 0개
+- 테스트 27개 통과
+
 ## 초보자 설명 템플릿
 
 작업이 끝날 때마다 아래 형식으로 정리한다.

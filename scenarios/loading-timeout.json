@@ -1,0 +1,26 @@
+{
+  "name": "loading-timeout",
+  "description": "Starts a cycle and verifies that Loading times out when no load-present input arrives.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading"
+    },
+    {
+      "name": "Advance loading timeout",
+      "action": "AdvanceTime",
+      "advanceMilliseconds": 30000
+    },
+    {
+      "name": "Poll timeout",
+      "action": "PollInputs",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    }
+  ]
+}

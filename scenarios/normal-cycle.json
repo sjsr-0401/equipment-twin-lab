@@ -1,0 +1,75 @@
+{
+  "name": "normal-cycle",
+  "description": "Runs one normal equipment cycle from Idle to Complete using virtual IO inputs.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading",
+      "expectSignals": {
+        "DO_VACUUM_ON": true,
+        "DO_TOWER_LAMP_RED": false,
+        "DO_BUZZER_ON": false
+      }
+    },
+    {
+      "name": "Material arrives",
+      "action": "SetInput",
+      "signal": "DI_LOAD_PRESENT",
+      "value": true
+    },
+    {
+      "name": "Poll loading input",
+      "action": "PollInputs",
+      "expectState": "Aligning",
+      "expectSignals": {
+        "DO_VACUUM_ON": true,
+        "DO_STAGE_MOVE_REQUESTED": true
+      }
+    },
+    {
+      "name": "Alignment completes",
+      "action": "SetInput",
+      "signal": "DI_ALIGNMENT_DONE",
+      "value": true
+    },
+    {
+      "name": "Poll alignment input",
+      "action": "PollInputs",
+      "expectState": "Inspecting",
+      "expectSignals": {
+        "DO_VACUUM_ON": true,
+        "DO_STAGE_MOVE_REQUESTED": false
+      }
+    },
+    {
+      "name": "Inspection completes",
+      "action": "SetInput",
+      "signal": "DI_INSPECTION_DONE",
+      "value": true
+    },
+    {
+      "name": "Poll inspection input",
+      "action": "PollInputs",
+      "expectState": "Unloading",
+      "expectSignals": {
+        "DO_VACUUM_ON": true
+      }
+    },
+    {
+      "name": "Unload completes",
+      "action": "SetInput",
+      "signal": "DI_UNLOAD_COMPLETE",
+      "value": true
+    },
+    {
+      "name": "Poll unload input",
+      "action": "PollInputs",
+      "expectState": "Complete",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false
+      }
+    }
+  ]
+}
