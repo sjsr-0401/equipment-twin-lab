@@ -990,12 +990,11 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. CI 실행 결과 확인
-2. PR #1 병합 여부 결정
-3. Clock/Timeout 모델 추가
-4. 상태머신과 IO 연결
-5. 공정 시나리오 파일 추가
-6. Unity 프로젝트 생성 전 Core 검증 강화
+1. PR #1 병합 여부 결정
+2. Clock/Timeout 모델 추가
+3. 상태머신과 IO 연결
+4. 공정 시나리오 파일 추가
+5. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
 
@@ -1020,3 +1019,8 @@ dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csp
 - PR마다 최소 빌드/테스트가 자동으로 확인된다.
 - 에이전트가 만든 변경을 GitHub에서 반복 검증할 수 있다.
 - 아직 자동 병합은 하지 않는다.
+
+확인 결과:
+
+- `goal/002-virtual-io` push 이벤트 CI 성공
+- PR #1 pull_request 이벤트 CI 성공

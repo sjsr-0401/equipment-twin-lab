@@ -55,13 +55,20 @@
 |---|---|---|
 | 2026-06-25 | Goal 001: 장비 상태머신 MVP | 빌드 성공, 콘솔 테스트 5개 통과 |
 | 2026-06-25 | Goal 002: 가상 IO 모델 | 빌드 성공, 콘솔 테스트 11개 통과, Draft PR #1 생성 |
-| 2026-06-25 | Goal 003: GitHub Actions CI | 로컬 빌드/테스트 통과, CI 워크플로 추가 |
+| 2026-06-25 | Goal 003: GitHub Actions CI | 로컬 빌드/테스트 통과, GitHub Actions push/PR 실행 성공 |
 
 ## 열린 PR
 
 | PR | 브랜치 | 상태 |
 |---|---|---|
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/1` | `goal/002-virtual-io` | Draft, 미병합 |
+
+## 최근 CI 결과
+
+| 날짜 | 브랜치 | 이벤트 | 결과 |
+|---|---|---|---|
+| 2026-06-25 | `goal/002-virtual-io` | push | 성공 |
+| 2026-06-25 | `goal/002-virtual-io` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
