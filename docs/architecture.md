@@ -5,7 +5,9 @@
 ## 현재 아키텍처 요약
 
 ```text
-Scenario / Unity / User Command
+Scenario JSON / Unity / User Command
+        ↓
+ScenarioRunner
         ↓
 EquipmentCellController
         ↓
@@ -183,11 +185,52 @@ DI_LOAD_PRESENT = true
 - Timeout
 - IO와 상태머신 연결
 - 안전 입력 우선순위
+- JSON 시나리오 실행
 
 유지보수 포인트:
 
 - 기능을 추가하면 이 파일에 테스트를 추가한다.
 - 테스트 이름은 사용자가 읽어도 기능을 이해할 수 있게 쓴다.
+
+## 6. ScenarioRunner
+
+파일:
+
+- `src/EquipmentTwin.Core/Scenarios/EquipmentScenario.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStep.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStepAction.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioRunResult.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStepRunResult.cs`
+- `scenarios/normal-cycle.json`
+- `scenarios/loading-timeout.json`
+
+역할:
+
+- JSON 파일로 장비 운전 흐름을 정의한다.
+- 정의된 step을 순서대로 실행한다.
+- 상태 expectation과 IO signal expectation을 검증한다.
+- 성공/실패 결과를 리포트한다.
+
+예:
+
+```text
+SetInput DI_LOAD_PRESENT = true
+PollInputs
+ExpectState Aligning
+```
+
+유지보수 포인트:
+
+- 새 시나리오 action이 필요하면 `ScenarioStepAction`과 `ScenarioRunner.RunStep()`을 같이 수정한다.
+- JSON 필드가 바뀌면 `ScenarioStep` validation도 같이 수정한다.
+- 샘플 시나리오는 `scenarios/` 폴더에 추가한다.
+
+주의:
+
+- 현재 시나리오 문법은 단순한 순차 실행만 지원한다.
+- 분기, 반복, 변수, 복잡한 recipe 기능은 아직 없다.
+- 실제 장비 recipe 시스템이 아니라 시뮬레이션 테스트용이다.
 
 ## 변경할 때 기준
 
@@ -214,18 +257,26 @@ DI_LOAD_PRESENT = true
 2. 상태머신 또는 컨트롤러 테스트 추가
 3. 실제 장비 안전성으로 과장하지 않기
 
+### Scenario action이 추가될 때
+
+1. `ScenarioStepAction`에 action 추가
+2. `ScenarioStep.Validate()`에 필수 필드 규칙 추가
+3. `ScenarioRunner.RunStep()`에 실행 로직 추가
+4. 정상/실패 테스트 추가
+5. 샘플 JSON 추가 또는 수정
+
 ## 현재 한계
 
 - 실제 PLC 통신 없음
 - 실제 모션 제어 없음
 - 실제 카메라 없음
 - Unity 화면 없음
-- 시나리오 파일 없음
+- 시나리오 분기/반복 없음
 - 알람 복구 절차는 단순화됨
 
 ## 다음 아키텍처 목표
 
-다음 단계는 공정 시나리오 파일이다.
+다음 단계는 시나리오 실행기를 CLI 또는 Unity 쪽에서 호출할 수 있게 연결하는 것이다.
 
 예상 흐름:
 

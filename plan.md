@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.8 — 상태머신과 IO 연결 계층 추가
+> 상태: 초안 v0.9 — 공정 시나리오 JSON Runner 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,8 +990,8 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. PR #3 병합 여부 결정
-2. 공정 시나리오 파일 추가
+1. Goal 006 PR 생성 및 CI 확인
+2. Scenario CLI 실행기 여부 결정
 3. Unity 프로젝트 생성 전 Core 검증 강화
 
 ## 25. 2026-06-25 Goal 003 결과
@@ -1157,3 +1157,56 @@ VirtualIoController
 ```
 
 이 규칙의 목적은 “에이전트가 만든 코드”가 아니라 “사용자가 설명하고 유지보수할 수 있는 코드”를 만드는 것이다.
+
+## 29. 2026-06-25 Goal 006 결과
+
+공정 시나리오 JSON Runner를 추가했다.
+
+추가된 핵심 파일:
+
+- `src/EquipmentTwin.Core/Scenarios/EquipmentScenario.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStep.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStepAction.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioRunResult.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStepRunResult.cs`
+- `scenarios/normal-cycle.json`
+- `scenarios/loading-timeout.json`
+
+핵심 흐름:
+
+```text
+Scenario JSON
+    ↓
+EquipmentScenario
+    ↓
+ScenarioRunner
+    ↓
+EquipmentCellController
+    ↓
+EquipmentStateMachine + VirtualIoController + ManualClock
+```
+
+검증 결과:
+
+- .NET 8 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 27개 통과
+
+막힌 점:
+
+- 현재 막힌 점 없음.
+
+보류한 판단:
+
+- 시나리오 분기/반복/변수 기능은 아직 넣지 않는다.
+- CLI 실행기는 다음 Goal 후보로 둔다.
+- Unity UI 연동은 Core 구조가 더 안정된 뒤 진행한다.
+
+유지보수 포인트:
+
+- 시나리오 문법 변경: `ScenarioStep.cs`
+- 새 action 추가: `ScenarioStepAction.cs`, `ScenarioRunner.cs`
+- 시나리오 파일 추가: `scenarios/`
+- 시나리오 테스트 추가: `tests/EquipmentTwin.Core.Tests/Program.cs`

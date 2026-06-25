@@ -1,5 +1,6 @@
 using EquipmentTwin.Core;
 using EquipmentTwin.Core.Io;
+using EquipmentTwin.Core.Scenarios;
 
 var tests = new (string Name, Action Body)[]
 {
@@ -25,7 +26,11 @@ var tests = new (string Name, Action Body)[]
     ("Cell controller prioritizes safety inputs", CellControllerPrioritizesSafetyInputs),
     ("Cell controller reports no change when sensor is missing", CellControllerReportsNoChangeWhenSensorIsMissing),
     ("Cell controller applies timeout policy", CellControllerAppliesTimeoutPolicy),
-    ("Clear alarm resets normal outputs", ClearAlarmResetsNormalOutputs)
+    ("Clear alarm resets normal outputs", ClearAlarmResetsNormalOutputs),
+    ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
+    ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
+    ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
+    ("Scenario runner reports expectation failure", ScenarioRunnerReportsExpectationFailure)
 };
 
 var failures = 0;
@@ -375,6 +380,66 @@ static void ClearAlarmResetsNormalOutputs()
     AssertEqual(false, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after ClearAlarm.");
 }
 
+static void ScenarioJsonLoadsNormalCycleFile()
+{
+    var scenario = LoadScenario("normal-cycle.json");
+
+    AssertEqual("normal-cycle", scenario.Name, "Scenario name mismatch.");
+    AssertEqual(9, scenario.Steps.Count, "Normal cycle step count mismatch.");
+    AssertEqual(ScenarioStepAction.StartCycle, scenario.Steps[0].Action, "First scenario step mismatch.");
+}
+
+static void ScenarioRunnerCompletesNormalCycleFile()
+{
+    var scenario = LoadScenario("normal-cycle.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Complete, result.FinalState, "Normal cycle scenario must end at Complete.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after normal cycle scenario.");
+}
+
+static void ScenarioRunnerHandlesLoadingTimeoutFile()
+{
+    var scenario = LoadScenario("loading-timeout.json");
+    var runner = ScenarioRunner.CreateDefault(
+        new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero),
+        StateTimeoutPolicy.CreateDefaultMvpPolicy());
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Alarmed, result.FinalState, "Timeout scenario must end at Alarmed.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be on after timeout scenario.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be on after timeout scenario.");
+}
+
+static void ScenarioRunnerReportsExpectationFailure()
+{
+    var scenario = EquipmentScenario.FromJson(
+        """
+        {
+          "name": "bad-expectation",
+          "steps": [
+            {
+              "name": "Start cycle",
+              "action": "StartCycle",
+              "expectState": "Complete"
+            }
+          ]
+        }
+        """);
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertFalse(result.Success, "Scenario with wrong expected state must fail.");
+    AssertEqual(1, result.FailedSteps.Count, "Failed step count mismatch.");
+    AssertTrue(result.FailedSteps[0].ValidationErrors[0].Contains("Expected state"), "Failure must explain expected state mismatch.");
+}
+
 static EquipmentStateMachine MoveToInspection()
 {
     var machine = new EquipmentStateMachine();
@@ -429,4 +494,41 @@ static void AssertThrows<TException>(Action action, string message)
     }
 
     throw new InvalidOperationException(message);
+}
+
+static EquipmentScenario LoadScenario(string fileName)
+{
+    var root = FindRepositoryRoot();
+    var path = Path.Combine(root, "scenarios", fileName);
+    var json = File.ReadAllText(path);
+    return EquipmentScenario.FromJson(json);
+}
+
+static string FindRepositoryRoot()
+{
+    var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+    while (directory is not null)
+    {
+        if (File.Exists(Path.Combine(directory.FullName, "EquipmentTwinLab.sln")))
+        {
+            return directory.FullName;
+        }
+
+        directory = directory.Parent;
+    }
+
+    throw new DirectoryNotFoundException("Could not find repository root containing EquipmentTwinLab.sln.");
+}
+
+static string ScenarioFailureMessage(ScenarioRunResult result)
+{
+    if (result.Success)
+    {
+        return "Scenario succeeded.";
+    }
+
+    return string.Join(
+        Environment.NewLine,
+        result.FailedSteps.Select(step => $"Step {step.Index} '{step.Name}' failed: {string.Join("; ", step.ValidationErrors)}"));
 }
