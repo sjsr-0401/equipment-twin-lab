@@ -52,6 +52,16 @@ dotnet build --no-restore
 dotnet run --project tests\EquipmentTwin.Core.Tests --no-restore
 ```
 
+## 자동 검증
+
+GitHub Actions CI가 push/PR마다 아래 검증을 실행한다.
+
+```text
+dotnet restore EquipmentTwinLab.sln --ignore-failed-sources
+dotnet build EquipmentTwinLab.sln --no-restore --configuration Release
+dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
+```
+
 ## GitHub
 
 공개 저장소:

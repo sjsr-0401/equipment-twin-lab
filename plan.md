@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v0.5 — GitHub 공개 저장소 생성 및 가상 IO 모델 구현 완료
+> 상태: 초안 v0.6 — GitHub Actions CI 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -990,7 +990,33 @@ Output = 장비 SW가 쓰고 장치가 반응하는 값
 
 다음 후보 작업:
 
-1. CI 추가
-2. 상태머신과 IO 연결
-3. 공정 시나리오 파일 추가
-4. Unity 프로젝트 생성 전 Core 검증 강화
+1. CI 실행 결과 확인
+2. PR #1 병합 여부 결정
+3. Clock/Timeout 모델 추가
+4. 상태머신과 IO 연결
+5. 공정 시나리오 파일 추가
+6. Unity 프로젝트 생성 전 Core 검증 강화
+
+## 25. 2026-06-25 Goal 003 결과
+
+GitHub Actions CI를 추가했다.
+
+워크플로 파일:
+
+```text
+.github/workflows/ci.yml
+```
+
+CI가 실행하는 검증:
+
+```text
+dotnet restore EquipmentTwinLab.sln --ignore-failed-sources
+dotnet build EquipmentTwinLab.sln --no-restore --configuration Release
+dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
+```
+
+의미:
+
+- PR마다 최소 빌드/테스트가 자동으로 확인된다.
+- 에이전트가 만든 변경을 GitHub에서 반복 검증할 수 있다.
+- 아직 자동 병합은 하지 않는다.
