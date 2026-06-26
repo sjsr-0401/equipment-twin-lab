@@ -94,6 +94,10 @@ scenarios/
 
 [docs/architecture.md](docs/architecture.md)
 
+현재 Core가 검증하는 범위와 한계는 아래 문서에 정리한다.
+
+[docs/core-validation.md](docs/core-validation.md)
+
 ## 실행 방법
 
 ```powershell
