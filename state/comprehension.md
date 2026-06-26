@@ -570,6 +570,52 @@ dotnet run --project src\EquipmentTwin.Cli --no-restore --configuration Release 
 
 지금 증명하는 것은 소프트웨어 모델 안에서 safety 입력이 정상 공정 입력보다 먼저 처리되고, 알람 상태에서 위험 출력이 꺼지며, 복구 명령 후 Idle로 돌아온다는 것이다.
 
+## 2026-06-26 이해 요약: Core 검증 정리
+
+### 오늘 한 일
+
+- `docs/core-validation.md`를 추가했다.
+- 현재 Core가 검증하는 것과 검증하지 않는 것을 정리했다.
+- 시나리오 5개의 의미를 표로 정리했다.
+- 면접에서 말할 수 있는 설명 문장을 추가했다.
+
+### 왜 필요한가
+
+포트폴리오에서는 “코드를 만들었다”보다 “무엇을 어떤 기준으로 검증했다”가 더 중요하다.
+
+특히 장비 SW는 실제 장비 안전성과 연결될 수 있으므로, 검증하지 않은 것을 검증했다고 말하면 안 된다.
+
+### 내가 이해해야 할 개념
+
+현재 검증은 소프트웨어 모델 검증이다.
+
+실제 장비 안전성, 실제 PLC 통신, 실제 모션, 실제 카메라 검사는 아직 검증하지 않았다. 대신 상태 전이, 가상 IO, Timeout, 알람/복구 시나리오가 Core 안에서 반복 가능하게 동작하는지를 확인한다.
+
+### 면접용 한 문장
+
+실제 장비가 없는 상황에서 장비 SW의 상태 전이, 가상 IO, Timeout, 알람/복구 시나리오를 C# Core로 분리해 자동 검증했습니다.
+
+### 확인 방법
+
+```powershell
+dotnet run --project tests\EquipmentTwin.Core.Tests\EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
+dotnet run --project src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
+```
+
+현재 로컬 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 테스트 30개 통과
+- batch 시나리오 5개 통과
+
+### 아직 모르는 것
+
+- 알람 코드와 복구 조건을 어떤 형태로 모델링할지
+- Unity 시뮬레이터를 언제 붙일지
+- 실제 PLC 어댑터를 어느 수준까지 일반화할지
+
 작업이 끝날 때마다 아래 형식으로 정리한다.
 
 ### 오늘 한 일

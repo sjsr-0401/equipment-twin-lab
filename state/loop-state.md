@@ -1,13 +1,13 @@
 # Loop State
 
-마지막 갱신: 2026-06-25
+마지막 갱신: 2026-06-26
 
 ## 현재 상태
 
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서 작성 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -56,6 +56,8 @@
 - Goal 009 로컬 검증 결과 Release 빌드 성공, 테스트 30개 통과, batch 시나리오 5개 통과를 확인했다.
 - Goal 009 Draft PR #7을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #7은 CI 성공 확인 후 main에 squash merge했다.
+- Goal 010에서 Core 검증 범위와 한계를 `docs/core-validation.md`에 정리했다.
+- Goal 010 Draft PR #8을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -86,6 +88,8 @@
 | 2026-06-25 | PR #6 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-25 | Goal 009: 알람/복구 시나리오 | 문 열림, 비상정지, ClearAlarm 복구 시나리오 추가, 로컬 테스트 30개 통과, batch 5개 통과 |
 | 2026-06-25 | Goal 009 PR #7 | Draft PR 생성, GitHub Actions push/pull_request 성공, main에 squash merge |
+| 2026-06-26 | Goal 010: Core 검증 정리 문서 | 검증 범위, 한계, 실행 방법, 면접 설명 정리 |
+| 2026-06-26 | Goal 010 PR #8 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -98,6 +102,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/5` | `goal/007-scenario-cli` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/6` | `goal/008-cli-batch-report` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/7` | `goal/009-alarm-recovery-scenarios` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/8` | `goal/010-core-validation-doc` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -117,12 +122,14 @@
 | 2026-06-25 | `goal/008-cli-batch-report` | pull_request | 성공 |
 | 2026-06-25 | `goal/009-alarm-recovery-scenarios` | push | 성공 |
 | 2026-06-25 | `goal/009-alarm-recovery-scenarios` | pull_request | 성공 |
+| 2026-06-26 | `goal/010-core-validation-doc` | push | 성공 |
+| 2026-06-26 | `goal/010-core-validation-doc` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 010으로 Core 검증 정리 문서를 작성한다.
+1. PR #8 병합 여부를 결정한다.
 2. 이후 알람 코드 체계 또는 복구 조건 세분화를 진행한다.
-3. 포트폴리오 설명 관점에서는 Core 검증 정리 문서를 우선 권장한다.
+3. 다음 구현 후보는 알람 코드 체계를 우선 권장한다.
 
 ## 금지할 것
 
