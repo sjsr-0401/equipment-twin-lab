@@ -10,13 +10,21 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증이다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
 ```
 
 알람 상황에서는 어떤 단계에서든 `Alarmed` 상태로 전환된다.
+
+현재 알람은 코드와 메시지를 함께 남긴다.
+
+```text
+DoorOpened    = 1001
+EmergencyStop = 1002
+StateTimeout  = 1003
+```
 
 가상 IO는 실제 PLC 없이 입력 센서와 출력 명령을 분리해서 테스트한다.
 

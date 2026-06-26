@@ -1454,3 +1454,61 @@ Core 검증 정리 문서를 추가했다.
 1. PR #8 병합 여부를 결정한다.
 2. 알람 코드 체계를 추가한다.
 3. 복구 조건을 실제 장비 흐름에 맞게 세분화한다.
+
+## 34. 2026-06-26 Goal 011 결과
+
+알람 코드 체계를 추가했다.
+
+추가한 코드:
+
+- `AlarmCode`
+- `AlarmInfo`
+- `EquipmentStateMachine.LastAlarm`
+- `TransitionResult.Alarm`
+- `EquipmentTransition.Alarm`
+
+현재 알람 코드:
+
+```text
+DoorOpened    = 1001
+EmergencyStop = 1002
+StateTimeout  = 1003
+```
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 34개 통과
+- CLI batch 시나리오 5개 통과
+
+막힌 점:
+
+- 현재 막힌 점 없음.
+
+보류한 판단:
+
+- 알람 레벨, 작업자 조치 문구, 복구 조건 테이블은 아직 만들지 않는다.
+- 현재 번호 체계는 MVP용이다.
+- 알람 이력 리포트와 UI 표시는 아직 없다.
+
+아키텍처:
+
+```text
+Safety Event / Timeout
+    ↓
+AlarmInfo.FromEvent()
+    ↓
+EquipmentStateMachine.LastAlarm
+    ↓
+TransitionResult / EquipmentTransition
+    ↓
+Test / Log / future UI
+```
+
+다음 권장 작업:
+
+1. Goal 011 PR을 만들고 CI를 확인한다.
+2. 복구 조건을 세분화한다.
+3. 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.

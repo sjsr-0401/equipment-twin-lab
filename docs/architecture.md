@@ -54,6 +54,32 @@ Inspecting + EmergencyStop → Alarmed
 - 상태 전이 규칙은 `EquipmentStateMachine.AllowedTransitions`를 본다.
 - 알람 처리 방식은 `ApplyAlarmEvent()`와 `MoveToAlarm()`을 본다.
 
+### 1.1 Alarm model
+
+파일:
+
+- `src/EquipmentTwin.Core/Alarms/AlarmCode.cs`
+- `src/EquipmentTwin.Core/Alarms/AlarmInfo.cs`
+
+역할:
+
+- 알람을 문자열 메시지뿐 아니라 코드로 추적한다.
+- 알람 발생 원인이 된 이벤트를 함께 남긴다.
+- 상태 전이 결과와 이력에서 같은 알람 정보를 확인할 수 있게 한다.
+
+현재 코드:
+
+```text
+DoorOpened    = 1001
+EmergencyStop = 1002
+StateTimeout  = 1003
+```
+
+주의:
+
+- 현재 번호 체계는 MVP용이다.
+- 실제 장비 알람 표준, 조치 문구, 복구 조건 테이블은 아직 아니다.
+
 주의:
 
 - 이 계층은 실제 PLC나 Unity를 직접 몰라야 한다.

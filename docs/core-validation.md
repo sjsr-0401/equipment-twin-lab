@@ -15,6 +15,7 @@
 - 장비 상태가 정해진 순서로 전환되는가
 - 잘못된 상태 전이가 거부되는가
 - 문 열림, 비상정지, Timeout이 알람 상태로 이어지는가
+- 알람이 코드와 원인 이벤트로 추적되는가
 - 장비 SW가 Input/Output 방향을 잘못 쓰지 못하게 막는가
 - 센서 입력이 상태머신 이벤트로 변환되는가
 - 알람 상태에서 위험 출력이 꺼지고 램프/부저가 켜지는가
@@ -55,6 +56,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 |---|---|---|---|
 | 상태머신 | 정상 순서와 잘못된 전이를 구분하는가 | `EquipmentStateMachine.cs` | 콘솔 테스트 |
 | 알람 전이 | Door open, Emergency stop, Timeout이 `Alarmed`로 가는가 | `EquipmentStateMachine.cs` | 콘솔 테스트, 시나리오 |
+| 알람 코드 | 알람 원인을 코드와 이벤트로 남기는가 | `AlarmCode.cs`, `AlarmInfo.cs` | 콘솔 테스트 |
 | 가상 IO | Input과 Output 방향을 강제하는가 | `VirtualIoController.cs`, `EquipmentIoMap.cs` | 콘솔 테스트 |
 | 시간/Timeout | 실제 대기 없이 Timeout을 재현하는가 | `ManualClock.cs`, `StateTimeoutPolicy.cs` | 콘솔 테스트, `loading-timeout.json` |
 | IO-상태 연결 | 센서 입력이 공정 이벤트로 변환되는가 | `EquipmentCellController.cs` | 콘솔 테스트 |
@@ -129,7 +131,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 | 부족한 점 | 왜 중요한가 | 후보 Goal |
 |---|---|---|
-| 알람 코드 체계 없음 | 현업에서는 알람 원인, 코드, 복구 조건이 중요하다 | Goal 011 |
+| 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
 | 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Goal 011 또는 012 |
 | 모션 모델 없음 | 제조 장비 설명력을 높이려면 축 위치/완료/알람이 필요하다 | Motion Goal |
 | 카메라 검사 없음 | 비전 검사 장비 컨셉을 설명하려면 검사 결과 흐름이 필요하다 | Inspection Goal |

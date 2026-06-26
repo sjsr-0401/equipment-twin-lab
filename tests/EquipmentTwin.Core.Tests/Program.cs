@@ -1,4 +1,5 @@
 using EquipmentTwin.Core;
+using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
 using EquipmentTwin.Core.Scenarios;
 
@@ -9,6 +10,10 @@ var tests = new (string Name, Action Body)[]
     ("Door opened during inspection creates alarm", DoorOpenedDuringInspectionCreatesAlarm),
     ("Clear alarm returns to Idle", ClearAlarmReturnsToIdle),
     ("History records accepted and rejected transitions", HistoryRecordsAcceptedAndRejectedTransitions),
+    ("Door opened records alarm code", DoorOpenedRecordsAlarmCode),
+    ("Emergency stop records alarm code", EmergencyStopRecordsAlarmCode),
+    ("Timeout records alarm code in history", TimeoutRecordsAlarmCodeInHistory),
+    ("Clear alarm clears alarm code", ClearAlarmClearsAlarmCode),
     ("Default IO map exposes expected inputs and outputs", DefaultIoMapExposesExpectedInputsAndOutputs),
     ("Equipment software can write outputs", EquipmentSoftwareCanWriteOutputs),
     ("Equipment software cannot write inputs", EquipmentSoftwareCannotWriteInputs),
@@ -115,6 +120,54 @@ static void HistoryRecordsAcceptedAndRejectedTransitions()
     AssertEqual(2, machine.History.Count, "History count mismatch.");
     AssertFalse(machine.History[0].Accepted, "First transition must be rejected.");
     AssertTrue(machine.History[1].Accepted, "Second transition must be accepted.");
+}
+
+static void DoorOpenedRecordsAlarmCode()
+{
+    var machine = MoveToInspection();
+
+    var result = machine.Apply(EquipmentEvent.DoorOpened);
+
+    AssertEqual(AlarmCode.DoorOpened, machine.LastAlarm?.Code, "DoorOpened must store DoorOpened alarm code.");
+    AssertEqual(AlarmCode.DoorOpened, result.Alarm?.Code, "TransitionResult must expose DoorOpened alarm code.");
+    AssertEqual(AlarmCode.DoorOpened, machine.History[^1].Alarm?.Code, "History must store DoorOpened alarm code.");
+}
+
+static void EmergencyStopRecordsAlarmCode()
+{
+    var machine = MoveToInspection();
+
+    var result = machine.Apply(EquipmentEvent.EmergencyStop);
+
+    AssertEqual(AlarmCode.EmergencyStop, machine.LastAlarm?.Code, "EmergencyStop must store EmergencyStop alarm code.");
+    AssertEqual(EquipmentEvent.EmergencyStop, result.Alarm?.SourceEvent, "Alarm source event mismatch.");
+}
+
+static void TimeoutRecordsAlarmCodeInHistory()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 26, 0, 0, 0, TimeSpan.Zero));
+    var machine = new EquipmentStateMachine(clock);
+    var policy = new StateTimeoutPolicy();
+    policy.SetTimeout(EquipmentState.Loading, TimeSpan.FromSeconds(30));
+
+    machine.Apply(EquipmentEvent.StartLoad);
+    clock.Advance(TimeSpan.FromSeconds(30));
+    machine.CheckTimeout(policy);
+
+    AssertEqual(AlarmCode.StateTimeout, machine.LastAlarm?.Code, "Timeout must store StateTimeout alarm code.");
+    AssertEqual(AlarmCode.StateTimeout, machine.History[^1].Alarm?.Code, "History must store timeout alarm code.");
+    AssertEqual(EquipmentEvent.Timeout, machine.LastAlarm?.SourceEvent, "Timeout alarm source mismatch.");
+}
+
+static void ClearAlarmClearsAlarmCode()
+{
+    var machine = MoveToInspection();
+    machine.Apply(EquipmentEvent.DoorOpened);
+
+    machine.Apply(EquipmentEvent.ClearAlarm);
+
+    AssertEqual(null, machine.LastAlarm, "ClearAlarm must clear active alarm info.");
+    AssertEqual(null, machine.LastAlarmReason, "ClearAlarm must clear active alarm reason.");
 }
 
 static void DefaultIoMapExposesExpectedInputsAndOutputs()

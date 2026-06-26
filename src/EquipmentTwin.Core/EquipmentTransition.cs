@@ -1,3 +1,5 @@
+using EquipmentTwin.Core.Alarms;
+
 namespace EquipmentTwin.Core;
 
 /// <summary>
@@ -9,4 +11,5 @@ public sealed record EquipmentTransition(
     EquipmentEvent Event,
     EquipmentState To,
     bool Accepted,
-    string Message);
+    string Message,
+    AlarmInfo? Alarm = null);
