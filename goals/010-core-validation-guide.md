@@ -38,6 +38,9 @@
 - `dotnet build EquipmentTwinLab.sln --no-restore --configuration Release`: 성공, 경고 0개, 오류 0개
 - `dotnet run --project tests\EquipmentTwin.Core.Tests\EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release`: 테스트 30개 통과
 - `dotnet run --project src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts\scenario-report.md`: 시나리오 5개 통과
+- Draft PR #8 생성 완료
+- GitHub Actions push 이벤트: 성공
+- GitHub Actions pull_request 이벤트: 성공
 
 ## 막힌 점과 해결 방법
 
@@ -81,6 +84,6 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 
 ## 다음 작업
 
-다음 후보는 `알람 코드 체계`다.
+다음 후보는 PR #8 병합 후 `알람 코드 체계`다.
 
 알람 코드, 원인, 복구 조건, 표시 메시지를 모델링하면 제조 장비 유지보수 관점의 실무성이 더 올라간다.

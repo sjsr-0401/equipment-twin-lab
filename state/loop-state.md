@@ -57,6 +57,7 @@
 - Goal 009 Draft PR #7을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #7은 CI 성공 확인 후 main에 squash merge했다.
 - Goal 010에서 Core 검증 범위와 한계를 `docs/core-validation.md`에 정리했다.
+- Goal 010 Draft PR #8을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -88,6 +89,7 @@
 | 2026-06-25 | Goal 009: 알람/복구 시나리오 | 문 열림, 비상정지, ClearAlarm 복구 시나리오 추가, 로컬 테스트 30개 통과, batch 5개 통과 |
 | 2026-06-25 | Goal 009 PR #7 | Draft PR 생성, GitHub Actions push/pull_request 성공, main에 squash merge |
 | 2026-06-26 | Goal 010: Core 검증 정리 문서 | 검증 범위, 한계, 실행 방법, 면접 설명 정리 |
+| 2026-06-26 | Goal 010 PR #8 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -100,6 +102,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/5` | `goal/007-scenario-cli` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/6` | `goal/008-cli-batch-report` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/7` | `goal/009-alarm-recovery-scenarios` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/8` | `goal/010-core-validation-doc` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -119,10 +122,12 @@
 | 2026-06-25 | `goal/008-cli-batch-report` | pull_request | 성공 |
 | 2026-06-25 | `goal/009-alarm-recovery-scenarios` | push | 성공 |
 | 2026-06-25 | `goal/009-alarm-recovery-scenarios` | pull_request | 성공 |
+| 2026-06-26 | `goal/010-core-validation-doc` | push | 성공 |
+| 2026-06-26 | `goal/010-core-validation-doc` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 010 PR을 만들고 CI를 확인한다.
+1. PR #8 병합 여부를 결정한다.
 2. 이후 알람 코드 체계 또는 복구 조건 세분화를 진행한다.
 3. 다음 구현 후보는 알람 코드 체계를 우선 권장한다.
 
