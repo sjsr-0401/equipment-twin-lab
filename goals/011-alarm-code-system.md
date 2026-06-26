@@ -43,6 +43,9 @@
 - 오류 0개
 - 콘솔 테스트 34개 통과
 - CLI batch 시나리오 5개 통과
+- Draft PR #9 생성 완료
+- GitHub Actions push 이벤트: 성공
+- GitHub Actions pull_request 이벤트: 성공
 
 ## 막힌 점과 해결 방법
 
@@ -87,6 +90,6 @@ Test / Log / future UI
 
 ## 다음 작업
 
-다음 후보는 복구 조건 세분화다.
+다음 후보는 PR #9 병합 후 복구 조건 세분화다.
 
 현재 `ClearAlarm`은 단순 복구 명령이다. 다음에는 “문이 다시 닫혔는가”, “비상정지가 해제됐는가”, “작업자 Reset을 눌렀는가” 같은 조건을 분리할 수 있다.
