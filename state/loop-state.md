@@ -63,6 +63,7 @@
 - Goal 011 Draft PR #9를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #9는 CI 성공 확인 후 main에 squash merge했다.
 - Goal 012에서 Visual Studio build/debug 가이드와 launch profile을 추가했다.
+- Goal 012 Draft PR #10을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -100,6 +101,7 @@
 | 2026-06-26 | Goal 011 PR #9 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-06-27 | PR #9 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-27 | Goal 012: Visual Studio build/debug 지원 | Visual Studio 가이드와 launch profile 추가 |
+| 2026-06-27 | Goal 012 PR #10 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -114,6 +116,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/7` | `goal/009-alarm-recovery-scenarios` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/8` | `goal/010-core-validation-doc` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/9` | `goal/011-alarm-code-system` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/10` | `goal/012-visual-studio-debug` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -137,10 +140,12 @@
 | 2026-06-26 | `goal/010-core-validation-doc` | pull_request | 성공 |
 | 2026-06-26 | `goal/011-alarm-code-system` | push | 성공 |
 | 2026-06-26 | `goal/011-alarm-code-system` | pull_request | 성공 |
+| 2026-06-27 | `goal/012-visual-studio-debug` | push | 성공 |
+| 2026-06-27 | `goal/012-visual-studio-debug` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 012 PR을 만들고 CI를 확인한다.
+1. PR #10 병합 여부를 결정한다.
 2. 이후 복구 조건 세분화를 진행한다.
 3. 다음 구현 후보는 복구 조건 세분화를 우선 권장한다.
 
