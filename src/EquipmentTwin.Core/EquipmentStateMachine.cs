@@ -1,3 +1,5 @@
+using EquipmentTwin.Core.Alarms;
+
 namespace EquipmentTwin.Core;
 
 /// <summary>
@@ -38,6 +40,8 @@ public sealed class EquipmentStateMachine
 
     public string? LastAlarmReason { get; private set; }
 
+    public AlarmInfo? LastAlarm { get; private set; }
+
     public IReadOnlyList<EquipmentTransition> History => _history;
 
     public bool CanApply(EquipmentEvent equipmentEvent)
@@ -69,6 +73,7 @@ public sealed class EquipmentStateMachine
         if (CurrentState == EquipmentState.Idle)
         {
             LastAlarmReason = null;
+            LastAlarm = null;
         }
 
         return Accept(previous, equipmentEvent, nextState, $"State changed from '{previous}' to '{nextState}'.");
@@ -91,8 +96,11 @@ public sealed class EquipmentStateMachine
         }
 
         var timedOutState = CurrentState;
-        var message = $"State '{timedOutState}' timed out after {timeout}.";
-        var transition = MoveToAlarm(timedOutState, EquipmentEvent.Timeout, message);
+        var alarm = AlarmInfo.FromEvent(EquipmentEvent.Timeout, timedOutState) with
+        {
+            Message = $"State '{timedOutState}' timed out after {timeout}."
+        };
+        var transition = MoveToAlarm(timedOutState, alarm);
 
         return new TimeoutCheckResult(timedOutState, true, elapsed, timeout, transition);
     }
@@ -104,22 +112,14 @@ public sealed class EquipmentStateMachine
             return Reject(previous, equipmentEvent, $"Equipment is already alarmed. Clear the alarm before applying '{equipmentEvent}'.");
         }
 
-        LastAlarmReason = equipmentEvent switch
-        {
-            EquipmentEvent.DoorOpened => "Door opened during operation.",
-            EquipmentEvent.EmergencyStop => "Emergency stop requested.",
-            EquipmentEvent.Timeout => "Timeout event requested.",
-            _ => "Safety event."
-        };
-
-        return MoveToAlarm(previous, equipmentEvent, LastAlarmReason);
+        return MoveToAlarm(previous, AlarmInfo.FromEvent(equipmentEvent, previous));
     }
 
-    private TransitionResult Accept(EquipmentState previous, EquipmentEvent equipmentEvent, EquipmentState nextState, string message)
+    private TransitionResult Accept(EquipmentState previous, EquipmentEvent equipmentEvent, EquipmentState nextState, string message, AlarmInfo? alarm = null)
     {
-        var transition = new EquipmentTransition(previous, equipmentEvent, nextState, true, message);
+        var transition = new EquipmentTransition(previous, equipmentEvent, nextState, true, message, alarm);
         _history.Add(transition);
-        return new TransitionResult(previous, equipmentEvent, nextState, true, message);
+        return new TransitionResult(previous, equipmentEvent, nextState, true, message, alarm);
     }
 
     private TransitionResult Reject(EquipmentState previous, EquipmentEvent equipmentEvent, string message)
@@ -134,11 +134,12 @@ public sealed class EquipmentStateMachine
         return equipmentEvent is EquipmentEvent.DoorOpened or EquipmentEvent.EmergencyStop or EquipmentEvent.Timeout;
     }
 
-    private TransitionResult MoveToAlarm(EquipmentState previous, EquipmentEvent equipmentEvent, string reason)
+    private TransitionResult MoveToAlarm(EquipmentState previous, AlarmInfo alarm)
     {
         MoveTo(EquipmentState.Alarmed);
-        LastAlarmReason = reason;
-        return Accept(previous, equipmentEvent, CurrentState, reason);
+        LastAlarm = alarm;
+        LastAlarmReason = alarm.Message;
+        return Accept(previous, alarm.SourceEvent, CurrentState, alarm.Message, alarm);
     }
 
     private void MoveTo(EquipmentState state)
