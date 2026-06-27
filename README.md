@@ -106,6 +106,10 @@ scenarios/
 
 [docs/core-validation.md](docs/core-validation.md)
 
+Visual Studio에서 build/debug하는 방법은 아래 문서에 정리한다.
+
+[docs/visual-studio.md](docs/visual-studio.md)
+
 ## 실행 방법
 
 ```powershell

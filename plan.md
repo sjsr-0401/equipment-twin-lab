@@ -1514,3 +1514,47 @@ Test / Log / future UI
 1. PR #9 병합 여부를 결정한다.
 2. 복구 조건을 세분화한다.
 3. 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
+
+## 35. 2026-06-27 Goal 012 결과
+
+Visual Studio build/debug 지원을 추가했다.
+
+추가한 문서:
+
+- `docs/visual-studio.md`
+
+추가한 실행 프로필:
+
+- `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+- `tests/EquipmentTwin.Core.Tests/Properties/launchSettings.json`
+
+가능해진 것:
+
+- Visual Studio에서 솔루션 build
+- CLI 정상 시나리오 debug
+- CLI Timeout 시나리오 debug
+- CLI batch report debug
+- 콘솔 테스트 전체 debug
+
+검증 결과:
+
+- Debug 빌드 성공, 경고 0개, 오류 0개
+- CLI 정상 시나리오 launch profile 실행 성공
+- CLI Timeout 시나리오 launch profile 실행 성공
+- CLI batch report launch profile 실행 성공
+- 콘솔 테스트 launch profile 실행 성공, 테스트 34개 통과
+- Release 빌드 성공, 경고 0개, 오류 0개
+- Release 테스트 34개 통과
+- Release CLI batch 시나리오 5개 통과
+
+보류한 판단:
+
+- Visual Studio Test Explorer 연동은 아직 하지 않는다.
+- xUnit/NUnit 전환은 아직 하지 않는다.
+- Unity debug는 Unity 프로젝트 생성 후 별도 문서로 다룬다.
+
+다음 권장 작업:
+
+1. Goal 012 PR을 만들고 CI를 확인한다.
+2. 복구 조건 세분화를 진행한다.
+3. 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.

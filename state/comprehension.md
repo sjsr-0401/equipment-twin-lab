@@ -618,6 +618,33 @@ dotnet run --project src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj --no-restore
 
 작업이 끝날 때마다 아래 형식으로 정리한다.
 
+## 2026-06-27 이해 요약: Visual Studio build/debug
+
+### 오늘 한 일
+
+- Visual Studio에서 build/debug 가능한지 확인했다.
+- `docs/visual-studio.md`를 추가했다.
+- CLI와 테스트 프로젝트에 launch profile을 추가했다.
+
+### 왜 필요한가
+
+터미널 명령만으로 작업하면 코드 흐름을 눈으로 따라가기 어렵다.
+
+Visual Studio에서 breakpoint를 걸면 상태머신, IO, Timeout, 알람 코드가 어떤 순서로 바뀌는지 직접 볼 수 있다.
+
+### 내가 이해해야 할 개념
+
+Visual Studio에서 중요한 것은 시작 프로젝트다.
+
+- `EquipmentTwin.Cli`: 시나리오 JSON을 실행하며 디버그한다.
+- `EquipmentTwin.Core.Tests`: 테스트 전체를 실행하며 디버그한다.
+- `EquipmentTwin.Core`: 라이브러리라 단독 실행은 안 하고, CLI나 테스트를 통해 들어간다.
+
+### 아직 모르는 것
+
+- Test Explorer를 쓸 만큼 테스트 프로젝트를 xUnit/NUnit으로 바꿀지
+- Unity 프로젝트가 생긴 뒤 Visual Studio와 Unity 디버그를 어떻게 연결할지
+
 ## 2026-06-26 이해 요약: 알람 코드 체계
 
 ### 오늘 한 일
