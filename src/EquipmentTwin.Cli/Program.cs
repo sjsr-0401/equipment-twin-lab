@@ -221,15 +221,17 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
 
     builder.AppendLine("## Summary");
     builder.AppendLine();
-    builder.AppendLine("| Scenario | Result | Final State | File |");
-    builder.AppendLine("|---|---:|---|---|");
+    builder.AppendLine("| Scenario | Result | Final State | Active Alarm | Clear Condition | File |");
+    builder.AppendLine("|---|---:|---|---|---|---|");
     foreach (var run in runs)
     {
         var scenarioName = EscapeMarkdownTable(run.Result?.ScenarioName ?? Path.GetFileNameWithoutExtension(run.ScenarioPath));
         var status = run.Success ? "PASS" : "FAIL";
         var finalState = run.Result?.FinalState.ToString() ?? "NotRun";
+        var activeAlarm = EscapeMarkdownTable(DescribeActiveAlarm(run));
+        var clearCondition = EscapeMarkdownTable(DescribeClearCondition(run));
         var fileName = EscapeMarkdownTable(run.ScenarioPath);
-        builder.AppendLine($"| {scenarioName} | {status} | {finalState} | `{fileName}` |");
+        builder.AppendLine($"| {scenarioName} | {status} | {finalState} | {activeAlarm} | {clearCondition} | `{fileName}` |");
     }
 
     builder.AppendLine();
@@ -244,6 +246,8 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
         builder.AppendLine($"- File: `{run.ScenarioPath}`");
         builder.AppendLine($"- Result: `{(run.Success ? "PASS" : "FAIL")}`");
         builder.AppendLine($"- Final state: `{run.Result?.FinalState.ToString() ?? "NotRun"}`");
+        builder.AppendLine($"- Active alarm: `{DescribeActiveAlarm(run)}`");
+        builder.AppendLine($"- Clear condition: `{DescribeClearCondition(run)}`");
 
         if (run.Errors.Count > 0)
         {
@@ -271,6 +275,35 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
     }
 
     return builder.ToString();
+}
+
+static string DescribeActiveAlarm(ScenarioCliRun run)
+{
+    var alarm = run.Runner?.Cell.StateMachine.LastAlarm;
+    if (alarm is null)
+    {
+        return "None";
+    }
+
+    return $"{alarm.Code} ({(int)alarm.Code}): {alarm.Message}";
+}
+
+static string DescribeClearCondition(ScenarioCliRun run)
+{
+    if (run.Runner is null)
+    {
+        return "NotRun";
+    }
+
+    if (run.Runner.Cell.StateMachine.CurrentState != EquipmentState.Alarmed)
+    {
+        return "Not alarmed";
+    }
+
+    var recovery = run.Runner.Cell.CheckAlarmRecoveryCondition();
+    var status = recovery.CanClear ? "Clearable" : "Blocked";
+
+    return $"{status}: {recovery.Message}";
 }
 
 static string EscapeMarkdownTable(string value)
@@ -384,11 +417,19 @@ internal sealed record ScenarioCliRun(
                 return new[] { ErrorMessage };
             }
 
-            return Result?.FailedSteps
+            if (Result is null || Result.Success)
+            {
+                return Array.Empty<string>();
+            }
+
+            var errors = Result.FailedSteps
                 .SelectMany(step => step.ValidationErrors)
-                .DefaultIfEmpty("Scenario failed without validation details.")
-                .ToArray()
-                ?? Array.Empty<string>();
+                .Where(error => !string.IsNullOrWhiteSpace(error))
+                .ToArray();
+
+            return errors.Length > 0
+                ? errors
+                : new[] { "Scenario failed without validation details." };
         }
     }
 }

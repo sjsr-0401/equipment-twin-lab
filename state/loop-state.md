@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원, 알람 복구 조건 구현 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원, 알람 복구 조건 구현 완료, CLI 리포트 알람/복구 조건 표시 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -67,6 +67,7 @@
 - PR #10은 CI 성공 확인 후 main에 squash merge했다.
 - Goal 013에서 문 열림/비상정지 알람 복구 조건을 추가했다.
 - Goal 013 Draft PR #11을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
+- Goal 013 후속으로 CLI Markdown 리포트에 활성 알람 코드와 ClearAlarm 조건 표시를 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -108,6 +109,7 @@
 | 2026-06-28 | PR #10 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-28 | Goal 013: 알람 복구 조건 세분화 | 문 열림/비상정지 복구 조건 추가, 테스트 41개 통과, batch 7개 통과 |
 | 2026-06-28 | Goal 013 PR #11 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
+| 2026-06-28 | Goal 013 후속: CLI 리포트 알람/복구 조건 표시 | Active Alarm/Clear Condition 컬럼 추가, 성공 시나리오 Errors 표시 버그 수정 |
 
 ## 열린 PR
 
@@ -154,9 +156,9 @@
 
 ## 다음 안전한 작업
 
-1. PR #11 병합 여부를 결정한다.
-2. 이후 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
-3. 다음 구현 후보는 CLI 리포트 개선을 우선 권장한다.
+1. PR #11 최신 CI를 확인하고 병합 여부를 결정한다.
+2. 다음 구현 후보는 모션 모델 시작 또는 CLI 리포트 filter/tag 기능이다.
+3. Timeout 복구 절차 상세화는 이후 별도 Goal로 둔다.
 
 ## 금지할 것
 

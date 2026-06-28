@@ -21,6 +21,7 @@
 - 알람 상태에서 위험 출력이 꺼지고 램프/부저가 켜지는가
 - JSON 시나리오를 반복 실행할 수 있는가
 - CLI batch로 전체 시나리오를 한 번에 검증할 수 있는가
+- CLI Markdown 리포트가 활성 알람 코드와 ClearAlarm 가능 조건을 보여주는가
 
 검증하지 않는 것:
 
@@ -63,6 +64,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | 안전 입력 우선순위 | 정상 센서보다 안전 입력을 먼저 처리하는가 | `EquipmentCellController.cs` | 콘솔 테스트 |
 | JSON 시나리오 | 장비 흐름을 데이터 파일로 반복 실행하는가 | `ScenarioRunner.cs`, `scenarios/` | 콘솔 테스트, CLI |
 | CLI batch | 전체 시나리오 묶음을 한 번에 검증하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
+| CLI 리포트 | 알람 시나리오의 활성 알람과 ClearAlarm 조건을 보여주는가 | `EquipmentTwin.Cli/Program.cs` | `artifacts/scenario-report.md` 샘플 확인 |
 
 ## 4. 현재 시나리오 세트
 

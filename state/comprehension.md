@@ -618,6 +618,53 @@ dotnet run --project src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj --no-restore
 
 작업이 끝날 때마다 아래 형식으로 정리한다.
 
+## 2026-06-28 이해 요약: CLI 리포트 알람/복구 조건 표시
+
+### 오늘 한 일
+
+- CLI Markdown batch 리포트의 Summary 표에 `Active Alarm`과 `Clear Condition` 컬럼을 추가했다.
+- Details 섹션에도 활성 알람과 ClearAlarm 조건을 표시하게 했다.
+- 성공한 시나리오에도 `Errors`가 표시되던 기존 리포트 오류를 수정했다.
+
+### 왜 필요한가
+
+PASS/FAIL만 있으면 “장비가 왜 Alarmed로 끝났는지”와 “지금 ClearAlarm을 눌러도 되는지”가 바로 보이지 않는다.
+
+제조 장비 SW에서는 알람 상태 자체보다 원인 코드와 복구 가능 조건이 중요하다. 이번 변경은 장비가 없어도 시나리오 리포트만 보고 알람 원인과 복구 조건을 리뷰할 수 있게 만든 것이다.
+
+### 네가 이해해야 할 개념
+
+CLI 리포트는 장비 로직을 새로 판단하지 않는다.
+
+이미 `ScenarioRunner`가 실행한 결과에서 `StateMachine.LastAlarm`을 읽고, `EquipmentCellController.CheckAlarmRecoveryCondition()`을 읽기 전용으로 호출해서 표시한다.
+
+즉, 실제 동작 판단은 Core에 남아 있고 CLI는 보고서 표현만 담당한다.
+
+```text
+ScenarioRunner 실행 완료
+    ↓
+ScenarioCliRun
+    ↓
+BuildMarkdownReport()
+    ↓
+DescribeActiveAlarm()
+DescribeClearCondition()
+```
+
+### 유지보수 포인트
+
+- 리포트 형식: `src/EquipmentTwin.Cli/Program.cs`
+- 활성 알람 표시: `DescribeActiveAlarm()`
+- ClearAlarm 조건 표시: `DescribeClearCondition()`
+- 성공/실패 오류 목록: `ScenarioCliRun.Errors`
+- 생성 리포트 샘플: `artifacts/scenario-report.md`
+
+### 아직 모르는 것
+
+- 리포트를 HTML/JSON으로도 export할지
+- 알람 조치 문구를 별도 테이블로 관리할지
+- 시나리오 tag/filter 기능을 먼저 넣을지
+
 ## 2026-06-28 이해 요약: 알람 복구 조건
 
 ### 오늘 한 일

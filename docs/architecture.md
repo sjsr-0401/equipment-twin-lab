@@ -278,6 +278,7 @@ ExpectState Aligning
 - 최종 장비 상태와 IO Snapshot을 보여준다.
 - 실패 시 non-zero exit code를 반환해서 CI에서 잡을 수 있게 한다.
 - 여러 시나리오를 batch로 실행하고 Markdown 리포트를 저장한다.
+- Markdown 리포트에서 활성 알람 코드와 ClearAlarm 가능 조건을 보여준다.
 
 예:
 
@@ -293,12 +294,14 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 출력 형식은 `PrintResult()`를 본다.
 - Batch 출력 형식은 `PrintBatchResult()`를 본다.
 - Markdown 리포트 형식은 `BuildMarkdownReport()`를 본다.
+- 리포트의 알람 표시 형식은 `DescribeActiveAlarm()`과 `DescribeClearCondition()`을 본다.
 - 실제 실행은 `ScenarioRunner`에 위임한다.
 
 주의:
 
 - CLI는 Core 로직을 다시 구현하지 않는다.
 - CLI는 사용자/CI가 ScenarioRunner를 쉽게 호출하게 하는 얇은 껍데기다.
+- CLI 리포트는 `CheckAlarmRecoveryCondition()`을 읽기 전용으로 호출해서 복구 가능 여부를 표시한다.
 - 실제 장비 운전용 UI나 recipe editor가 아니다.
 
 ## 변경할 때 기준
