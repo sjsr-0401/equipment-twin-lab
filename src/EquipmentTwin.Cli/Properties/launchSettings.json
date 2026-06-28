@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "CLI - normal cycle": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\scenarios\\normal-cycle.json"
+    },
+    "CLI - loading timeout": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\scenarios\\loading-timeout.json --default-timeouts"
+    },
+    "CLI - batch report": {
+      "commandName": "Project",
+      "commandLineArgs": "batch ..\\..\\scenarios --default-timeouts --report ..\\..\\artifacts\\scenario-report.md"
+    }
+  }
+}
