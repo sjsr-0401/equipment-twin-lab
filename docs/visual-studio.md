@@ -150,3 +150,28 @@ IO:
 - 실제 상태
 - 기대 IO
 - 실제 IO
+
+## 8. 자주 뜰 수 있는 경고/팝업
+
+### `Scenario file was not found` 또는 `Scenario path was not found`
+
+이 메시지가 뜨면 build 실패가 아니라 CLI debug profile의 작업 폴더와 시나리오 상대 경로가 안 맞는 것이다.
+
+해결 기준:
+
+- `EquipmentTwin.Cli`의 launch profile은 작업 폴더를 repo root로 맞춘다.
+- 시나리오 경로는 repo root 기준으로 `scenarios\normal-cycle.json`처럼 적는다.
+- batch 리포트 경로도 repo root 기준으로 `artifacts\scenario-report.md`처럼 적는다.
+
+관련 파일:
+
+- `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+
+### `EquipmentTwin.Core`를 직접 시작할 수 없다는 메시지
+
+`EquipmentTwin.Core`는 실행 프로그램이 아니라 class library다. 그래서 이 프로젝트를 시작 프로젝트로 두고 `F5`를 누르면 실행할 수 없다는 메시지가 뜰 수 있다.
+
+이 경우 아래 둘 중 하나를 시작 프로젝트로 설정한다.
+
+- `EquipmentTwin.Cli`
+- `EquipmentTwin.Core.Tests`
