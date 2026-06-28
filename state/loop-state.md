@@ -66,6 +66,7 @@
 - Goal 012 Draft PR #10을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #10은 CI 성공 확인 후 main에 squash merge했다.
 - Goal 013에서 문 열림/비상정지 알람 복구 조건을 추가했다.
+- Goal 013 Draft PR #11을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -106,6 +107,7 @@
 | 2026-06-27 | Goal 012 PR #10 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-06-28 | PR #10 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-28 | Goal 013: 알람 복구 조건 세분화 | 문 열림/비상정지 복구 조건 추가, 테스트 41개 통과, batch 7개 통과 |
+| 2026-06-28 | Goal 013 PR #11 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -121,6 +123,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/8` | `goal/010-core-validation-doc` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/9` | `goal/011-alarm-code-system` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/10` | `goal/012-visual-studio-debug` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/11` | `goal/013-alarm-recovery-conditions` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -146,10 +149,12 @@
 | 2026-06-26 | `goal/011-alarm-code-system` | pull_request | 성공 |
 | 2026-06-27 | `goal/012-visual-studio-debug` | push | 성공 |
 | 2026-06-27 | `goal/012-visual-studio-debug` | pull_request | 성공 |
+| 2026-06-28 | `goal/013-alarm-recovery-conditions` | push | 성공 |
+| 2026-06-28 | `goal/013-alarm-recovery-conditions` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 013 PR을 만들고 CI를 확인한다.
+1. PR #11 병합 여부를 결정한다.
 2. 이후 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
 3. 다음 구현 후보는 CLI 리포트 개선을 우선 권장한다.
 
