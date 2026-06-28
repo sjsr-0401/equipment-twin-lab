@@ -1,13 +1,13 @@
 # Loop State
 
-마지막 갱신: 2026-06-27
+마지막 갱신: 2026-06-28
 
 ## 현재 상태
 
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원 완료
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원, 알람 복구 조건 구현 완료
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -64,6 +64,8 @@
 - PR #9는 CI 성공 확인 후 main에 squash merge했다.
 - Goal 012에서 Visual Studio build/debug 가이드와 launch profile을 추가했다.
 - Goal 012 Draft PR #10을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
+- PR #10은 CI 성공 확인 후 main에 squash merge했다.
+- Goal 013에서 문 열림/비상정지 알람 복구 조건을 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -102,6 +104,8 @@
 | 2026-06-27 | PR #9 병합 | CI 성공 확인 후 main에 squash merge |
 | 2026-06-27 | Goal 012: Visual Studio build/debug 지원 | Visual Studio 가이드와 launch profile 추가 |
 | 2026-06-27 | Goal 012 PR #10 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
+| 2026-06-28 | PR #10 병합 | CI 성공 확인 후 main에 squash merge |
+| 2026-06-28 | Goal 013: 알람 복구 조건 세분화 | 문 열림/비상정지 복구 조건 추가, 테스트 41개 통과, batch 7개 통과 |
 
 ## 열린 PR
 
@@ -116,7 +120,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/7` | `goal/009-alarm-recovery-scenarios` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/8` | `goal/010-core-validation-doc` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/9` | `goal/011-alarm-code-system` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/10` | `goal/012-visual-studio-debug` | Draft, CI 성공 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/10` | `goal/012-visual-studio-debug` | 병합 완료 |
 
 ## 최근 CI 결과
 
@@ -145,9 +149,9 @@
 
 ## 다음 안전한 작업
 
-1. PR #10 병합 여부를 결정한다.
-2. 이후 복구 조건 세분화를 진행한다.
-3. 다음 구현 후보는 복구 조건 세분화를 우선 권장한다.
+1. Goal 013 PR을 만들고 CI를 확인한다.
+2. 이후 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
+3. 다음 구현 후보는 CLI 리포트 개선을 우선 권장한다.
 
 ## 금지할 것
 

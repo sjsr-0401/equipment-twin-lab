@@ -1560,3 +1560,57 @@ Visual Studio build/debug 지원을 추가했다.
 1. PR #10 병합 여부를 결정한다.
 2. 복구 조건 세분화를 진행한다.
 3. 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
+
+## 36. 2026-06-28 Goal 013 결과
+
+알람 복구 조건을 세분화했다.
+
+추가한 코드:
+
+- `AlarmRecoveryCheck`
+- `EquipmentCellController.CheckAlarmRecoveryCondition()`
+- `EquipmentStateMachine.RejectCommand()`
+
+추가한 시나리오:
+
+- `scenarios/door-open-clear-blocked.json`
+- `scenarios/emergency-stop-recovery.json`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 41개 통과
+- CLI batch 시나리오 7개 통과
+
+막힌 점:
+
+- 병렬 검증 실행 중 Release 산출물 파일 잠금이 한 번 발생했다.
+- 코드 오류가 아니라 테스트와 batch가 같은 산출물을 동시에 사용한 실행 방식 문제였다.
+- 순차 실행으로 재검증했고 통과했다.
+
+보류한 판단:
+
+- Timeout 알람의 실제 복구 조건은 아직 단순화했다.
+- 작업자 확인 버튼, 알람 레벨, 조치 문구는 아직 만들지 않는다.
+- 실제 안전 PLC나 하드웨어 인터록 검증은 아니다.
+
+아키텍처:
+
+```text
+ClearAlarm command
+    ↓
+EquipmentCellController.CheckAlarmRecoveryCondition()
+    ↓
+Virtual IO 상태 확인
+    ↓
+허용: EquipmentStateMachine.Apply(ClearAlarm)
+거부: EquipmentStateMachine.RejectCommand(ClearAlarm)
+```
+
+다음 권장 작업:
+
+1. Goal 013 PR을 만들고 CI를 확인한다.
+2. 알람 코드/복구 조건을 CLI 리포트에 표시한다.
+3. 이후 모션 모델 시작 여부를 결정한다.

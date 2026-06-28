@@ -32,12 +32,19 @@ var tests = new (string Name, Action Body)[]
     ("Cell controller reports no change when sensor is missing", CellControllerReportsNoChangeWhenSensorIsMissing),
     ("Cell controller applies timeout policy", CellControllerAppliesTimeoutPolicy),
     ("Clear alarm resets normal outputs", ClearAlarmResetsNormalOutputs),
+    ("Door alarm cannot clear while door remains open", DoorAlarmCannotClearWhileDoorRemainsOpen),
+    ("Door alarm clears after door closes", DoorAlarmClearsAfterDoorCloses),
+    ("Emergency stop alarm cannot clear while pressed", EmergencyStopAlarmCannotClearWhilePressed),
+    ("Emergency stop alarm clears after release", EmergencyStopAlarmClearsAfterRelease),
+    ("Timeout alarm can clear in MVP model", TimeoutAlarmCanClearInMvpModel),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
     ("Scenario runner handles door open alarm file", ScenarioRunnerHandlesDoorOpenAlarmFile),
     ("Scenario runner handles emergency stop alarm file", ScenarioRunnerHandlesEmergencyStopAlarmFile),
     ("Scenario runner handles clear alarm recovery file", ScenarioRunnerHandlesClearAlarmRecoveryFile),
+    ("Scenario runner handles door open clear blocked file", ScenarioRunnerHandlesDoorOpenClearBlockedFile),
+    ("Scenario runner handles emergency stop recovery file", ScenarioRunnerHandlesEmergencyStopRecoveryFile),
     ("Scenario runner reports expectation failure", ScenarioRunnerReportsExpectationFailure)
 };
 
@@ -436,6 +443,99 @@ static void ClearAlarmResetsNormalOutputs()
     AssertEqual(false, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after ClearAlarm.");
 }
 
+static void DoorAlarmCannotClearWhileDoorRemainsOpen()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.DoorClosed, false);
+    cell.PollInputs();
+
+    var result = cell.ClearAlarm();
+
+    AssertFalse(result.Accepted, "ClearAlarm must be rejected while door remains open.");
+    AssertEqual(EquipmentState.Alarmed, machine.CurrentState, "Door alarm must stay Alarmed while door remains open.");
+    AssertEqual(AlarmCode.DoorOpened, result.Alarm?.Code, "Rejected ClearAlarm must keep DoorOpened alarm info.");
+    AssertTrue(result.Message.Contains("Door must be closed"), "Rejected ClearAlarm must explain door recovery condition.");
+    AssertEqual(true, io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must stay on while alarm remains active.");
+    AssertEqual(true, io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must stay on while alarm remains active.");
+}
+
+static void DoorAlarmClearsAfterDoorCloses()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.DoorClosed, false);
+    cell.PollInputs();
+    io.SetInput(EquipmentIoMap.DoorClosed, true);
+
+    var result = cell.ClearAlarm();
+
+    AssertTrue(result.Accepted, "ClearAlarm must be accepted after door closes.");
+    AssertEqual(EquipmentState.Idle, machine.CurrentState, "Door alarm must clear to Idle after door closes.");
+    AssertEqual(null, machine.LastAlarm, "Door alarm info must clear after successful ClearAlarm.");
+}
+
+static void EmergencyStopAlarmCannotClearWhilePressed()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.EmergencyStopPressed, true);
+    cell.PollInputs();
+
+    var result = cell.ClearAlarm();
+
+    AssertFalse(result.Accepted, "ClearAlarm must be rejected while emergency stop remains pressed.");
+    AssertEqual(EquipmentState.Alarmed, machine.CurrentState, "EmergencyStop alarm must stay Alarmed while pressed.");
+    AssertEqual(AlarmCode.EmergencyStop, result.Alarm?.Code, "Rejected ClearAlarm must keep EmergencyStop alarm info.");
+    AssertTrue(result.Message.Contains("Emergency stop must be released"), "Rejected ClearAlarm must explain emergency stop recovery condition.");
+}
+
+static void EmergencyStopAlarmClearsAfterRelease()
+{
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine();
+    var cell = new EquipmentCellController(machine, io);
+
+    cell.StartCycle();
+    io.SetInput(EquipmentIoMap.EmergencyStopPressed, true);
+    cell.PollInputs();
+    io.SetInput(EquipmentIoMap.EmergencyStopPressed, false);
+
+    var result = cell.ClearAlarm();
+
+    AssertTrue(result.Accepted, "ClearAlarm must be accepted after emergency stop releases.");
+    AssertEqual(EquipmentState.Idle, machine.CurrentState, "EmergencyStop alarm must clear to Idle after release.");
+    AssertEqual(null, machine.LastAlarm, "EmergencyStop alarm info must clear after successful ClearAlarm.");
+}
+
+static void TimeoutAlarmCanClearInMvpModel()
+{
+    var clock = new ManualClock(new DateTimeOffset(2026, 6, 28, 0, 0, 0, TimeSpan.Zero));
+    var io = EquipmentIoMap.CreateDefaultCellIo();
+    var machine = new EquipmentStateMachine(clock);
+    var cell = new EquipmentCellController(machine, io);
+    var policy = new StateTimeoutPolicy();
+    policy.SetTimeout(EquipmentState.Loading, TimeSpan.FromSeconds(30));
+
+    cell.StartCycle();
+    clock.Advance(TimeSpan.FromSeconds(30));
+    cell.PollInputs(policy);
+
+    var result = cell.ClearAlarm();
+
+    AssertTrue(result.Accepted, "Timeout alarm can be cleared in the MVP model.");
+    AssertEqual(EquipmentState.Idle, machine.CurrentState, "Timeout alarm must clear to Idle in MVP model.");
+}
+
 static void ScenarioJsonLoadsNormalCycleFile()
 {
     var scenario = LoadScenario("normal-cycle.json");
@@ -512,6 +612,34 @@ static void ScenarioRunnerHandlesClearAlarmRecoveryFile()
     AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.VacuumOn), "Vacuum must be off after ClearAlarm.");
     AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be off after ClearAlarm.");
     AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after ClearAlarm.");
+}
+
+static void ScenarioRunnerHandlesDoorOpenClearBlockedFile()
+{
+    var scenario = LoadScenario("door-open-clear-blocked.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 28, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Alarmed, result.FinalState, "Door-open blocked recovery scenario must stay Alarmed.");
+    AssertEqual(AlarmCode.DoorOpened, runner.Cell.StateMachine.LastAlarm?.Code, "Door-open blocked recovery must keep DoorOpened alarm.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must stay on while ClearAlarm is blocked.");
+    AssertEqual(true, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must stay on while ClearAlarm is blocked.");
+}
+
+static void ScenarioRunnerHandlesEmergencyStopRecoveryFile()
+{
+    var scenario = LoadScenario("emergency-stop-recovery.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 6, 28, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertEqual(EquipmentState.Idle, result.FinalState, "Emergency stop recovery scenario must end at Idle.");
+    AssertEqual(null, runner.Cell.StateMachine.LastAlarm, "Emergency stop recovery scenario must clear alarm info.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be off after emergency stop recovery.");
+    AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after emergency stop recovery.");
 }
 
 static void ScenarioRunnerReportsExpectationFailure()

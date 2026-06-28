@@ -1,0 +1,38 @@
+{
+  "name": "door-open-clear-blocked",
+  "description": "Verifies that ClearAlarm is rejected while the door-open condition remains active.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading"
+    },
+    {
+      "name": "Door opens",
+      "action": "SetInput",
+      "signal": "DI_DOOR_CLOSED",
+      "value": false
+    },
+    {
+      "name": "Poll door alarm",
+      "action": "PollInputs",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    },
+    {
+      "name": "Try to clear while door is still open",
+      "action": "ClearAlarm",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    }
+  ]
+}

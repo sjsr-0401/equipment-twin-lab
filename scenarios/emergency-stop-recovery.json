@@ -1,0 +1,45 @@
+{
+  "name": "emergency-stop-recovery",
+  "description": "Creates an emergency stop alarm, releases the input, and verifies ClearAlarm returns the equipment to Idle.",
+  "steps": [
+    {
+      "name": "Start cycle",
+      "action": "StartCycle",
+      "expectState": "Loading"
+    },
+    {
+      "name": "Emergency stop pressed",
+      "action": "SetInput",
+      "signal": "DI_EMERGENCY_STOP_PRESSED",
+      "value": true
+    },
+    {
+      "name": "Poll emergency stop alarm",
+      "action": "PollInputs",
+      "expectState": "Alarmed",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false,
+        "DO_TOWER_LAMP_RED": true,
+        "DO_BUZZER_ON": true
+      }
+    },
+    {
+      "name": "Emergency stop released",
+      "action": "SetInput",
+      "signal": "DI_EMERGENCY_STOP_PRESSED",
+      "value": false
+    },
+    {
+      "name": "Clear alarm",
+      "action": "ClearAlarm",
+      "expectState": "Idle",
+      "expectSignals": {
+        "DO_VACUUM_ON": false,
+        "DO_STAGE_MOVE_REQUESTED": false,
+        "DO_TOWER_LAMP_RED": false,
+        "DO_BUZZER_ON": false
+      }
+    }
+  ]
+}

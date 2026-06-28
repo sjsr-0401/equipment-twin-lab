@@ -73,6 +73,8 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | `door-open-alarm.json` | `Alarmed` | 운전 중 문 열림 |
 | `emergency-stop-alarm.json` | `Alarmed` | 비상정지 입력 |
 | `clear-alarm-recovery.json` | `Idle` | 문 닫힘 이후 ClearAlarm 복구 |
+| `door-open-clear-blocked.json` | `Alarmed` | 문이 열린 상태에서 ClearAlarm 거부 |
+| `emergency-stop-recovery.json` | `Idle` | 비상정지 해제 이후 ClearAlarm 복구 |
 
 이 세트는 아직 실제 생산 장비 전체를 표현하지 않는다. 대신 정상/Timeout/안전 입력/기본 복구를 최소 회귀 검증 세트로 묶은 것이다.
 
@@ -132,7 +134,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 | 부족한 점 | 왜 중요한가 | 후보 Goal |
 |---|---|---|
 | 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
-| 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Goal 011 또는 012 |
+| Timeout 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Recovery Report Goal |
 | 모션 모델 없음 | 제조 장비 설명력을 높이려면 축 위치/완료/알람이 필요하다 | Motion Goal |
 | 카메라 검사 없음 | 비전 검사 장비 컨셉을 설명하려면 검사 결과 흐름이 필요하다 | Inspection Goal |
 | Unity 화면 없음 | 데모 시각화와 포트폴리오 전달력에 필요하다 | Unity Goal |
