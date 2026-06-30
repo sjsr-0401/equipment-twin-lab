@@ -22,11 +22,13 @@
 - JSON 시나리오를 반복 실행할 수 있는가
 - CLI batch로 전체 시나리오를 한 번에 검증할 수 있는가
 - CLI Markdown 리포트가 활성 알람 코드와 ClearAlarm 가능 조건을 보여주는가
+- 가상 모션 축이 Servo On, Home, Move, InPosition, Timeout, Alarm 흐름을 검증하는가
 
 검증하지 않는 것:
 
 - 실제 PLC 통신 안정성
 - 실제 모션 축의 위치, 속도, 가속도
+- 실제 모션 컨트롤러/드라이버 응답
 - 실제 안전 회로 또는 안전 인증
 - 실제 카메라 영상 품질
 - 실제 설비의 기구 충돌
@@ -65,6 +67,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | JSON 시나리오 | 장비 흐름을 데이터 파일로 반복 실행하는가 | `ScenarioRunner.cs`, `scenarios/` | 콘솔 테스트, CLI |
 | CLI batch | 전체 시나리오 묶음을 한 번에 검증하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
 | CLI 리포트 | 알람 시나리오의 활성 알람과 ClearAlarm 조건을 보여주는가 | `EquipmentTwin.Cli/Program.cs` | `artifacts/scenario-report.md` 샘플 확인 |
+| 가상 모션 축 | Servo On, Home, Move, Timeout, Alarm 흐름을 검증하는가 | `MotionAxis.cs` | 콘솔 테스트 |
 
 ## 4. 현재 시나리오 세트
 
@@ -137,7 +140,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 |---|---|---|
 | 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
 | Timeout 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Recovery Report Goal |
-| 모션 모델 없음 | 제조 장비 설명력을 높이려면 축 위치/완료/알람이 필요하다 | Motion Goal |
+| 모션 모델 공정 연결 없음 | 축 모델은 생겼지만 아직 장비 공정/시나리오와 연결되지 않았다 | Motion Scenario Goal |
 | 카메라 검사 없음 | 비전 검사 장비 컨셉을 설명하려면 검사 결과 흐름이 필요하다 | Inspection Goal |
 | Unity 화면 없음 | 데모 시각화와 포트폴리오 전달력에 필요하다 | Unity Goal |
 | 실제 PLC 통신 없음 | 현장 연동성을 설명하려면 어댑터 계층이 필요하다 | PLC Adapter Goal |
