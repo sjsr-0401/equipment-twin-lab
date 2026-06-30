@@ -62,6 +62,8 @@
 - 오류 0개
 - 콘솔 테스트 68개 통과
 - CLI batch 시나리오 9개 통과
+- Draft PR #17 생성: `https://github.com/sjsr-0401/equipment-twin-lab/pull/17`
+- GitHub Actions `push`, `pull_request` 성공
 
 ## 막힌 점과 해결 방법
 
@@ -117,7 +119,7 @@ TemplateRunResult
 
 ## 다음 작업
 
-다음 후보는 `Template Runner CLI` 또는 `Inspection Scenario Selection`이다.
+PR #17을 병합한 뒤 다음 후보는 `Template Runner CLI` 또는 `Inspection Scenario Selection`이다.
 
 CLI를 먼저 만들면 사용자가 template/recipe/fault를 명령어로 실행해 결과를 볼 수 있다.
 

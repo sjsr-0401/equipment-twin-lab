@@ -2093,6 +2093,8 @@ TemplateRunner 실행 결과에 검사 결과를 남긴다.
 - 오류 0개
 - 콘솔 테스트 68개 통과
 - CLI batch 시나리오 9개 통과
+- Draft PR #17 생성
+- GitHub Actions push/pull_request 성공
 
 막힌 점:
 
@@ -2126,6 +2128,6 @@ ProductPassed = 제품 검사 PASS/FAIL
 
 다음 권장 작업:
 
-1. Goal 019 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #17 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. Template Runner CLI 또는 Inspection Scenario Selection을 선택한다.
