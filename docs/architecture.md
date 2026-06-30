@@ -420,3 +420,51 @@ Alarmed 또는 Idle
 
 - 이 검증은 실제 장비 안전 인증이나 실제 인터록 검증이 아니다.
 - 현재는 소프트웨어 모델이 의도한 상태 전이와 출력 정책을 지키는지 확인하는 단계다.
+
+## 9. Motion Axis
+
+파일:
+
+- `src/EquipmentTwin.Core/Motion/MotionAxis.cs`
+- `src/EquipmentTwin.Core/Motion/MotionAxisState.cs`
+- `src/EquipmentTwin.Core/Motion/MotionAxisAlarmCode.cs`
+- `src/EquipmentTwin.Core/Motion/MotionAxisAlarm.cs`
+- `src/EquipmentTwin.Core/Motion/MotionCommandResult.cs`
+
+역할:
+
+- 실제 모션 컨트롤러 없이 축 상태를 모델링한다.
+- Servo On, Home, Move, InPosition, Timeout, Servo Alarm 흐름을 검증한다.
+- 나중에 Unity, Equipment Template, Product Recipe가 같은 모션 모델을 사용할 수 있게 한다.
+
+흐름:
+
+```text
+MotionAxis
+    ↓
+ServoOn()
+    ↓
+StartHome()
+    ↓
+Poll()
+    ↓
+StartMove()
+    ↓
+Poll() 또는 CheckTimeout()
+    ↓
+InPosition 또는 Alarmed
+```
+
+유지보수 포인트:
+
+- 축 상태 추가/변경: `MotionAxisState`
+- 모션 명령 동작 변경: `MotionAxis`
+- 모션 알람 코드 변경: `MotionAxisAlarmCode`
+- 테스트 추가: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+주의:
+
+- 이 계층은 실제 서보 드라이버가 아니다.
+- 현재는 위치 완료와 Timeout을 검증하는 MVP 모델이다.
+- 속도/가속도/감속도 프로파일은 아직 없다.
+- 아직 장비 공정 상태나 Scenario JSON action과 연결하지 않았다.

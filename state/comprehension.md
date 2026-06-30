@@ -618,6 +618,62 @@ dotnet run --project src\EquipmentTwin.Cli\EquipmentTwin.Cli.csproj --no-restore
 
 작업이 끝날 때마다 아래 형식으로 정리한다.
 
+## 2026-06-30 이해 요약: Motion Axis와 커스텀 장비 목표
+
+### 오늘 한 일
+
+- PR #11을 병합했다.
+- Goal 014로 `MotionAxis` 모델을 시작했다.
+- Servo On, Home, Move, InPosition, Timeout, Alarm 흐름을 테스트로 검증했다.
+- 테스트가 49개로 늘었다.
+
+### 왜 중요한가
+
+사용자가 원하는 장기 목표는 사용자가 원하는 장비/제품/공정/트러블을 선택해서 실제처럼 제조/검사 시뮬레이션하는 것이다.
+
+이 목표를 달성하려면 장비를 하나의 거대한 코드로 만들면 안 된다. Loader, Stage, Robot, Inspector 같은 모듈로 쪼개야 한다.
+
+그중 가장 먼저 필요한 공통 모듈이 모션 축이다.
+
+### 네가 이해해야 할 개념
+
+모션 축은 장비의 움직이는 부품 하나다.
+
+```text
+Servo Off
+    ↓
+Servo On
+    ↓
+Home
+    ↓
+Move
+    ↓
+InPosition
+```
+
+문제가 생기면 알람으로 간다.
+
+```text
+Move 중 Timeout
+    ↓
+MoveTimeout
+    ↓
+Alarmed
+```
+
+### 유지보수 포인트
+
+- 모션 축 동작: `src/EquipmentTwin.Core/Motion/MotionAxis.cs`
+- 모션 축 상태: `src/EquipmentTwin.Core/Motion/MotionAxisState.cs`
+- 모션 알람 코드: `src/EquipmentTwin.Core/Motion/MotionAxisAlarmCode.cs`
+- 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+### 아직 모르는 것
+
+- 모션을 장비 공정 상태와 어떻게 연결할지
+- Scenario JSON에 어떤 action 이름으로 노출할지
+- Unity에서 축 상태를 어떤 UI/3D 오브젝트로 보여줄지
+
 ## 2026-06-28 이해 요약: CLI 리포트 알람/복구 조건 표시
 
 ### 오늘 한 일

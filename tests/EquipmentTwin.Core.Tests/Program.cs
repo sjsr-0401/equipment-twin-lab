@@ -1,6 +1,7 @@
 using EquipmentTwin.Core;
 using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
+using EquipmentTwin.Core.Motion;
 using EquipmentTwin.Core.Scenarios;
 
 var tests = new (string Name, Action Body)[]
@@ -37,6 +38,14 @@ var tests = new (string Name, Action Body)[]
     ("Emergency stop alarm cannot clear while pressed", EmergencyStopAlarmCannotClearWhilePressed),
     ("Emergency stop alarm clears after release", EmergencyStopAlarmClearsAfterRelease),
     ("Timeout alarm can clear in MVP model", TimeoutAlarmCanClearInMvpModel),
+    ("Motion axis starts disabled", MotionAxisStartsDisabled),
+    ("Motion axis servo on moves to ready", MotionAxisServoOnMovesToReady),
+    ("Motion axis home requires servo on", MotionAxisHomeRequiresServoOn),
+    ("Motion axis home completes after duration", MotionAxisHomeCompletesAfterDuration),
+    ("Motion axis move requires home", MotionAxisMoveRequiresHome),
+    ("Motion axis move completes after duration", MotionAxisMoveCompletesAfterDuration),
+    ("Motion axis timeout creates alarm", MotionAxisTimeoutCreatesAlarm),
+    ("Motion axis clear alarm returns to in position", MotionAxisClearAlarmReturnsToInPosition),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -536,6 +545,116 @@ static void TimeoutAlarmCanClearInMvpModel()
     AssertEqual(EquipmentState.Idle, machine.CurrentState, "Timeout alarm must clear to Idle in MVP model.");
 }
 
+static void MotionAxisStartsDisabled()
+{
+    var axis = CreateMotionAxis();
+
+    AssertEqual(MotionAxisState.Disabled, axis.State, "New axis must start disabled.");
+    AssertFalse(axis.ServoEnabled, "New axis servo must be disabled.");
+    AssertFalse(axis.IsHomed, "New axis must not start homed.");
+    AssertEqual(0.0, axis.Position, "New axis position mismatch.");
+}
+
+static void MotionAxisServoOnMovesToReady()
+{
+    var axis = CreateMotionAxis();
+
+    var result = axis.ServoOn();
+
+    AssertTrue(result.Accepted, "ServoOn must be accepted.");
+    AssertTrue(axis.ServoEnabled, "Servo must be enabled.");
+    AssertEqual(MotionAxisState.Ready, axis.State, "ServoOn must move an unhomed axis to Ready.");
+}
+
+static void MotionAxisHomeRequiresServoOn()
+{
+    var axis = CreateMotionAxis();
+
+    var result = axis.StartHome(TimeSpan.FromSeconds(1));
+
+    AssertTrue(result.Accepted, "Servo-off home attempt must be recorded as an alarm result.");
+    AssertEqual(MotionAxisState.Alarmed, axis.State, "Home without servo must alarm.");
+    AssertEqual(MotionAxisAlarmCode.ServoOff, axis.LastAlarm?.Code, "Home without servo must create ServoOff alarm.");
+}
+
+static void MotionAxisHomeCompletesAfterDuration()
+{
+    var clock = CreateMotionClock();
+    var axis = new MotionAxis("X", clock, initialPosition: 12.5);
+
+    axis.ServoOn();
+    axis.StartHome(TimeSpan.FromSeconds(2));
+    clock.Advance(TimeSpan.FromMilliseconds(1999));
+    axis.Poll();
+
+    AssertEqual(MotionAxisState.Homing, axis.State, "Axis must keep homing before duration expires.");
+
+    clock.Advance(TimeSpan.FromMilliseconds(1));
+    var result = axis.Poll();
+
+    AssertTrue(result.Accepted, "Home completion poll must be accepted.");
+    AssertEqual(MotionAxisState.InPosition, axis.State, "Axis must be InPosition after homing.");
+    AssertTrue(axis.IsHomed, "Axis must be homed after homing completes.");
+    AssertEqual(0.0, axis.Position, "Homing must move position to zero.");
+}
+
+static void MotionAxisMoveRequiresHome()
+{
+    var axis = CreateMotionAxis();
+
+    axis.ServoOn();
+    var result = axis.StartMove(25.0, TimeSpan.FromSeconds(1));
+
+    AssertTrue(result.Accepted, "Unhomed move attempt must be recorded as an alarm result.");
+    AssertEqual(MotionAxisState.Alarmed, axis.State, "Move before home must alarm.");
+    AssertEqual(MotionAxisAlarmCode.NotHomed, axis.LastAlarm?.Code, "Move before home must create NotHomed alarm.");
+}
+
+static void MotionAxisMoveCompletesAfterDuration()
+{
+    var clock = CreateMotionClock();
+    var axis = CreateHomedMotionAxis(clock);
+
+    axis.StartMove(25.0, TimeSpan.FromSeconds(3));
+    clock.Advance(TimeSpan.FromSeconds(3));
+    var result = axis.Poll();
+
+    AssertTrue(result.Accepted, "Move completion poll must be accepted.");
+    AssertEqual(MotionAxisState.InPosition, axis.State, "Axis must be InPosition after move completes.");
+    AssertEqual(25.0, axis.Position, "Axis position mismatch after move.");
+    AssertEqual(null, axis.TargetPosition, "Target position must clear after move completes.");
+}
+
+static void MotionAxisTimeoutCreatesAlarm()
+{
+    var clock = CreateMotionClock();
+    var axis = CreateHomedMotionAxis(clock);
+
+    axis.StartMove(100.0, TimeSpan.FromSeconds(10));
+    clock.Advance(TimeSpan.FromSeconds(6));
+    var result = axis.CheckTimeout(TimeSpan.FromSeconds(5));
+
+    AssertTrue(result.Accepted, "Motion timeout must be recorded as an accepted alarm result.");
+    AssertEqual(MotionAxisState.Alarmed, axis.State, "Motion timeout must move axis to Alarmed.");
+    AssertEqual(MotionAxisAlarmCode.MoveTimeout, axis.LastAlarm?.Code, "Motion timeout alarm code mismatch.");
+}
+
+static void MotionAxisClearAlarmReturnsToInPosition()
+{
+    var clock = CreateMotionClock();
+    var axis = CreateHomedMotionAxis(clock);
+
+    axis.StartMove(100.0, TimeSpan.FromSeconds(10));
+    clock.Advance(TimeSpan.FromSeconds(6));
+    axis.CheckTimeout(TimeSpan.FromSeconds(5));
+
+    var result = axis.ClearAlarm();
+
+    AssertTrue(result.Accepted, "ClearAlarm must be accepted for motion alarm.");
+    AssertEqual(MotionAxisState.InPosition, axis.State, "Homed servo-on axis must return to InPosition after ClearAlarm.");
+    AssertEqual(null, axis.LastAlarm, "Motion alarm must clear.");
+}
+
 static void ScenarioJsonLoadsNormalCycleFile()
 {
     var scenario = LoadScenario("normal-cycle.json");
@@ -720,6 +839,29 @@ static void AssertThrows<TException>(Action action, string message)
     }
 
     throw new InvalidOperationException(message);
+}
+
+static ManualClock CreateMotionClock()
+{
+    return new ManualClock(new DateTimeOffset(2026, 6, 30, 0, 0, 0, TimeSpan.Zero));
+}
+
+static MotionAxis CreateMotionAxis()
+{
+    return new MotionAxis("X", CreateMotionClock());
+}
+
+static MotionAxis CreateHomedMotionAxis(ManualClock clock)
+{
+    var axis = new MotionAxis("X", clock);
+
+    axis.ServoOn();
+    axis.StartHome(TimeSpan.FromSeconds(1));
+    clock.Advance(TimeSpan.FromSeconds(1));
+    axis.Poll();
+
+    AssertEqual(MotionAxisState.InPosition, axis.State, "Test helper must create a homed axis.");
+    return axis;
 }
 
 static EquipmentScenario LoadScenario(string fileName)
