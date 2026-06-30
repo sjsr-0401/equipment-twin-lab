@@ -1996,3 +1996,65 @@ TemplateRunResult
 1. PR #15 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Fault Model 또는 Inspection Result Model을 시작한다.
+
+## 43. 2026-07-01 Goal 018: Fault Model
+
+PR #15를 병합한 뒤 Goal 018을 시작했다.
+
+목표:
+
+```text
+사용자가 선택할 수 있는 트러블 조건을 template에 넣고,
+TemplateRunner 실행 중 해당 fault를 주입한다.
+```
+
+추가한 코드:
+
+- `FaultKind`
+- `FaultScenario`
+- `EquipmentTemplate.FaultScenarios`
+- `TemplateRunner` fault 주입
+
+추가한 샘플 fault:
+
+- `x-axis-move-timeout`
+- `z-axis-servo-alarm`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 66개 통과
+- CLI batch 시나리오 9개 통과
+
+막힌 점:
+
+- 이번 구현 자체에서 큰 막힘은 없었다.
+- DLL lock을 피하기 위해 검증은 순차 실행했다.
+
+보류한 판단:
+
+- IO fault와 검사 NG는 아직 없다.
+- fault severity, operator action, recovery guide는 아직 없다.
+- 기존 door open/emergency stop scenario와 template fault 통합은 아직 하지 않았다.
+
+소프트웨어 아키텍처:
+
+```text
+EquipmentTemplate
+    ↓
+FaultScenario
+    ↓
+TemplateRunner
+    ↓
+MotionAxis.CheckTimeout() / TriggerServoAlarm()
+    ↓
+TemplateRunResult.Success = false
+```
+
+다음 권장 작업:
+
+1. Goal 018 Draft PR을 만든다.
+2. CI 결과를 확인한다.
+3. Inspection Result Model을 시작한다.

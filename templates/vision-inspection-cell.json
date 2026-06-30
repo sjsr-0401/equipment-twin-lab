@@ -32,5 +32,20 @@
         "Z": 12
       }
     }
+  ],
+  "faultScenarios": [
+    {
+      "name": "x-axis-move-timeout",
+      "kind": "MotionTimeout",
+      "axis": "X",
+      "timeoutMilliseconds": 500,
+      "elapsedMilliseconds": 1000
+    },
+    {
+      "name": "z-axis-servo-alarm",
+      "kind": "ServoAlarm",
+      "axis": "Z",
+      "message": "Z axis servo amplifier alarm."
+    }
   ]
 }

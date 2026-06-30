@@ -1025,6 +1025,61 @@ TemplateRunResult
 - Fault 조건을 언제 실행 중에 주입할지
 - Template Runner와 ScenarioRunner를 합칠지, 계속 분리할지
 
+## 2026-07-01 이해 요약: Fault Model
+
+### 오늘 한 일
+
+- PR #15를 병합했다.
+- Fault Model을 추가했다.
+- `x-axis-move-timeout`, `z-axis-servo-alarm` 트러블 조건을 template에 추가했다.
+- Template Runner가 fault를 실행 중 주입하게 했다.
+- 테스트가 66개로 늘었다.
+
+### 왜 필요한가
+
+정상 동작만 되는 시뮬레이터는 제조 장비 프로젝트로는 부족하다.
+
+현업 장비 SW에서는 정상 공정보다 트러블 상황에서 어떻게 멈추고, 어떤 알람을 남기는지가 중요하다.
+
+### 내가 이해해야 할 개념
+
+Fault Scenario는 사용자가 선택하는 트러블 조건이다.
+
+예:
+
+```text
+x-axis-move-timeout
+    → X축 move 중 Timeout 발생
+
+z-axis-servo-alarm
+    → Z축 move 중 Servo Alarm 발생
+```
+
+### 소프트웨어 아키텍처 설명
+
+```text
+FaultScenario
+    ↓
+TemplateRunner
+    ↓
+MotionAxis
+    ↓
+Alarmed
+```
+
+### 유지보수 포인트
+
+- fault 종류: `src/EquipmentTwin.Core/Templates/FaultKind.cs`
+- fault 정의/검증: `src/EquipmentTwin.Core/Templates/FaultScenario.cs`
+- fault 실행: `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- 샘플 fault: `templates/vision-inspection-cell.json`
+
+### 아직 모르는 것
+
+- 검사 NG/PASS를 어떻게 데이터로 표현할지
+- IO fault와 safety fault를 template fault로 통합할지
+- fault severity와 operator action을 어디에 둘지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

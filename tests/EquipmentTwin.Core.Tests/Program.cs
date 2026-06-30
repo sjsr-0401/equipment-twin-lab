@@ -50,11 +50,17 @@ var tests = new (string Name, Action Body)[]
     ("Equipment template JSON loads vision inspection cell file", EquipmentTemplateJsonLoadsVisionInspectionCellFile),
     ("Equipment template creates motion axes", EquipmentTemplateCreatesMotionAxes),
     ("Equipment template finds product recipe case insensitively", EquipmentTemplateFindsProductRecipeCaseInsensitively),
+    ("Equipment template finds fault scenario case insensitively", EquipmentTemplateFindsFaultScenarioCaseInsensitively),
     ("Equipment template rejects duplicate motion axes", EquipmentTemplateRejectsDuplicateMotionAxes),
     ("Equipment template rejects unknown recipe axis", EquipmentTemplateRejectsUnknownRecipeAxis),
+    ("Equipment template rejects unknown fault axis", EquipmentTemplateRejectsUnknownFaultAxis),
+    ("Equipment template rejects invalid timeout fault", EquipmentTemplateRejectsInvalidTimeoutFault),
     ("Template runner runs default panel recipe", TemplateRunnerRunsDefaultPanelRecipe),
     ("Template runner runs tall part recipe", TemplateRunnerRunsTallPartRecipe),
+    ("Template runner injects motion timeout fault", TemplateRunnerInjectsMotionTimeoutFault),
+    ("Template runner injects servo alarm fault", TemplateRunnerInjectsServoAlarmFault),
     ("Template runner rejects missing recipe", TemplateRunnerRejectsMissingRecipe),
+    ("Template runner rejects missing fault scenario", TemplateRunnerRejectsMissingFaultScenario),
     ("Template runner rejects invalid durations", TemplateRunnerRejectsInvalidDurations),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
@@ -674,6 +680,7 @@ static void EquipmentTemplateJsonLoadsVisionInspectionCellFile()
     AssertEqual("vision-inspection-cell", template.Name, "Template name mismatch.");
     AssertEqual(2, template.MotionAxes.Count, "Template motion axis count mismatch.");
     AssertEqual(2, template.ProductRecipes.Count, "Template product recipe count mismatch.");
+    AssertEqual(2, template.FaultScenarios.Count, "Template fault scenario count mismatch.");
     AssertEqual(InspectionMode.DatasetCamera, template.ProductRecipes[0].InspectionMode, "Inspection mode mismatch.");
     AssertTrue(template.ProductRecipes[0].TryGetAxisTarget("x", out var xTarget), "Recipe must find X target case insensitively.");
     AssertEqual(25.0, xTarget, "Default panel X target mismatch.");
@@ -700,6 +707,17 @@ static void EquipmentTemplateFindsProductRecipeCaseInsensitively()
     AssertEqual("PART-TALL", recipe.ProductCode, "Recipe product code mismatch.");
     AssertTrue(recipe.TryGetAxisTarget("z", out var zTarget), "Recipe must find Z target case insensitively.");
     AssertEqual(12.0, zTarget, "Tall part Z target mismatch.");
+}
+
+static void EquipmentTemplateFindsFaultScenarioCaseInsensitively()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+
+    var fault = template.FindFaultScenario("X-AXIS-MOVE-TIMEOUT");
+
+    AssertEqual(FaultKind.MotionTimeout, fault.Kind, "Fault kind mismatch.");
+    AssertEqual("X", fault.Axis, "Fault axis mismatch.");
+    AssertEqual(500, fault.TimeoutMilliseconds, "Fault timeout mismatch.");
 }
 
 static void EquipmentTemplateRejectsDuplicateMotionAxes()
@@ -747,6 +765,67 @@ static void EquipmentTemplateRejectsUnknownRecipeAxis()
         "Recipe targets for unknown axes must be rejected.");
 }
 
+static void EquipmentTemplateRejectsUnknownFaultAxis()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "axisTargets": { "X": 1 }
+                }
+              ],
+              "faultScenarios": [
+                {
+                  "name": "bad-fault",
+                  "kind": "ServoAlarm",
+                  "axis": "Z",
+                  "message": "Unknown axis fault."
+                }
+              ]
+            }
+            """),
+        "Fault targets for unknown axes must be rejected.");
+}
+
+static void EquipmentTemplateRejectsInvalidTimeoutFault()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "axisTargets": { "X": 1 }
+                }
+              ],
+              "faultScenarios": [
+                {
+                  "name": "bad-timeout",
+                  "kind": "MotionTimeout",
+                  "axis": "X",
+                  "timeoutMilliseconds": 1000,
+                  "elapsedMilliseconds": 500
+                }
+              ]
+            }
+            """),
+        "Timeout fault elapsed time must reach timeout.");
+}
+
 static void TemplateRunnerRunsDefaultPanelRecipe()
 {
     var template = LoadTemplate("vision-inspection-cell.json");
@@ -776,6 +855,36 @@ static void TemplateRunnerRunsTallPartRecipe()
     AssertEqual(12.0, result.MotionAxes["Z"].Position, "Tall part Z target mismatch.");
 }
 
+static void TemplateRunnerInjectsMotionTimeoutFault()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    var result = runner.RunRecipe(template, "default-panel", "x-axis-move-timeout");
+
+    AssertFalse(result.Success, "Motion timeout fault must fail the template run.");
+    AssertEqual("x-axis-move-timeout", result.FaultScenario?.Name, "Fault scenario name mismatch.");
+    AssertEqual(MotionAxisState.Alarmed, result.MotionAxes["X"].State, "X axis must end Alarmed after timeout fault.");
+    AssertEqual(MotionAxisAlarmCode.MoveTimeout, result.MotionAxes["X"].LastAlarm?.Code, "Timeout fault alarm mismatch.");
+    AssertFalse(result.MotionAxes["Z"].IsHomed && result.MotionAxes["Z"].Position > 0, "Z move must not continue after X fault.");
+    AssertTrue(result.CommandLog.Any(log => log.Step == "FaultMotionTimeout"), "Command log must record motion timeout fault.");
+}
+
+static void TemplateRunnerInjectsServoAlarmFault()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    var result = runner.RunRecipe(template, "default-panel", "z-axis-servo-alarm");
+
+    AssertFalse(result.Success, "Servo alarm fault must fail the template run.");
+    AssertEqual(MotionAxisState.InPosition, result.MotionAxes["X"].State, "X axis must complete before Z fault.");
+    AssertEqual(25.0, result.MotionAxes["X"].Position, "X axis final position mismatch before Z fault.");
+    AssertEqual(MotionAxisState.Alarmed, result.MotionAxes["Z"].State, "Z axis must end Alarmed after servo fault.");
+    AssertEqual(MotionAxisAlarmCode.ServoAlarm, result.MotionAxes["Z"].LastAlarm?.Code, "Servo fault alarm mismatch.");
+    AssertTrue(result.CommandLog.Any(log => log.Step == "FaultServoAlarm"), "Command log must record servo alarm fault.");
+}
+
 static void TemplateRunnerRejectsMissingRecipe()
 {
     var template = LoadTemplate("vision-inspection-cell.json");
@@ -784,6 +893,16 @@ static void TemplateRunnerRejectsMissingRecipe()
     AssertThrows<InvalidOperationException>(
         () => runner.RunRecipe(template, "missing-recipe"),
         "Template runner must reject unknown recipe names.");
+}
+
+static void TemplateRunnerRejectsMissingFaultScenario()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    AssertThrows<InvalidOperationException>(
+        () => runner.RunRecipe(template, "default-panel", "missing-fault"),
+        "Template runner must reject unknown fault scenario names.");
 }
 
 static void TemplateRunnerRejectsInvalidDurations()
