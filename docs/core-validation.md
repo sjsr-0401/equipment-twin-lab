@@ -26,6 +26,7 @@
 - JSON 시나리오에서 모션 축을 실행하고 CLI 리포트에 최종 축 상태를 보여주는가
 - Equipment Template JSON이 축과 제품 recipe를 올바르게 정의하는가
 - recipe가 존재하지 않는 축을 참조하면 거부되는가
+- Template Runner가 선택한 recipe의 목표 위치까지 가상 축을 실행하는가
 
 검증하지 않는 것:
 
@@ -73,6 +74,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | 가상 모션 축 | Servo On, Home, Move, Timeout, Alarm 흐름을 검증하는가 | `MotionAxis.cs` | 콘솔 테스트 |
 | 모션 시나리오 | JSON action으로 축을 움직이고 축 상태를 검증하는가 | `ScenarioRunner.cs`, `motion-axis-*.json` | 콘솔 테스트, CLI batch |
 | Equipment Template | 장비 축과 제품 recipe를 데이터로 정의하고 검증하는가 | `EquipmentTemplate.cs`, `templates/` | 콘솔 테스트 |
+| Template Runner | 선택한 template/recipe를 가상 모션 실행으로 변환하는가 | `TemplateRunner.cs` | 콘솔 테스트 |
 
 ## 4. 현재 시나리오 세트
 
@@ -147,7 +149,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 |---|---|---|
 | 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
 | Timeout 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Recovery Report Goal |
-| 템플릿 실행 엔진 없음 | 템플릿은 축/recipe를 정의하지만 아직 ScenarioRunner 실행 계획으로 자동 변환하지 않는다 | Template Runner Goal |
+| Template Runner 범위가 모션에 한정됨 | template/recipe를 축 실행으로 바꾸지만 IO, 검사 결과, Fault 조건은 아직 없다 | Fault / Inspection Goal |
 | 카메라 검사 없음 | 비전 검사 장비 컨셉을 설명하려면 검사 결과 흐름이 필요하다 | Inspection Goal |
 | Unity 화면 없음 | 데모 시각화와 포트폴리오 전달력에 필요하다 | Unity Goal |
 | 실제 PLC 통신 없음 | 현장 연동성을 설명하려면 어댑터 계층이 필요하다 | PLC Adapter Goal |
@@ -188,10 +190,10 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 ## 10. 다음 권장 작업
 
-다음 구현 후보는 `Template Runner`다.
+다음 구현 후보는 `Fault Model` 또는 `Inspection Result Model`이다.
 
 이유:
 
-- Equipment Template와 Product Recipe를 읽고 검증하는 모델이 생겼다.
-- 다음은 선택한 recipe를 실제 시나리오 실행 계획으로 바꾸는 계층이 필요하다.
-- 그래야 사용자가 “장비와 제품을 선택하면 실행된다”고 말할 수 있다.
+- Template Runner로 template/recipe가 실제 가상 모션 실행까지 이어졌다.
+- 다음은 정상 동작만이 아니라 트러블 조건이나 검사 결과를 데이터로 표현해야 한다.
+- 그래야 사용자가 “제품/공정/트러블 조건을 선택한다”는 목표에 가까워진다.
