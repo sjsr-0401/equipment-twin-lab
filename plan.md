@@ -1871,3 +1871,70 @@ CLI Markdown report
 1. PR #13 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Equipment Template / Product Recipe 설계를 시작한다.
+
+## 41. 2026-07-01 Goal 016: Equipment Template / Product Recipe
+
+PR #13을 병합한 뒤 Goal 016을 시작했다.
+
+목표:
+
+```text
+사용자가 선택할 수 있는 장비 구성과 제품 recipe를 JSON으로 정의한다.
+```
+
+추가한 코드:
+
+- `EquipmentTemplate`
+- `MotionAxisTemplate`
+- `ProductRecipe`
+- `InspectionMode`
+
+추가한 샘플:
+
+- `templates/vision-inspection-cell.json`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 56개 통과
+- CLI batch 시나리오 9개 통과
+- Draft PR #14 생성
+- GitHub Actions push/pull_request CI 성공
+
+막힌 점:
+
+- build와 test를 동시에 돌려서 Release DLL lock 문제가 한 번 발생했다.
+- 순차 실행으로 다시 검증했고 통과했다.
+
+보류한 판단:
+
+- 템플릿을 아직 ScenarioRunner 실행 계획으로 자동 변환하지 않는다.
+- IO 정의와 Fault 조건은 아직 template에 넣지 않는다.
+- Unity UI 선택 기능은 아직 없다.
+
+소프트웨어 아키텍처:
+
+```text
+EquipmentTemplate JSON
+    ↓
+EquipmentTemplate.FromJson()
+    ↓
+Validate motion axes and recipes
+    ↓
+CreateMotionAxes(clock)
+```
+
+유지보수 포인트:
+
+- 템플릿 전체 구조: `src/EquipmentTwin.Core/Templates/EquipmentTemplate.cs`
+- 축 정의: `src/EquipmentTwin.Core/Templates/MotionAxisTemplate.cs`
+- 제품 recipe: `src/EquipmentTwin.Core/Templates/ProductRecipe.cs`
+- 샘플 JSON: `templates/vision-inspection-cell.json`
+
+다음 권장 작업:
+
+1. PR #14 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
+3. Template Runner 설계를 시작한다.

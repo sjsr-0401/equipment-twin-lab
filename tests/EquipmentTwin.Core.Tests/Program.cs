@@ -3,6 +3,7 @@ using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
 using EquipmentTwin.Core.Motion;
 using EquipmentTwin.Core.Scenarios;
+using EquipmentTwin.Core.Templates;
 
 var tests = new (string Name, Action Body)[]
 {
@@ -46,6 +47,11 @@ var tests = new (string Name, Action Body)[]
     ("Motion axis move completes after duration", MotionAxisMoveCompletesAfterDuration),
     ("Motion axis timeout creates alarm", MotionAxisTimeoutCreatesAlarm),
     ("Motion axis clear alarm returns to in position", MotionAxisClearAlarmReturnsToInPosition),
+    ("Equipment template JSON loads vision inspection cell file", EquipmentTemplateJsonLoadsVisionInspectionCellFile),
+    ("Equipment template creates motion axes", EquipmentTemplateCreatesMotionAxes),
+    ("Equipment template finds product recipe case insensitively", EquipmentTemplateFindsProductRecipeCaseInsensitively),
+    ("Equipment template rejects duplicate motion axes", EquipmentTemplateRejectsDuplicateMotionAxes),
+    ("Equipment template rejects unknown recipe axis", EquipmentTemplateRejectsUnknownRecipeAxis),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -657,6 +663,86 @@ static void MotionAxisClearAlarmReturnsToInPosition()
     AssertEqual(null, axis.LastAlarm, "Motion alarm must clear.");
 }
 
+static void EquipmentTemplateJsonLoadsVisionInspectionCellFile()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+
+    AssertEqual("vision-inspection-cell", template.Name, "Template name mismatch.");
+    AssertEqual(2, template.MotionAxes.Count, "Template motion axis count mismatch.");
+    AssertEqual(2, template.ProductRecipes.Count, "Template product recipe count mismatch.");
+    AssertEqual(InspectionMode.DatasetCamera, template.ProductRecipes[0].InspectionMode, "Inspection mode mismatch.");
+    AssertTrue(template.ProductRecipes[0].TryGetAxisTarget("x", out var xTarget), "Recipe must find X target case insensitively.");
+    AssertEqual(25.0, xTarget, "Default panel X target mismatch.");
+}
+
+static void EquipmentTemplateCreatesMotionAxes()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var axes = template.CreateMotionAxes(CreateMotionClock());
+
+    AssertEqual(2, axes.Count, "Created motion axis count mismatch.");
+    AssertTrue(axes.TryGetValue("X", out var xAxis), "Template must create X axis.");
+    AssertTrue(axes.TryGetValue("z", out var zAxis), "Template must create Z axis case insensitively.");
+    AssertEqual(MotionAxisState.Disabled, xAxis!.State, "Created X axis must start disabled.");
+    AssertEqual(0.0, zAxis!.Position, "Created Z axis initial position mismatch.");
+}
+
+static void EquipmentTemplateFindsProductRecipeCaseInsensitively()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+
+    var recipe = template.FindProductRecipe("TALL-PART");
+
+    AssertEqual("PART-TALL", recipe.ProductCode, "Recipe product code mismatch.");
+    AssertTrue(recipe.TryGetAxisTarget("z", out var zTarget), "Recipe must find Z target case insensitively.");
+    AssertEqual(12.0, zTarget, "Tall part Z target mismatch.");
+}
+
+static void EquipmentTemplateRejectsDuplicateMotionAxes()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" },
+                { "name": "x" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "axisTargets": { "X": 1 }
+                }
+              ]
+            }
+            """),
+        "Duplicate motion axes must be rejected.");
+}
+
+static void EquipmentTemplateRejectsUnknownRecipeAxis()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "axisTargets": { "Z": 1 }
+                }
+              ]
+            }
+            """),
+        "Recipe targets for unknown axes must be rejected.");
+}
+
 static void ScenarioJsonLoadsNormalCycleFile()
 {
     var scenario = LoadScenario("normal-cycle.json");
@@ -899,6 +985,14 @@ static EquipmentScenario LoadScenario(string fileName)
     var path = Path.Combine(root, "scenarios", fileName);
     var json = File.ReadAllText(path);
     return EquipmentScenario.FromJson(json);
+}
+
+static EquipmentTemplate LoadTemplate(string fileName)
+{
+    var root = FindRepositoryRoot();
+    var path = Path.Combine(root, "templates", fileName);
+    var json = File.ReadAllText(path);
+    return EquipmentTemplate.FromJson(json);
 }
 
 static string FindRepositoryRoot()

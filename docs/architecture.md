@@ -9,6 +9,8 @@
 ```text
 Scenario JSON / CLI / Unity / User Command
         ↓
+Equipment Template / Product Recipe
+        ↓
 ScenarioRunner
         ├─ EquipmentCellController → EquipmentStateMachine + VirtualIoController
         └─ MotionAxis
@@ -213,6 +215,7 @@ DI_LOAD_PRESENT = true
 - 알람/복구 시나리오 실행
 - 모션 축 단위 동작
 - 모션 축 JSON 시나리오 실행
+- Equipment Template / Product Recipe JSON 검증
 
 유지보수 포인트:
 
@@ -361,6 +364,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 리포트 artifact 업로드 없음
 - 알람 복구 조건은 문 열림/비상정지 기준으로 시작했지만 Timeout 복구는 아직 단순화됨
 - 모션 축은 JSON 시나리오로 실행 가능하지만 아직 장비 공정 상태와 자동으로 동기화되는 Equipment Template 단계는 아니다.
+- Equipment Template는 아직 축과 recipe를 정의하는 모델이며, ScenarioRunner가 자동으로 template를 실행 계획으로 변환하지는 않는다.
 
 ## 다음 아키텍처 목표
 
@@ -509,3 +513,56 @@ ServoOn → Home → Move → InPosition
 - 새 모션 action 추가: `ScenarioStepAction`, `ScenarioStep.Validate()`, `ScenarioRunner.RunStep()`
 - 모션 expectation 추가: `ScenarioRunner.AddMotionExpectations()`
 - CLI 표시 변경: `EquipmentTwin.Cli/Program.cs`의 `DescribeMotionAxes()`
+
+## 10. Equipment Template / Product Recipe
+
+파일:
+
+- `src/EquipmentTwin.Core/Templates/EquipmentTemplate.cs`
+- `src/EquipmentTwin.Core/Templates/MotionAxisTemplate.cs`
+- `src/EquipmentTwin.Core/Templates/ProductRecipe.cs`
+- `src/EquipmentTwin.Core/Templates/InspectionMode.cs`
+- `templates/vision-inspection-cell.json`
+
+역할:
+
+- 사용자가 선택할 수 있는 장비 구성을 JSON으로 정의한다.
+- 장비가 어떤 모션 축을 갖는지 정의한다.
+- 제품 recipe별 목표 축 위치와 검사 모드를 정의한다.
+- 중복 축 이름이나 존재하지 않는 축을 참조하는 recipe를 거부한다.
+
+현재 예시:
+
+```text
+vision-inspection-cell
+    ├─ Motion axis: X
+    ├─ Motion axis: Z
+    ├─ Recipe: default-panel → X=25, Z=5, DatasetCamera
+    └─ Recipe: tall-part     → X=40, Z=12, DatasetCamera
+```
+
+아키텍처 흐름:
+
+```text
+EquipmentTemplate JSON
+    ↓
+EquipmentTemplate.FromJson()
+    ↓
+Validate axes and recipes
+    ↓
+CreateMotionAxes(clock)
+```
+
+유지보수 포인트:
+
+- 장비 구성 필드 변경: `EquipmentTemplate`
+- 축 정의 변경: `MotionAxisTemplate`
+- 제품별 목표 위치 변경: `ProductRecipe`
+- 검사 모드 추가: `InspectionMode`
+- 샘플 장비 추가: `templates/`
+
+주의:
+
+- 이 단계는 아직 Unity 장비 빌더가 아니다.
+- 이 단계는 아직 recipe 실행 엔진이 아니다.
+- 현재는 “장비 구성 데이터를 안전하게 읽고 검증하는 Core 모델”이다.

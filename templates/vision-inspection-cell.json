@@ -1,0 +1,36 @@
+{
+  "name": "vision-inspection-cell",
+  "description": "Minimal configurable cell with X/Z motion axes and dataset-camera product recipes.",
+  "motionAxes": [
+    {
+      "name": "X",
+      "initialPosition": 0,
+      "requiresHome": true
+    },
+    {
+      "name": "Z",
+      "initialPosition": 0,
+      "requiresHome": true
+    }
+  ],
+  "productRecipes": [
+    {
+      "name": "default-panel",
+      "productCode": "PANEL-A",
+      "inspectionMode": "DatasetCamera",
+      "axisTargets": {
+        "X": 25,
+        "Z": 5
+      }
+    },
+    {
+      "name": "tall-part",
+      "productCode": "PART-TALL",
+      "inspectionMode": "DatasetCamera",
+      "axisTargets": {
+        "X": 40,
+        "Z": 12
+      }
+    }
+  ]
+}
