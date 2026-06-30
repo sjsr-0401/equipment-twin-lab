@@ -78,6 +78,7 @@
 - Goal 016 Draft PR #14를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #14를 main에 squash merge했다.
 - Goal 017에서 Template Runner를 추가했다.
+- Goal 017 Draft PR #15를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -130,6 +131,7 @@
 | 2026-07-01 | Goal 016 PR #14 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-07-01 | PR #14 병합 | Equipment Template / Product Recipe main 반영 |
 | 2026-07-01 | Goal 017: Template Runner | template/recipe를 모션 실행으로 변환, 테스트 60개 통과, batch 9개 통과 |
+| 2026-07-01 | Goal 017 PR #15 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -149,6 +151,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/12` | `goal/014-motion-axis-model` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/13` | `goal/015-motion-scenario-actions` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/14` | `goal/016-equipment-template` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/15` | `goal/017-template-runner` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -182,11 +185,13 @@
 | 2026-07-01 | `goal/015-motion-scenario-actions` | pull_request | 성공 |
 | 2026-07-01 | `goal/016-equipment-template` | push | 성공 |
 | 2026-07-01 | `goal/016-equipment-template` | pull_request | 성공 |
+| 2026-07-01 | `goal/017-template-runner` | push | 성공 |
+| 2026-07-01 | `goal/017-template-runner` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 017 변경을 커밋하고 Draft PR을 만든다.
-2. CI에서 Release build, console tests, CLI batch 9개 시나리오 통과를 확인한다.
+1. PR #15 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. 이후 Fault Model / Inspection Result Model로 확장한다.
 
 ## 금지할 것
