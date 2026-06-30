@@ -365,7 +365,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 알람 복구 조건은 문 열림/비상정지 기준으로 시작했지만 Timeout 복구는 아직 단순화됨
 - 모션 축은 JSON 시나리오로 실행 가능하지만 아직 장비 공정 상태와 자동으로 동기화되는 Equipment Template 단계는 아니다.
 - Equipment Template는 아직 축과 recipe를 정의하는 모델이며, ScenarioRunner가 자동으로 template를 실행 계획으로 변환하지는 않는다.
-- Template Runner는 template/recipe를 가상 모션 실행으로 변환하지만, 아직 IO/Fault/검사 결과까지 포함한 전체 공정 실행 엔진은 아니다.
+- Template Runner는 template/recipe를 가상 모션 실행으로 변환하고, 선택한 Fault Scenario를 모션 실행 중 주입할 수 있다. 아직 IO/검사 결과까지 포함한 전체 공정 실행 엔진은 아니다.
 
 ## 다음 아키텍처 목표
 
@@ -583,6 +583,7 @@ CreateMotionAxes(clock)
 - 템플릿에 정의된 축을 생성한다.
 - 각 축에 Servo On, Home, Move 명령을 순서대로 실행한다.
 - 실행 결과와 명령 로그를 `TemplateRunResult`로 남긴다.
+- 선택한 fault scenario가 있으면 해당 축 move 중 모션 Timeout 또는 Servo Alarm을 주입한다.
 
 흐름:
 
@@ -594,6 +595,8 @@ TemplateRunner.RunRecipe()
 CreateMotionAxes(clock)
     ↓
 ServoOn / Home / Move
+    ↓
+optional FaultScenario
     ↓
 TemplateRunResult
 ```
@@ -607,6 +610,57 @@ TemplateRunResult
 
 주의:
 
-- 현재 Template Runner는 모션 축만 실행한다.
-- IO 시뮬레이션, 검사 결과, Fault Injection은 아직 연결하지 않았다.
+- 현재 Template Runner는 모션 축과 모션 fault만 실행한다.
+- IO 시뮬레이션과 검사 결과는 아직 연결하지 않았다.
 - 실제 장비 recipe 엔진이 아니라 configurable twin을 위한 첫 실행 계층이다.
+
+## 12. Fault Model
+
+파일:
+
+- `src/EquipmentTwin.Core/Templates/FaultScenario.cs`
+- `src/EquipmentTwin.Core/Templates/FaultKind.cs`
+- `templates/vision-inspection-cell.json`
+
+역할:
+
+- 사용자가 선택할 수 있는 트러블 조건을 JSON으로 정의한다.
+- 현재는 `MotionTimeout`, `ServoAlarm` 두 종류를 지원한다.
+- fault가 참조하는 축이 template에 실제로 있는지 검증한다.
+- Timeout fault는 `timeoutMilliseconds`와 `elapsedMilliseconds`를 검증한다.
+
+현재 예시:
+
+```text
+x-axis-move-timeout
+    └─ X축 move 중 timeout 발생
+
+z-axis-servo-alarm
+    └─ Z축 move 중 servo amplifier alarm 발생
+```
+
+아키텍처 흐름:
+
+```text
+FaultScenario JSON
+    ↓
+EquipmentTemplate.Validate()
+    ↓
+TemplateRunner.RunRecipe(template, recipe, faultName)
+    ↓
+MotionAxis.CheckTimeout() 또는 MotionAxis.TriggerServoAlarm()
+    ↓
+TemplateRunResult.Success = false
+```
+
+유지보수 포인트:
+
+- 새 fault 종류 추가: `FaultKind`
+- fault 필드/검증 변경: `FaultScenario`
+- fault 실행 위치 변경: `TemplateRunner.InjectFault()`
+- 샘플 fault 추가: `templates/vision-inspection-cell.json`
+
+주의:
+
+- 이 fault model은 실제 고장 물리 모델이 아니다.
+- 현재는 소프트웨어 시뮬레이션에서 재현 가능한 대표 트러블 조건을 정의하는 단계다.

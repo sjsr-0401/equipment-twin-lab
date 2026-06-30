@@ -19,12 +19,18 @@ public sealed class TemplateRunner
         _options.Validate();
     }
 
-    public TemplateRunResult RunRecipe(EquipmentTemplate template, string recipeName)
+    public TemplateRunResult RunRecipe(
+        EquipmentTemplate template,
+        string recipeName,
+        string? faultScenarioName = null)
     {
         ArgumentNullException.ThrowIfNull(template);
 
         template.Validate();
         var recipe = template.FindProductRecipe(recipeName);
+        var faultScenario = string.IsNullOrWhiteSpace(faultScenarioName)
+            ? null
+            : template.FindFaultScenario(faultScenarioName);
         var axes = template.CreateMotionAxes(_clock);
         var commandLog = new List<TemplateMotionCommandLog>();
 
@@ -45,11 +51,53 @@ public sealed class TemplateRunner
         {
             var axis = axes[axisTarget.Key];
             Add(commandLog, "StartMove", axis, axis.StartMove(axisTarget.Value, _options.MoveDuration));
+
+            if (ShouldInjectFault(faultScenario, axis.Name))
+            {
+                InjectFault(commandLog, axis, faultScenario!);
+                break;
+            }
+
             _clock.Advance(_options.MoveDuration);
             Add(commandLog, "PollMove", axis, axis.Poll());
         }
 
-        return new TemplateRunResult(template.Name, recipe, axes, commandLog);
+        return new TemplateRunResult(template.Name, recipe, faultScenario, axes, commandLog);
+    }
+
+    private static bool ShouldInjectFault(FaultScenario? faultScenario, string axisName)
+    {
+        return faultScenario is not null
+            && string.Equals(faultScenario.Axis, axisName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void InjectFault(
+        List<TemplateMotionCommandLog> commandLog,
+        MotionAxis axis,
+        FaultScenario faultScenario)
+    {
+        switch (faultScenario.Kind)
+        {
+            case FaultKind.MotionTimeout:
+                _clock.Advance(TimeSpan.FromMilliseconds(faultScenario.ElapsedMilliseconds!.Value));
+                Add(
+                    commandLog,
+                    "FaultMotionTimeout",
+                    axis,
+                    axis.CheckTimeout(TimeSpan.FromMilliseconds(faultScenario.TimeoutMilliseconds!.Value)));
+                break;
+
+            case FaultKind.ServoAlarm:
+                Add(
+                    commandLog,
+                    "FaultServoAlarm",
+                    axis,
+                    axis.TriggerServoAlarm(faultScenario.Message));
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported fault kind '{faultScenario.Kind}'.");
+        }
     }
 
     private static void Add(

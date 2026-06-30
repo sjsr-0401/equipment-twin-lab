@@ -24,6 +24,8 @@ public sealed class EquipmentTemplate
 
     public List<ProductRecipe> ProductRecipes { get; init; } = new();
 
+    public List<FaultScenario> FaultScenarios { get; init; } = new();
+
     public static EquipmentTemplate FromJson(string json)
     {
         var template = JsonSerializer.Deserialize<EquipmentTemplate>(json, JsonOptions)
@@ -79,6 +81,18 @@ public sealed class EquipmentTemplate
                 throw new InvalidOperationException($"Equipment template '{Name}' contains duplicate product recipe '{recipe.Name}'.");
             }
         }
+
+        var faultNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        for (var index = 0; index < FaultScenarios.Count; index++)
+        {
+            var fault = FaultScenarios[index];
+            fault.Validate(index, axisNames);
+
+            if (!faultNames.Add(fault.Name))
+            {
+                throw new InvalidOperationException($"Equipment template '{Name}' contains duplicate fault scenario '{fault.Name}'.");
+            }
+        }
     }
 
     public IReadOnlyDictionary<string, MotionAxis> CreateMotionAxes(IClock clock)
@@ -102,5 +116,17 @@ public sealed class EquipmentTemplate
         return ProductRecipes.FirstOrDefault(recipe =>
             string.Equals(recipe.Name, recipeName, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Product recipe '{recipeName}' was not found in template '{Name}'.");
+    }
+
+    public FaultScenario FindFaultScenario(string faultName)
+    {
+        if (string.IsNullOrWhiteSpace(faultName))
+        {
+            throw new ArgumentException("Fault scenario name is required.", nameof(faultName));
+        }
+
+        return FaultScenarios.FirstOrDefault(fault =>
+            string.Equals(fault.Name, faultName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Fault scenario '{faultName}' was not found in template '{Name}'.");
     }
 }
