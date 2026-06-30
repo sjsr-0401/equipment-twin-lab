@@ -31,7 +31,8 @@
 | P1 | CLI 리포트 알람/복구 조건 표시 | batch 결과에서 알람 코드와 ClearAlarm 가능 여부가 보여야 리뷰가 쉽다 | 완료 |
 | P1 | Motion Axis 모델 | 사용자 커스텀 장비의 공통 모션 부품이 필요하다 | 완료 |
 | P1 | Motion Scenario JSON action | 축 동작을 코드가 아니라 시나리오 파일로 실행해야 Unity/CLI/자동화가 공유할 수 있다 | 완료 |
-| P1 | Equipment Template / Product Recipe | 축, IO, 검사, fault 조건을 사용자가 고르는 장비 구성으로 묶어야 한다 | 대기 |
+| P1 | Equipment Template / Product Recipe | 축, IO, 검사, fault 조건을 사용자가 고르는 장비 구성으로 묶어야 한다 | 진행 중 |
+| P1 | Template Runner | 선택한 template/recipe를 실제 실행 계획으로 바꿔야 한다 | 대기 |
 | P2 | Core 검증 정리 문서 | 면접/포트폴리오에서 현재 구조를 설명할 수 있어야 한다 | 완료 |
 | P2 | RayWork 경험과 새 프로젝트 연결 문서 작성 | 면접에서 “실무 경험 → 사이드 프로젝트”로 설명 가능해진다 | 대기 |
 | P2 | Visual Studio build/debug 가이드 | 사용자가 직접 breakpoint를 걸고 Core 흐름을 이해할 수 있어야 한다 | 완료 |
@@ -39,9 +40,9 @@
 
 ## 오늘의 추천 작업
 
-1. PR #13 병합 여부를 결정한다.
-2. 병합 후 `main`을 최신화한다.
-3. Equipment Template / Product Recipe 설계를 시작한다.
+1. Goal 016 변경을 커밋하고 Draft PR을 만든다.
+2. CI 결과를 확인한다.
+3. Template Runner 설계를 시작한다.
 
 ## 보류 작업
 

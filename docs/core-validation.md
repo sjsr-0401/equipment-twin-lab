@@ -24,6 +24,8 @@
 - CLI Markdown 리포트가 활성 알람 코드와 ClearAlarm 가능 조건을 보여주는가
 - 가상 모션 축이 Servo On, Home, Move, InPosition, Timeout, Alarm 흐름을 검증하는가
 - JSON 시나리오에서 모션 축을 실행하고 CLI 리포트에 최종 축 상태를 보여주는가
+- Equipment Template JSON이 축과 제품 recipe를 올바르게 정의하는가
+- recipe가 존재하지 않는 축을 참조하면 거부되는가
 
 검증하지 않는 것:
 
@@ -70,6 +72,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | CLI 리포트 | 알람 시나리오의 활성 알람과 ClearAlarm 조건을 보여주는가 | `EquipmentTwin.Cli/Program.cs` | `artifacts/scenario-report.md` 샘플 확인 |
 | 가상 모션 축 | Servo On, Home, Move, Timeout, Alarm 흐름을 검증하는가 | `MotionAxis.cs` | 콘솔 테스트 |
 | 모션 시나리오 | JSON action으로 축을 움직이고 축 상태를 검증하는가 | `ScenarioRunner.cs`, `motion-axis-*.json` | 콘솔 테스트, CLI batch |
+| Equipment Template | 장비 축과 제품 recipe를 데이터로 정의하고 검증하는가 | `EquipmentTemplate.cs`, `templates/` | 콘솔 테스트 |
 
 ## 4. 현재 시나리오 세트
 
@@ -144,7 +147,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 |---|---|---|
 | 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
 | Timeout 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Recovery Report Goal |
-| 모션 모델 공정 연결이 아직 얕음 | 축 모델은 JSON 시나리오에서 실행되지만 아직 Equipment Template가 축/IO/검사를 자동으로 묶어주지는 않는다 | Equipment Template Goal |
+| 템플릿 실행 엔진 없음 | 템플릿은 축/recipe를 정의하지만 아직 ScenarioRunner 실행 계획으로 자동 변환하지 않는다 | Template Runner Goal |
 | 카메라 검사 없음 | 비전 검사 장비 컨셉을 설명하려면 검사 결과 흐름이 필요하다 | Inspection Goal |
 | Unity 화면 없음 | 데모 시각화와 포트폴리오 전달력에 필요하다 | Unity Goal |
 | 실제 PLC 통신 없음 | 현장 연동성을 설명하려면 어댑터 계층이 필요하다 | PLC Adapter Goal |
@@ -185,10 +188,10 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 ## 10. 다음 권장 작업
 
-다음 구현 후보는 `Equipment Template / Product Recipe`다.
+다음 구현 후보는 `Template Runner`다.
 
 이유:
 
-- 모션 축은 이제 독립 테스트와 JSON 시나리오 실행이 가능하다.
-- 다음은 “어떤 장비가 어떤 축과 IO를 갖는지”를 데이터로 묶어야 한다.
-- 그래야 사용자가 장비/제품/공정/트러블 조건을 선택하는 구조로 확장할 수 있다.
+- Equipment Template와 Product Recipe를 읽고 검증하는 모델이 생겼다.
+- 다음은 선택한 recipe를 실제 시나리오 실행 계획으로 바꾸는 계층이 필요하다.
+- 그래야 사용자가 “장비와 제품을 선택하면 실행된다”고 말할 수 있다.
