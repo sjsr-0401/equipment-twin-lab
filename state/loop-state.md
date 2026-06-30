@@ -75,6 +75,7 @@
 - Goal 015 Draft PR #13을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #13을 main에 squash merge했다.
 - Goal 016에서 Equipment Template / Product Recipe 최소 모델을 추가했다.
+- Goal 016 Draft PR #14를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -124,6 +125,7 @@
 | 2026-07-01 | Goal 015 PR #13 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-07-01 | PR #13 병합 | Motion Scenario Actions main 반영 |
 | 2026-07-01 | Goal 016: Equipment Template / Product Recipe | 템플릿/recipe 최소 모델 추가, 테스트 56개 통과, batch 9개 통과 |
+| 2026-07-01 | Goal 016 PR #14 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -142,6 +144,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/11` | `goal/013-alarm-recovery-conditions` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/12` | `goal/014-motion-axis-model` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/13` | `goal/015-motion-scenario-actions` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/14` | `goal/016-equipment-template` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -173,11 +176,13 @@
 | 2026-06-30 | `goal/014-motion-axis-model` | pull_request | 성공 |
 | 2026-07-01 | `goal/015-motion-scenario-actions` | push | 성공 |
 | 2026-07-01 | `goal/015-motion-scenario-actions` | pull_request | 성공 |
+| 2026-07-01 | `goal/016-equipment-template` | push | 성공 |
+| 2026-07-01 | `goal/016-equipment-template` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 016 변경을 커밋하고 Draft PR을 만든다.
-2. CI에서 Release build, console tests, CLI batch 9개 시나리오 통과를 확인한다.
+1. PR #14 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. 이후 Template Runner / Fault Model로 확장한다.
 
 ## 금지할 것

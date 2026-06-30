@@ -57,6 +57,8 @@
 - 오류 0개
 - 콘솔 테스트 56개 통과
 - CLI batch 시나리오 9개 통과
+- Draft PR #14 생성
+- GitHub Actions push/pull_request CI 성공
 
 ## 막힌 점과 해결 방법
 
@@ -109,6 +111,6 @@ CreateMotionAxes(clock)
 
 ## 다음 작업
 
-다음 후보는 `Template Runner`다.
+다음 후보는 PR #14 병합 후 `Template Runner`다.
 
 선택한 `EquipmentTemplate`과 `ProductRecipe`를 읽어서 실제 `ScenarioRunner` 또는 모션 실행 계획으로 바꾸는 계층이 필요하다.
