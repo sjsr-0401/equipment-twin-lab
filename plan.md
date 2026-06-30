@@ -1560,3 +1560,161 @@ Visual Studio build/debug 지원을 추가했다.
 1. PR #10 병합 여부를 결정한다.
 2. 복구 조건 세분화를 진행한다.
 3. 알람 코드/복구 조건을 CLI 리포트에 표시할지 결정한다.
+
+## 36. 2026-06-28 Goal 013 결과
+
+알람 복구 조건을 세분화했다.
+
+추가한 코드:
+
+- `AlarmRecoveryCheck`
+- `EquipmentCellController.CheckAlarmRecoveryCondition()`
+- `EquipmentStateMachine.RejectCommand()`
+
+추가한 시나리오:
+
+- `scenarios/door-open-clear-blocked.json`
+- `scenarios/emergency-stop-recovery.json`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 41개 통과
+- CLI batch 시나리오 7개 통과
+- Draft PR #11 생성
+- GitHub Actions push/pull_request 성공
+
+막힌 점:
+
+- 병렬 검증 실행 중 Release 산출물 파일 잠금이 한 번 발생했다.
+- 코드 오류가 아니라 테스트와 batch가 같은 산출물을 동시에 사용한 실행 방식 문제였다.
+- 순차 실행으로 재검증했고 통과했다.
+
+보류한 판단:
+
+- Timeout 알람의 실제 복구 조건은 아직 단순화했다.
+- 작업자 확인 버튼, 알람 레벨, 조치 문구는 아직 만들지 않는다.
+- 실제 안전 PLC나 하드웨어 인터록 검증은 아니다.
+
+아키텍처:
+
+```text
+ClearAlarm command
+    ↓
+EquipmentCellController.CheckAlarmRecoveryCondition()
+    ↓
+Virtual IO 상태 확인
+    ↓
+허용: EquipmentStateMachine.Apply(ClearAlarm)
+거부: EquipmentStateMachine.RejectCommand(ClearAlarm)
+```
+
+다음 권장 작업:
+
+1. PR #11 병합 여부를 결정한다.
+2. 알람 코드/복구 조건을 CLI 리포트에 표시한다.
+3. 이후 모션 모델 시작 여부를 결정한다.
+
+## 37. 2026-06-28 Goal 013 후속: CLI 리포트 알람/복구 조건 표시
+
+Goal 013의 알람 복구 조건을 사람이 읽기 쉬운 Markdown batch 리포트에 표시했다.
+
+바뀐 코드:
+
+- `src/EquipmentTwin.Cli/Program.cs`
+
+한 일:
+
+- Summary 표에 `Active Alarm` 컬럼을 추가했다.
+- Summary 표에 `Clear Condition` 컬럼을 추가했다.
+- Details 섹션에 활성 알람과 ClearAlarm 조건을 추가했다.
+- 성공한 시나리오에도 `Errors`가 표시되던 기존 오류를 수정했다.
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 41개 통과
+- CLI batch 시나리오 7개 통과
+- `artifacts/scenario-report.md`에서 알람 코드와 복구 조건 표시 확인
+- 성공 시나리오에 불필요한 `Errors`가 표시되지 않는 것 확인
+
+막힌 점:
+
+- 리포트 확인 중 기존 `ScenarioCliRun.Errors` 로직이 성공 시나리오에도 기본 오류 문구를 반환하는 것을 발견했다.
+- 성공 결과에서는 빈 배열을 반환하도록 수정했다.
+
+보류한 판단:
+
+- 리포트를 HTML/JSON으로 export할지는 아직 정하지 않았다.
+- 알람 조치 문구를 별도 테이블로 분리할지는 아직 정하지 않았다.
+- 시나리오 filter/tag 기능은 아직 없다.
+
+소프트웨어 아키텍처:
+
+```text
+ScenarioRunner 실행 완료
+    ↓
+ScenarioCliRun
+    ↓
+BuildMarkdownReport()
+    ↓
+DescribeActiveAlarm()
+DescribeClearCondition()
+```
+
+CLI 리포트는 Core 장비 로직을 재구현하지 않는다. 이미 실행된 `ScenarioRunner`의 최종 상태를 읽고, `CheckAlarmRecoveryCondition()`을 읽기 전용으로 호출해서 사람이 볼 보고서에 표시한다.
+
+유지보수 포인트:
+
+- 리포트 형식: `src/EquipmentTwin.Cli/Program.cs`
+- 활성 알람 표시: `DescribeActiveAlarm()`
+- ClearAlarm 조건 표시: `DescribeClearCondition()`
+- 성공/실패 오류 목록: `ScenarioCliRun.Errors`
+- 생성 리포트 샘플: `artifacts/scenario-report.md`
+
+다음 권장 작업:
+
+1. PR #11 병합 여부를 결정한다.
+2. 모션 모델을 시작할지 결정한다.
+3. 또는 CLI 리포트 filter/tag 기능을 추가한다.
+
+## 38. 2026-06-28 Visual Studio launch profile 경로 수정
+
+사용자가 Visual Studio build/debug 때 메시지가 떴다고 알려줘서 Goal 012에서 추가한 launch profile을 재검증했다.
+
+확인 결과:
+
+- Debug build는 성공했다.
+- `EquipmentTwin.Core.Tests` launch profile은 정상 실행됐다.
+- `EquipmentTwin.Cli` launch profile은 실행 위치에 따라 시나리오 경로를 못 찾을 수 있었다.
+
+수정한 것:
+
+- `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+  - `workingDirectory`를 repo root로 고정했다.
+  - `commandLineArgs`를 repo root 기준 경로로 수정했다.
+- `docs/visual-studio.md`
+  - `Scenario file was not found` / `Scenario path was not found`의 의미와 해결 방법을 추가했다.
+
+검증 결과:
+
+- `dotnet build EquipmentTwinLab.sln --configuration Debug` 성공
+- 경고 0개
+- 오류 0개
+- `CLI - normal cycle` 실행 성공
+- `CLI - loading timeout` 실행 성공
+- `CLI - batch report` 실행 성공
+- batch 시나리오 7개 통과
+
+소프트웨어 아키텍처 관점:
+
+이 수정은 장비 Core 로직이 아니라 실행 환경 설정이다. Core 로직은 그대로 두고, Visual Studio가 CLI를 실행할 때 어느 폴더 기준으로 시나리오 JSON을 찾을지 명시했다.
+
+유지보수 포인트:
+
+- Visual Studio debug profile: `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+- Visual Studio 사용법: `docs/visual-studio.md`

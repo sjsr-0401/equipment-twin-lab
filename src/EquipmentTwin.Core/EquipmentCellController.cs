@@ -1,3 +1,4 @@
+using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
 
 namespace EquipmentTwin.Core;
@@ -36,7 +37,45 @@ public sealed class EquipmentCellController
 
     public TransitionResult ClearAlarm()
     {
+        var recovery = CheckAlarmRecoveryCondition();
+        if (!recovery.CanClear)
+        {
+            var rejected = StateMachine.RejectCommand(EquipmentEvent.ClearAlarm, recovery.Message);
+            SyncOutputsForCurrentState();
+            return rejected;
+        }
+
         return ApplyAndSync(EquipmentEvent.ClearAlarm);
+    }
+
+    public AlarmRecoveryCheck CheckAlarmRecoveryCondition()
+    {
+        if (StateMachine.CurrentState != EquipmentState.Alarmed)
+        {
+            return AlarmRecoveryCheck.Ready("Equipment is not alarmed.");
+        }
+
+        var alarm = StateMachine.LastAlarm;
+        if (alarm is null)
+        {
+            return AlarmRecoveryCheck.Blocked("Active alarm has no alarm code. Manual review is required before clearing.");
+        }
+
+        return alarm.Code switch
+        {
+            AlarmCode.DoorOpened when !Io.Read(EquipmentIoMap.DoorClosed) =>
+                AlarmRecoveryCheck.Blocked("Door must be closed before clearing DoorOpened alarm."),
+            AlarmCode.DoorOpened =>
+                AlarmRecoveryCheck.Ready("Door is closed. DoorOpened alarm can be cleared."),
+            AlarmCode.EmergencyStop when Io.Read(EquipmentIoMap.EmergencyStopPressed) =>
+                AlarmRecoveryCheck.Blocked("Emergency stop must be released before clearing EmergencyStop alarm."),
+            AlarmCode.EmergencyStop =>
+                AlarmRecoveryCheck.Ready("Emergency stop is released. EmergencyStop alarm can be cleared."),
+            AlarmCode.StateTimeout =>
+                AlarmRecoveryCheck.Ready("Timeout alarm can be cleared in the MVP model after operator review."),
+            _ =>
+                AlarmRecoveryCheck.Blocked($"Alarm code '{alarm.Code}' does not have a recovery rule.")
+        };
     }
 
     public EquipmentCellStepResult PollInputs(StateTimeoutPolicy? timeoutPolicy = null)

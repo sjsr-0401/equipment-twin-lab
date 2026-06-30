@@ -79,6 +79,11 @@ public sealed class EquipmentStateMachine
         return Accept(previous, equipmentEvent, nextState, $"State changed from '{previous}' to '{nextState}'.");
     }
 
+    public TransitionResult RejectCommand(EquipmentEvent equipmentEvent, string message)
+    {
+        return Reject(CurrentState, equipmentEvent, message, LastAlarm);
+    }
+
     public TimeoutCheckResult CheckTimeout(StateTimeoutPolicy policy)
     {
         ArgumentNullException.ThrowIfNull(policy);
@@ -122,11 +127,11 @@ public sealed class EquipmentStateMachine
         return new TransitionResult(previous, equipmentEvent, nextState, true, message, alarm);
     }
 
-    private TransitionResult Reject(EquipmentState previous, EquipmentEvent equipmentEvent, string message)
+    private TransitionResult Reject(EquipmentState previous, EquipmentEvent equipmentEvent, string message, AlarmInfo? alarm = null)
     {
-        var transition = new EquipmentTransition(previous, equipmentEvent, previous, false, message);
+        var transition = new EquipmentTransition(previous, equipmentEvent, previous, false, message, alarm);
         _history.Add(transition);
-        return new TransitionResult(previous, equipmentEvent, previous, false, message);
+        return new TransitionResult(previous, equipmentEvent, previous, false, message, alarm);
     }
 
     private static bool IsSafetyEvent(EquipmentEvent equipmentEvent)

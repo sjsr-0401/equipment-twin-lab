@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계, 알람 복구 조건, CLI 리포트 알람/복구 조건 표시이다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -70,6 +70,8 @@ scenarios/loading-timeout.json
 - `scenarios/door-open-alarm.json`: 문 열림 알람
 - `scenarios/emergency-stop-alarm.json`: 비상정지 알람
 - `scenarios/clear-alarm-recovery.json`: 문 열림 알람 이후 ClearAlarm 복구
+- `scenarios/door-open-clear-blocked.json`: 문이 열린 상태에서는 ClearAlarm 거부
+- `scenarios/emergency-stop-recovery.json`: 비상정지 해제 이후 ClearAlarm 복구
 
 ## 프로젝트 구조
 
@@ -137,6 +139,10 @@ dotnet run --project src\EquipmentTwin.Cli -- scenarios\loading-timeout.json --d
 ```powershell
 dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts\scenario-report.md
 ```
+
+생성되는 Markdown 리포트는 각 시나리오의 최종 상태뿐 아니라 `Active Alarm`과 `Clear Condition`도 표시한다.
+
+예를 들어 문이 열린 알람 시나리오는 `DoorOpened (1001)`과 `Blocked: Door must be closed before clearing DoorOpened alarm.`처럼 표시된다.
 
 ## 자동 검증
 

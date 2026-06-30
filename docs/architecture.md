@@ -278,6 +278,7 @@ ExpectState Aligning
 - 최종 장비 상태와 IO Snapshot을 보여준다.
 - 실패 시 non-zero exit code를 반환해서 CI에서 잡을 수 있게 한다.
 - 여러 시나리오를 batch로 실행하고 Markdown 리포트를 저장한다.
+- Markdown 리포트에서 활성 알람 코드와 ClearAlarm 가능 조건을 보여준다.
 
 예:
 
@@ -293,12 +294,14 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 출력 형식은 `PrintResult()`를 본다.
 - Batch 출력 형식은 `PrintBatchResult()`를 본다.
 - Markdown 리포트 형식은 `BuildMarkdownReport()`를 본다.
+- 리포트의 알람 표시 형식은 `DescribeActiveAlarm()`과 `DescribeClearCondition()`을 본다.
 - 실제 실행은 `ScenarioRunner`에 위임한다.
 
 주의:
 
 - CLI는 Core 로직을 다시 구현하지 않는다.
 - CLI는 사용자/CI가 ScenarioRunner를 쉽게 호출하게 하는 얇은 껍데기다.
+- CLI 리포트는 `CheckAlarmRecoveryCondition()`을 읽기 전용으로 호출해서 복구 가능 여부를 표시한다.
 - 실제 장비 운전용 UI나 recipe editor가 아니다.
 
 ## 변경할 때 기준
@@ -350,7 +353,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 시나리오 분기/반복 없음
 - CLI batch filtering 없음
 - 리포트 artifact 업로드 없음
-- 알람 복구 절차는 `ClearAlarm` 수준으로 단순화됨
+- 알람 복구 조건은 문 열림/비상정지 기준으로 시작했지만 Timeout 복구는 아직 단순화됨
 
 ## 다음 아키텍처 목표
 
@@ -377,6 +380,8 @@ StateMachine + Virtual IO + ManualClock
 - `scenarios/door-open-alarm.json`
 - `scenarios/emergency-stop-alarm.json`
 - `scenarios/clear-alarm-recovery.json`
+- `scenarios/door-open-clear-blocked.json`
+- `scenarios/emergency-stop-recovery.json`
 
 역할:
 
@@ -384,6 +389,8 @@ StateMachine + Virtual IO + ManualClock
 - 알람 상태에서 진공, 스테이지 이동 같은 정상 공정 출력이 꺼지는지 확인한다.
 - 적색 램프와 부저가 켜지는지 확인한다.
 - Door close 이후 `ClearAlarm`으로 `Idle` 상태로 돌아오는 기본 복구 흐름을 확인한다.
+- Door open 상태에서는 `ClearAlarm`이 거부되는지 확인한다.
+- Emergency stop 해제 이후 `ClearAlarm`으로 `Idle` 상태로 돌아오는지 확인한다.
 
 아키텍처 흐름:
 
@@ -406,6 +413,7 @@ Alarmed 또는 Idle
 - Safety 입력 우선순위는 `EquipmentCellController.ReadSafetyEvent()`를 본다.
 - 알람 상태 전이는 `EquipmentStateMachine.ApplyAlarmEvent()`와 `MoveToAlarm()`을 본다.
 - 알람 출력 정책은 `EquipmentCellController.SyncOutputsForCurrentState()`를 본다.
+- 알람 복구 조건은 `EquipmentCellController.CheckAlarmRecoveryCondition()`을 본다.
 - 새 알람 시나리오는 `scenarios/`에 JSON을 추가하고 `tests/EquipmentTwin.Core.Tests/Program.cs`에 회귀 테스트를 추가한다.
 
 주의:
