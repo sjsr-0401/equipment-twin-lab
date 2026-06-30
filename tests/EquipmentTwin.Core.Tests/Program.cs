@@ -54,6 +54,8 @@ var tests = new (string Name, Action Body)[]
     ("Scenario runner handles clear alarm recovery file", ScenarioRunnerHandlesClearAlarmRecoveryFile),
     ("Scenario runner handles door open clear blocked file", ScenarioRunnerHandlesDoorOpenClearBlockedFile),
     ("Scenario runner handles emergency stop recovery file", ScenarioRunnerHandlesEmergencyStopRecoveryFile),
+    ("Scenario runner handles motion axis normal file", ScenarioRunnerHandlesMotionAxisNormalFile),
+    ("Scenario runner handles motion axis timeout file", ScenarioRunnerHandlesMotionAxisTimeoutFile),
     ("Scenario runner reports expectation failure", ScenarioRunnerReportsExpectationFailure)
 };
 
@@ -759,6 +761,33 @@ static void ScenarioRunnerHandlesEmergencyStopRecoveryFile()
     AssertEqual(null, runner.Cell.StateMachine.LastAlarm, "Emergency stop recovery scenario must clear alarm info.");
     AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.TowerLampRed), "Red lamp must be off after emergency stop recovery.");
     AssertEqual(false, runner.Cell.Io.Read(EquipmentIoMap.BuzzerOn), "Buzzer must be off after emergency stop recovery.");
+}
+
+static void ScenarioRunnerHandlesMotionAxisNormalFile()
+{
+    var scenario = LoadScenario("motion-axis-normal.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertTrue(runner.MotionAxes.TryGetValue("X", out var axis), "Motion scenario must create X axis.");
+    AssertEqual(MotionAxisState.InPosition, axis!.State, "X axis must end InPosition.");
+    AssertEqual(25.0, axis.Position, "X axis final position mismatch.");
+    AssertEqual(null, axis.LastAlarm, "Normal motion scenario must not leave an alarm.");
+}
+
+static void ScenarioRunnerHandlesMotionAxisTimeoutFile()
+{
+    var scenario = LoadScenario("motion-axis-timeout.json");
+    var runner = ScenarioRunner.CreateDefault(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+
+    var result = runner.Run(scenario);
+
+    AssertTrue(result.Success, ScenarioFailureMessage(result));
+    AssertTrue(runner.MotionAxes.TryGetValue("X", out var axis), "Motion timeout scenario must create X axis.");
+    AssertEqual(MotionAxisState.Alarmed, axis!.State, "X axis must end Alarmed after timeout.");
+    AssertEqual(MotionAxisAlarmCode.MoveTimeout, axis.LastAlarm?.Code, "Motion timeout scenario alarm mismatch.");
 }
 
 static void ScenarioRunnerReportsExpectationFailure()

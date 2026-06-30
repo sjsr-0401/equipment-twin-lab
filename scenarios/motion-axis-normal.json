@@ -1,0 +1,51 @@
+{
+  "name": "motion-axis-normal",
+  "description": "Verifies that a virtual motion axis can servo on, home, move, and reach in-position.",
+  "steps": [
+    {
+      "name": "Enable X axis servo",
+      "action": "MotionServoOn",
+      "axis": "X",
+      "expectMotionState": "Ready"
+    },
+    {
+      "name": "Start X axis home",
+      "action": "StartMotionHome",
+      "axis": "X",
+      "durationMilliseconds": 1000,
+      "expectMotionState": "Homing"
+    },
+    {
+      "name": "Advance home duration",
+      "action": "AdvanceTime",
+      "advanceMilliseconds": 1000
+    },
+    {
+      "name": "Poll X axis home completion",
+      "action": "PollMotion",
+      "axis": "X",
+      "expectMotionState": "InPosition",
+      "expectPosition": 0
+    },
+    {
+      "name": "Start X axis move",
+      "action": "StartMotionMove",
+      "axis": "X",
+      "targetPosition": 25,
+      "durationMilliseconds": 2000,
+      "expectMotionState": "Moving"
+    },
+    {
+      "name": "Advance move duration",
+      "action": "AdvanceTime",
+      "advanceMilliseconds": 2000
+    },
+    {
+      "name": "Poll X axis move completion",
+      "action": "PollMotion",
+      "axis": "X",
+      "expectMotionState": "InPosition",
+      "expectPosition": 25
+    }
+  ]
+}

@@ -12,5 +12,11 @@ public enum ScenarioStepAction
     PollInputs,
     ClearAlarm,
     ExpectState,
-    ExpectSignal
+    ExpectSignal,
+    MotionServoOn,
+    StartMotionHome,
+    StartMotionMove,
+    PollMotion,
+    CheckMotionTimeout,
+    ExpectMotionState
 }

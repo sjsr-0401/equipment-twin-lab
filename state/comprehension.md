@@ -831,6 +831,75 @@ Visual Studio에서 중요한 것은 시작 프로젝트다.
 
 -
 
+## 2026-07-01 이해 요약: Motion Scenario Actions
+
+### 오늘 한 일
+
+- PR #12를 병합했다.
+- `MotionAxis`를 Scenario JSON action으로 실행할 수 있게 했다.
+- `motion-axis-normal.json`과 `motion-axis-timeout.json`을 추가했다.
+- CLI batch 리포트에 `Motion Axes` 컬럼을 추가했다.
+- 테스트를 51개로 늘렸고, batch 시나리오가 9개로 늘었다.
+
+### 왜 필요한가
+
+모션 축 모델이 C# 테스트 안에만 있으면 포트폴리오에서 “내부 구현은 했다”고 말할 수는 있지만, 사용자가 장비 동작을 선택해서 돌리는 프로그램이라고 말하기는 어렵다.
+
+이번 변경은 모션을 JSON 시나리오로 노출했다. 그래서 나중에 Unity UI, 장비 템플릿, 자동화 루프가 같은 시나리오 파일을 사용할 수 있다.
+
+### 내가 이해해야 할 개념
+
+`ScenarioStepAction`은 JSON에서 사용할 수 있는 명령 이름 목록이다.
+
+예:
+
+```json
+{
+  "name": "Start X axis move",
+  "action": "StartMotionMove",
+  "axis": "X",
+  "targetPosition": 25,
+  "durationMilliseconds": 2000,
+  "expectMotionState": "Moving"
+}
+```
+
+이 step은 `X`축을 25 위치로 2초 동안 이동시키기 시작하고, 실행 직후 상태가 `Moving`인지 확인한다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+Scenario JSON
+    ↓
+ScenarioStep validation
+    ↓
+ScenarioRunner
+    ↓
+MotionAxis
+    ↓
+Motion expectation
+    ↓
+CLI report
+```
+
+중요한 점은 CLI가 모션 동작을 계산하지 않는다는 것이다.
+
+CLI는 `ScenarioRunner.MotionAxes`를 읽어서 사람이 보기 좋은 리포트를 만든다. 실제 동작 판단은 Core에 남아 있다.
+
+### 유지보수 포인트
+
+- 새 action 이름 추가: `src/EquipmentTwin.Core/Scenarios/ScenarioStepAction.cs`
+- JSON 필드 검증: `src/EquipmentTwin.Core/Scenarios/ScenarioStep.cs`
+- 실제 실행: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- 리포트 표시: `src/EquipmentTwin.Cli/Program.cs`
+- 샘플 시나리오: `scenarios/motion-axis-normal.json`, `scenarios/motion-axis-timeout.json`
+
+### 아직 모르는 것
+
+- 축 알람을 장비 전체 알람과 어떤 기준으로 연결할지
+- 장비 템플릿에서 축, IO, 검사기를 어떤 JSON 구조로 묶을지
+- Unity에서 X축 상태를 어떤 3D 오브젝트 움직임으로 표시할지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

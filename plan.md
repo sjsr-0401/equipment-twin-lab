@@ -1793,3 +1793,81 @@ InPosition 또는 Alarmed
 1. 모션 축을 Scenario JSON action으로 실행할 수 있게 한다.
 2. CLI 리포트에 모션 축 최종 상태를 표시한다.
 3. 이후 Equipment Template / Product Recipe / Fault Model로 확장한다.
+
+## 40. 2026-07-01 Goal 015: Motion Scenario Actions
+
+PR #12를 병합한 뒤 Goal 015를 진행했다.
+
+목표:
+
+```text
+MotionAxis를 테스트 코드 안에만 두지 않고
+Scenario JSON action과 CLI 리포트로 연결한다.
+```
+
+추가한 코드:
+
+- `MotionServoOn`
+- `StartMotionHome`
+- `StartMotionMove`
+- `PollMotion`
+- `CheckMotionTimeout`
+- `ExpectMotionState`
+
+추가한 시나리오:
+
+- `scenarios/motion-axis-normal.json`
+- `scenarios/motion-axis-timeout.json`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 51개 통과
+- CLI batch 시나리오 9개 통과
+- CLI Markdown 리포트에서 `Motion Axes` 컬럼 확인
+- Draft PR #13 생성
+- GitHub Actions push/pull_request CI 성공
+
+막힌 점:
+
+- 큰 구현 막힘은 없었다.
+- PowerShell 출력에서 한글 문서가 깨져 보였지만, 파일은 UTF-8로 정상 유지되어 있었다.
+
+보류한 판단:
+
+- 모션 축 알람을 아직 장비 전체 `Alarmed` 상태와 자동 연결하지 않는다.
+- 모션 축은 아직 공정 상태머신의 자동 진행 조건으로 쓰지 않는다.
+- 속도/가속도/감속도 프로파일은 아직 없다.
+- Unity 연결은 아직 없다.
+
+소프트웨어 아키텍처:
+
+```text
+Scenario JSON
+    ↓
+ScenarioRunner
+    ↓
+MotionAxis
+    ↓
+Motion expectation
+    ↓
+CLI Markdown report
+```
+
+이번 변경은 “모션 모델을 만들었다”에서 한 단계 더 나아가 “모션 모델을 데이터 기반 시나리오로 실행할 수 있게 했다”는 의미가 있다.
+
+유지보수 포인트:
+
+- action 이름: `src/EquipmentTwin.Core/Scenarios/ScenarioStepAction.cs`
+- JSON 필드 검증: `src/EquipmentTwin.Core/Scenarios/ScenarioStep.cs`
+- 실행 로직: `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- CLI 리포트: `src/EquipmentTwin.Cli/Program.cs`
+- 테스트: `tests/EquipmentTwin.Core.Tests/Program.cs`
+
+다음 권장 작업:
+
+1. PR #13 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
+3. Equipment Template / Product Recipe 설계를 시작한다.

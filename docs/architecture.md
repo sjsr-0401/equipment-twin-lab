@@ -10,12 +10,8 @@
 Scenario JSON / CLI / Unity / User Command
         ↓
 ScenarioRunner
-        ↓
-EquipmentCellController
-        ↓
-EquipmentStateMachine
-        ↓
-VirtualIoController
+        ├─ EquipmentCellController → EquipmentStateMachine + VirtualIoController
+        └─ MotionAxis
 ```
 
 현재는 Unity나 실제 PLC 없이 `.NET Core` 로직만 있다.
@@ -215,6 +211,8 @@ DI_LOAD_PRESENT = true
 - 안전 입력 우선순위
 - JSON 시나리오 실행
 - 알람/복구 시나리오 실행
+- 모션 축 단위 동작
+- 모션 축 JSON 시나리오 실행
 
 유지보수 포인트:
 
@@ -236,12 +234,17 @@ DI_LOAD_PRESENT = true
 - `scenarios/door-open-alarm.json`
 - `scenarios/emergency-stop-alarm.json`
 - `scenarios/clear-alarm-recovery.json`
+- `scenarios/door-open-clear-blocked.json`
+- `scenarios/emergency-stop-recovery.json`
+- `scenarios/motion-axis-normal.json`
+- `scenarios/motion-axis-timeout.json`
 
 역할:
 
 - JSON 파일로 장비 운전 흐름을 정의한다.
 - 정의된 step을 순서대로 실행한다.
 - 상태 expectation과 IO signal expectation을 검증한다.
+- 모션 축 action을 실행하고 축 상태, 알람, 위치 expectation을 검증한다.
 - 성공/실패 결과를 리포트한다.
 
 예:
@@ -256,6 +259,7 @@ ExpectState Aligning
 
 - 새 시나리오 action이 필요하면 `ScenarioStepAction`과 `ScenarioRunner.RunStep()`을 같이 수정한다.
 - JSON 필드가 바뀌면 `ScenarioStep` validation도 같이 수정한다.
+- 모션 축 JSON 필드는 `axis`, `targetPosition`, `durationMilliseconds`, `timeoutMilliseconds`, `expectMotionState`, `expectMotionAlarmCode`, `expectPosition`을 쓴다.
 - 샘플 시나리오는 `scenarios/` 폴더에 추가한다.
 
 주의:
@@ -279,6 +283,7 @@ ExpectState Aligning
 - 실패 시 non-zero exit code를 반환해서 CI에서 잡을 수 있게 한다.
 - 여러 시나리오를 batch로 실행하고 Markdown 리포트를 저장한다.
 - Markdown 리포트에서 활성 알람 코드와 ClearAlarm 가능 조건을 보여준다.
+- Markdown 리포트에서 각 모션 축의 최종 상태, 위치, 모션 알람을 보여준다.
 
 예:
 
@@ -295,6 +300,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - Batch 출력 형식은 `PrintBatchResult()`를 본다.
 - Markdown 리포트 형식은 `BuildMarkdownReport()`를 본다.
 - 리포트의 알람 표시 형식은 `DescribeActiveAlarm()`과 `DescribeClearCondition()`을 본다.
+- 리포트의 모션 축 표시 형식은 `DescribeMotionAxes()`를 본다.
 - 실제 실행은 `ScenarioRunner`에 위임한다.
 
 주의:
@@ -354,24 +360,24 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - CLI batch filtering 없음
 - 리포트 artifact 업로드 없음
 - 알람 복구 조건은 문 열림/비상정지 기준으로 시작했지만 Timeout 복구는 아직 단순화됨
+- 모션 축은 JSON 시나리오로 실행 가능하지만 아직 장비 공정 상태와 자동으로 동기화되는 Equipment Template 단계는 아니다.
 
 ## 다음 아키텍처 목표
 
-다음 단계는 시나리오 실행기를 CLI 또는 Unity 쪽에서 호출할 수 있게 연결하는 것이다.
+다음 단계는 모션 축, IO, 검사, fault 조건을 하나의 Equipment Template로 묶는 것이다.
 
 예상 흐름:
 
 ```text
-Scenario JSON
+Equipment Template / Product Recipe
     ↓
 ScenarioRunner
-    ↓
-EquipmentCellController
-    ↓
-StateMachine + Virtual IO + ManualClock
+    ├─ EquipmentCellController
+    ├─ MotionAxis
+    └─ future Inspection / Fault Model
 ```
 
-이렇게 하면 “정상 공정”, “센서 지연”, “비상정지”, “문 열림”, “Timeout” 같은 시나리오를 파일로 반복 실행할 수 있다.
+이렇게 하면 “정상 공정”, “센서 지연”, “비상정지”, “문 열림”, “모션 Timeout”, “검사 NG” 같은 시나리오를 파일로 반복 실행할 수 있다.
 
 ## 8. 알람/복구 시나리오
 
@@ -467,4 +473,39 @@ InPosition 또는 Alarmed
 - 이 계층은 실제 서보 드라이버가 아니다.
 - 현재는 위치 완료와 Timeout을 검증하는 MVP 모델이다.
 - 속도/가속도/감속도 프로파일은 아직 없다.
-- 아직 장비 공정 상태나 Scenario JSON action과 연결하지 않았다.
+- 현재는 Scenario JSON action으로 직접 실행할 수 있지만, 아직 Equipment Template가 자동으로 축/IO/검사를 묶어주는 단계는 아니다.
+
+### 9.1 Motion Scenario Actions
+
+파일:
+
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStepAction.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioStep.cs`
+- `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- `scenarios/motion-axis-normal.json`
+- `scenarios/motion-axis-timeout.json`
+
+역할:
+
+- JSON 시나리오에서 모션 축을 직접 실행한다.
+- `MotionServoOn`, `StartMotionHome`, `StartMotionMove`, `PollMotion`, `CheckMotionTimeout`, `ExpectMotionState` action을 제공한다.
+- 같은 ScenarioRunner 안에서 축 이름별 `MotionAxis` 인스턴스를 보관한다.
+- CLI batch 리포트가 마지막 축 상태를 사람이 볼 수 있게 표시한다.
+
+흐름:
+
+```text
+motion-axis-normal.json
+    ↓
+ScenarioRunner
+    ↓
+X MotionAxis
+    ↓
+ServoOn → Home → Move → InPosition
+```
+
+유지보수 포인트:
+
+- 새 모션 action 추가: `ScenarioStepAction`, `ScenarioStep.Validate()`, `ScenarioRunner.RunStep()`
+- 모션 expectation 추가: `ScenarioRunner.AddMotionExpectations()`
+- CLI 표시 변경: `EquipmentTwin.Cli/Program.cs`의 `DescribeMotionAxes()`
