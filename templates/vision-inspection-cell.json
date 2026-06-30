@@ -18,6 +18,14 @@
       "name": "default-panel",
       "productCode": "PANEL-A",
       "inspectionMode": "DatasetCamera",
+      "inspectionResult": {
+        "outcome": "Pass",
+        "message": "Panel vision inspection passed.",
+        "measurements": {
+          "edgeOffsetMm": 0.12,
+          "surfaceScore": 98.5
+        }
+      },
       "axisTargets": {
         "X": 25,
         "Z": 5
@@ -27,6 +35,15 @@
       "name": "tall-part",
       "productCode": "PART-TALL",
       "inspectionMode": "DatasetCamera",
+      "inspectionResult": {
+        "outcome": "Fail",
+        "defectCode": "HEIGHT_OVER_LIMIT",
+        "message": "Tall part height exceeded inspection limit.",
+        "measurements": {
+          "heightMm": 12.8,
+          "heightLimitMm": 12
+        }
+      },
       "axisTargets": {
         "X": 40,
         "Z": 12

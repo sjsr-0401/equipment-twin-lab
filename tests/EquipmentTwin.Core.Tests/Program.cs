@@ -53,6 +53,8 @@ var tests = new (string Name, Action Body)[]
     ("Equipment template finds fault scenario case insensitively", EquipmentTemplateFindsFaultScenarioCaseInsensitively),
     ("Equipment template rejects duplicate motion axes", EquipmentTemplateRejectsDuplicateMotionAxes),
     ("Equipment template rejects unknown recipe axis", EquipmentTemplateRejectsUnknownRecipeAxis),
+    ("Equipment template rejects missing inspection result", EquipmentTemplateRejectsMissingInspectionResult),
+    ("Equipment template rejects failed inspection without defect code", EquipmentTemplateRejectsFailedInspectionWithoutDefectCode),
     ("Equipment template rejects unknown fault axis", EquipmentTemplateRejectsUnknownFaultAxis),
     ("Equipment template rejects invalid timeout fault", EquipmentTemplateRejectsInvalidTimeoutFault),
     ("Template runner runs default panel recipe", TemplateRunnerRunsDefaultPanelRecipe),
@@ -682,6 +684,10 @@ static void EquipmentTemplateJsonLoadsVisionInspectionCellFile()
     AssertEqual(2, template.ProductRecipes.Count, "Template product recipe count mismatch.");
     AssertEqual(2, template.FaultScenarios.Count, "Template fault scenario count mismatch.");
     AssertEqual(InspectionMode.DatasetCamera, template.ProductRecipes[0].InspectionMode, "Inspection mode mismatch.");
+    AssertEqual(InspectionOutcome.Pass, template.ProductRecipes[0].InspectionResult?.Outcome, "Default panel inspection outcome mismatch.");
+    AssertTrue(template.ProductRecipes[0].InspectionResult!.Measurements.ContainsKey("edgeOffsetMm"), "Default panel inspection must include edge offset measurement.");
+    AssertEqual(InspectionOutcome.Fail, template.ProductRecipes[1].InspectionResult?.Outcome, "Tall part inspection outcome mismatch.");
+    AssertEqual("HEIGHT_OVER_LIMIT", template.ProductRecipes[1].InspectionResult?.DefectCode, "Tall part defect code mismatch.");
     AssertTrue(template.ProductRecipes[0].TryGetAxisTarget("x", out var xTarget), "Recipe must find X target case insensitively.");
     AssertEqual(25.0, xTarget, "Default panel X target mismatch.");
 }
@@ -765,6 +771,55 @@ static void EquipmentTemplateRejectsUnknownRecipeAxis()
         "Recipe targets for unknown axes must be rejected.");
 }
 
+static void EquipmentTemplateRejectsMissingInspectionResult()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "inspectionMode": "DatasetCamera",
+                  "axisTargets": { "X": 1 }
+                }
+              ]
+            }
+            """),
+        "DatasetCamera recipe must define an inspection result.");
+}
+
+static void EquipmentTemplateRejectsFailedInspectionWithoutDefectCode()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "inspectionMode": "DatasetCamera",
+                  "inspectionResult": {
+                    "outcome": "Fail"
+                  },
+                  "axisTargets": { "X": 1 }
+                }
+              ]
+            }
+            """),
+        "Failed inspection result must define a defect code.");
+}
+
 static void EquipmentTemplateRejectsUnknownFaultAxis()
 {
     AssertThrows<InvalidOperationException>(
@@ -840,6 +895,10 @@ static void TemplateRunnerRunsDefaultPanelRecipe()
     AssertEqual(MotionAxisState.InPosition, result.MotionAxes["X"].State, "X axis must end InPosition.");
     AssertEqual(25.0, result.MotionAxes["X"].Position, "X axis final position mismatch.");
     AssertEqual(5.0, result.MotionAxes["Z"].Position, "Z axis final position mismatch.");
+    AssertTrue(result.ProductPassed == true, "Default panel product must pass inspection.");
+    AssertEqual(InspectionOutcome.Pass, result.InspectionResult?.Outcome, "Default panel inspection outcome mismatch.");
+    AssertTrue(result.InspectionResult!.TryGetMeasurement("surfaceScore", out var surfaceScore), "Inspection result must expose measurements case insensitively.");
+    AssertEqual(98.5, surfaceScore, "Surface score mismatch.");
 }
 
 static void TemplateRunnerRunsTallPartRecipe()
@@ -853,6 +912,9 @@ static void TemplateRunnerRunsTallPartRecipe()
     AssertEqual("PART-TALL", result.Recipe.ProductCode, "Tall part product code mismatch.");
     AssertEqual(40.0, result.MotionAxes["X"].Position, "Tall part X target mismatch.");
     AssertEqual(12.0, result.MotionAxes["Z"].Position, "Tall part Z target mismatch.");
+    AssertTrue(result.ProductPassed == false, "Tall part product must fail inspection.");
+    AssertEqual(InspectionOutcome.Fail, result.InspectionResult?.Outcome, "Tall part inspection outcome mismatch.");
+    AssertEqual("HEIGHT_OVER_LIMIT", result.InspectionResult?.DefectCode, "Tall part defect code mismatch.");
 }
 
 static void TemplateRunnerInjectsMotionTimeoutFault()
@@ -868,6 +930,7 @@ static void TemplateRunnerInjectsMotionTimeoutFault()
     AssertEqual(MotionAxisAlarmCode.MoveTimeout, result.MotionAxes["X"].LastAlarm?.Code, "Timeout fault alarm mismatch.");
     AssertFalse(result.MotionAxes["Z"].IsHomed && result.MotionAxes["Z"].Position > 0, "Z move must not continue after X fault.");
     AssertTrue(result.CommandLog.Any(log => log.Step == "FaultMotionTimeout"), "Command log must record motion timeout fault.");
+    AssertEqual(null, result.InspectionResult, "Inspection must not run after motion timeout fault.");
 }
 
 static void TemplateRunnerInjectsServoAlarmFault()
@@ -883,6 +946,7 @@ static void TemplateRunnerInjectsServoAlarmFault()
     AssertEqual(MotionAxisState.Alarmed, result.MotionAxes["Z"].State, "Z axis must end Alarmed after servo fault.");
     AssertEqual(MotionAxisAlarmCode.ServoAlarm, result.MotionAxes["Z"].LastAlarm?.Code, "Servo fault alarm mismatch.");
     AssertTrue(result.CommandLog.Any(log => log.Step == "FaultServoAlarm"), "Command log must record servo alarm fault.");
+    AssertEqual(null, result.InspectionResult, "Inspection must not run after servo alarm fault.");
 }
 
 static void TemplateRunnerRejectsMissingRecipe()

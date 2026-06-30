@@ -62,7 +62,25 @@ public sealed class TemplateRunner
             Add(commandLog, "PollMove", axis, axis.Poll());
         }
 
-        return new TemplateRunResult(template.Name, recipe, faultScenario, axes, commandLog);
+        var inspectionResult = CreateInspectionResult(recipe, axes, commandLog);
+
+        return new TemplateRunResult(template.Name, recipe, faultScenario, inspectionResult, axes, commandLog);
+    }
+
+    private static InspectionResult? CreateInspectionResult(
+        ProductRecipe recipe,
+        IReadOnlyDictionary<string, MotionAxis> axes,
+        IReadOnlyList<TemplateMotionCommandLog> commandLog)
+    {
+        if (recipe.InspectionMode == InspectionMode.None)
+        {
+            return null;
+        }
+
+        var motionSucceeded = commandLog.All(log => log.Result.Accepted)
+            && axes.Values.All(axis => axis.LastAlarm is null);
+
+        return motionSucceeded ? InspectionResult.FromRecipe(recipe) : null;
     }
 
     private static bool ShouldInjectFault(FaultScenario? faultScenario, string axisName)

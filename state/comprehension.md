@@ -1080,6 +1080,64 @@ Alarmed
 - IO fault와 safety fault를 template fault로 통합할지
 - fault severity와 operator action을 어디에 둘지
 
+## 2026-07-01 이해 요약: Inspection Result Model
+
+### 오늘 한 일
+
+- PR #16을 병합했다.
+- Inspection Result Model을 추가했다.
+- `default-panel`은 PASS 검사 결과를 갖게 했다.
+- `tall-part`는 `HEIGHT_OVER_LIMIT` Fail 검사 결과를 갖게 했다.
+- 테스트가 68개로 늘었다.
+
+### 왜 필요한가
+
+장비가 움직이는 것과 제품이 양품인지 불량인지는 다르다.
+
+현업에서는 장비가 정상으로 움직였는데도 제품 검사는 NG가 될 수 있다.
+
+그래서 장비 실행 결과와 제품 검사 결과를 코드에서 분리했다.
+
+### 내가 이해해야 할 개념
+
+```text
+TemplateRunResult.Success
+    → 장비가 알람 없이 동작했는가
+
+TemplateRunResult.ProductPassed
+    → 제품 검사가 PASS인가
+```
+
+예를 들어 `tall-part`는 장비가 정상으로 움직여도 높이 초과로 Fail이 될 수 있다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+ProductRecipe
+    ↓
+InspectionResultSpec
+    ↓
+TemplateRunner
+    ↓
+InspectionResult
+    ↓
+TemplateRunResult
+```
+
+### 유지보수 포인트
+
+- 검사 결과 종류: `src/EquipmentTwin.Core/Templates/InspectionOutcome.cs`
+- recipe 검사 결과 정의: `src/EquipmentTwin.Core/Templates/InspectionResultSpec.cs`
+- 실행 후 검사 결과: `src/EquipmentTwin.Core/Templates/InspectionResult.cs`
+- 검사 결과 생성 시점: `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- 실행 결과에서 PASS/FAIL 확인: `src/EquipmentTwin.Core/Templates/TemplateRunResult.cs`
+
+### 아직 모르는 것
+
+- 같은 recipe에서 여러 검사 scenario를 어떻게 선택할지
+- 실제 dataset camera를 어떤 인터페이스로 붙일지
+- Unity camera 결과를 어떤 시점에 Core로 넘길지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.
