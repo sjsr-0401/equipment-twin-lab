@@ -365,6 +365,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 - 알람 복구 조건은 문 열림/비상정지 기준으로 시작했지만 Timeout 복구는 아직 단순화됨
 - 모션 축은 JSON 시나리오로 실행 가능하지만 아직 장비 공정 상태와 자동으로 동기화되는 Equipment Template 단계는 아니다.
 - Equipment Template는 아직 축과 recipe를 정의하는 모델이며, ScenarioRunner가 자동으로 template를 실행 계획으로 변환하지는 않는다.
+- Template Runner는 template/recipe를 가상 모션 실행으로 변환하지만, 아직 IO/Fault/검사 결과까지 포함한 전체 공정 실행 엔진은 아니다.
 
 ## 다음 아키텍처 목표
 
@@ -566,3 +567,46 @@ CreateMotionAxes(clock)
 - 이 단계는 아직 Unity 장비 빌더가 아니다.
 - 이 단계는 아직 recipe 실행 엔진이 아니다.
 - 현재는 “장비 구성 데이터를 안전하게 읽고 검증하는 Core 모델”이다.
+
+## 11. Template Runner
+
+파일:
+
+- `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunnerOptions.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunResult.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateMotionCommandLog.cs`
+
+역할:
+
+- 선택한 `EquipmentTemplate`과 `ProductRecipe`를 실제 가상 모션 실행으로 변환한다.
+- 템플릿에 정의된 축을 생성한다.
+- 각 축에 Servo On, Home, Move 명령을 순서대로 실행한다.
+- 실행 결과와 명령 로그를 `TemplateRunResult`로 남긴다.
+
+흐름:
+
+```text
+EquipmentTemplate + recipeName
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+CreateMotionAxes(clock)
+    ↓
+ServoOn / Home / Move
+    ↓
+TemplateRunResult
+```
+
+유지보수 포인트:
+
+- 실행 순서 변경: `TemplateRunner.RunRecipe()`
+- 표준 home/move 시간 변경: `TemplateRunnerOptions`
+- 실행 결과에 더 많은 정보 추가: `TemplateRunResult`
+- 명령 로그 형식 변경: `TemplateMotionCommandLog`
+
+주의:
+
+- 현재 Template Runner는 모션 축만 실행한다.
+- IO 시뮬레이션, 검사 결과, Fault Injection은 아직 연결하지 않았다.
+- 실제 장비 recipe 엔진이 아니라 configurable twin을 위한 첫 실행 계층이다.

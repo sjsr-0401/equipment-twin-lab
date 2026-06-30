@@ -1938,3 +1938,61 @@ CreateMotionAxes(clock)
 1. PR #14 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Template Runner 설계를 시작한다.
+
+## 42. 2026-07-01 Goal 017: Template Runner
+
+PR #14를 병합한 뒤 Goal 017을 시작했다.
+
+목표:
+
+```text
+EquipmentTemplate + ProductRecipe를 실제 가상 모션 실행으로 변환한다.
+```
+
+추가한 코드:
+
+- `TemplateRunner`
+- `TemplateRunnerOptions`
+- `TemplateRunResult`
+- `TemplateMotionCommandLog`
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 60개 통과
+- CLI batch 시나리오 9개 통과
+- Draft PR #15 생성
+- GitHub Actions push/pull_request CI 성공
+
+막힌 점:
+
+- build/test 병렬 실행으로 Release DLL lock이 다시 발생했다.
+- `default-panel` recipe command count 기대값을 처음에 12로 잘못 계산했고, 실제 10개로 수정했다.
+
+보류한 판단:
+
+- Template Runner는 아직 모션 축만 실행한다.
+- IO, 검사 결과, Fault Injection은 아직 없다.
+- ScenarioRunner와 TemplateRunner 통합은 아직 하지 않았다.
+
+소프트웨어 아키텍처:
+
+```text
+EquipmentTemplate
+    ↓
+ProductRecipe
+    ↓
+TemplateRunner
+    ↓
+MotionAxis ServoOn/Home/Move
+    ↓
+TemplateRunResult
+```
+
+다음 권장 작업:
+
+1. PR #15 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
+3. Fault Model 또는 Inspection Result Model을 시작한다.

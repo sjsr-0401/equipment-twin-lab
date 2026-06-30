@@ -968,6 +968,63 @@ CreateMotionAxes(clock)
 - Fault 조건을 recipe와 별도로 둘지, template 옵션으로 둘지
 - Unity에서 이 template를 어떻게 시각화할지
 
+## 2026-07-01 이해 요약: Template Runner
+
+### 오늘 한 일
+
+- PR #14를 병합했다.
+- `TemplateRunner`를 추가했다.
+- 선택한 장비 템플릿과 제품 recipe를 실제 모션 실행으로 바꿨다.
+- 테스트가 60개로 늘었다.
+
+### 왜 필요한가
+
+Template와 Recipe는 설계 데이터다.
+
+하지만 설계 데이터만 있으면 아직 장비가 움직이지 않는다.
+
+Template Runner는 그 데이터를 읽어서 실제 가상 축 명령을 실행한다.
+
+### 내가 이해해야 할 개념
+
+```text
+Template = 장비 설계도
+Recipe = 제품 조건
+Runner = 설계도와 조건을 읽고 실행하는 코드
+```
+
+예를 들어 `default-panel` recipe는 X=25, Z=5를 목표 위치로 갖는다.
+
+Template Runner는 X축과 Z축을 만들고, Servo On, Home, Move를 실행해서 그 위치까지 보낸다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+EquipmentTemplate
+    ↓
+ProductRecipe
+    ↓
+TemplateRunner
+    ↓
+MotionAxis
+    ↓
+TemplateRunResult
+```
+
+### 유지보수 포인트
+
+- 실행 순서: `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- 실행 옵션: `src/EquipmentTwin.Core/Templates/TemplateRunnerOptions.cs`
+- 실행 결과: `src/EquipmentTwin.Core/Templates/TemplateRunResult.cs`
+- 명령 로그: `src/EquipmentTwin.Core/Templates/TemplateMotionCommandLog.cs`
+
+### 아직 모르는 것
+
+- IO를 Template Runner에 어떻게 붙일지
+- 검사 결과를 recipe와 어떻게 연결할지
+- Fault 조건을 언제 실행 중에 주입할지
+- Template Runner와 ScenarioRunner를 합칠지, 계속 분리할지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

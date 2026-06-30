@@ -52,6 +52,10 @@ var tests = new (string Name, Action Body)[]
     ("Equipment template finds product recipe case insensitively", EquipmentTemplateFindsProductRecipeCaseInsensitively),
     ("Equipment template rejects duplicate motion axes", EquipmentTemplateRejectsDuplicateMotionAxes),
     ("Equipment template rejects unknown recipe axis", EquipmentTemplateRejectsUnknownRecipeAxis),
+    ("Template runner runs default panel recipe", TemplateRunnerRunsDefaultPanelRecipe),
+    ("Template runner runs tall part recipe", TemplateRunnerRunsTallPartRecipe),
+    ("Template runner rejects missing recipe", TemplateRunnerRejectsMissingRecipe),
+    ("Template runner rejects invalid durations", TemplateRunnerRejectsInvalidDurations),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -741,6 +745,68 @@ static void EquipmentTemplateRejectsUnknownRecipeAxis()
             }
             """),
         "Recipe targets for unknown axes must be rejected.");
+}
+
+static void TemplateRunnerRunsDefaultPanelRecipe()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    var result = runner.RunRecipe(template, "default-panel");
+
+    AssertTrue(result.Success, "Template runner must complete default-panel recipe.");
+    AssertEqual("vision-inspection-cell", result.TemplateName, "Template result name mismatch.");
+    AssertEqual("PANEL-A", result.Recipe.ProductCode, "Recipe product code mismatch.");
+    AssertEqual(10, result.CommandLog.Count, "Default two-axis recipe command count mismatch.");
+    AssertEqual(MotionAxisState.InPosition, result.MotionAxes["X"].State, "X axis must end InPosition.");
+    AssertEqual(25.0, result.MotionAxes["X"].Position, "X axis final position mismatch.");
+    AssertEqual(5.0, result.MotionAxes["Z"].Position, "Z axis final position mismatch.");
+}
+
+static void TemplateRunnerRunsTallPartRecipe()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    var result = runner.RunRecipe(template, "tall-part");
+
+    AssertTrue(result.Success, "Template runner must complete tall-part recipe.");
+    AssertEqual("PART-TALL", result.Recipe.ProductCode, "Tall part product code mismatch.");
+    AssertEqual(40.0, result.MotionAxes["X"].Position, "Tall part X target mismatch.");
+    AssertEqual(12.0, result.MotionAxes["Z"].Position, "Tall part Z target mismatch.");
+}
+
+static void TemplateRunnerRejectsMissingRecipe()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    AssertThrows<InvalidOperationException>(
+        () => runner.RunRecipe(template, "missing-recipe"),
+        "Template runner must reject unknown recipe names.");
+}
+
+static void TemplateRunnerRejectsInvalidDurations()
+{
+    AssertThrows<InvalidOperationException>(
+        () => new TemplateRunner(
+            CreateMotionClock(),
+            new TemplateRunnerOptions
+            {
+                HomeDuration = TimeSpan.Zero,
+                MoveDuration = TimeSpan.FromSeconds(1)
+            }),
+        "Template runner must reject invalid home duration.");
+
+    AssertThrows<InvalidOperationException>(
+        () => new TemplateRunner(
+            CreateMotionClock(),
+            new TemplateRunnerOptions
+            {
+                HomeDuration = TimeSpan.FromSeconds(1),
+                MoveDuration = TimeSpan.Zero
+            }),
+        "Template runner must reject invalid move duration.");
 }
 
 static void ScenarioJsonLoadsNormalCycleFile()
