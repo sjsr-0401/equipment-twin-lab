@@ -81,6 +81,7 @@
 - Goal 017 Draft PR #15를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #15를 main에 squash merge했다.
 - Goal 018에서 Fault Model을 추가했다.
+- Goal 018 Draft PR #16을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -136,6 +137,7 @@
 | 2026-07-01 | Goal 017 PR #15 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-07-01 | PR #15 병합 | Template Runner main 반영 |
 | 2026-07-01 | Goal 018: Fault Model | MotionTimeout/ServoAlarm fault 추가, 테스트 66개 통과, batch 9개 통과 |
+| 2026-07-01 | Goal 018 PR #16 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 
 ## 열린 PR
 
@@ -156,6 +158,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/13` | `goal/015-motion-scenario-actions` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/14` | `goal/016-equipment-template` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/15` | `goal/017-template-runner` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/16` | `goal/018-fault-model` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -191,11 +194,13 @@
 | 2026-07-01 | `goal/016-equipment-template` | pull_request | 성공 |
 | 2026-07-01 | `goal/017-template-runner` | push | 성공 |
 | 2026-07-01 | `goal/017-template-runner` | pull_request | 성공 |
+| 2026-07-01 | `goal/018-fault-model` | push | 성공 |
+| 2026-07-01 | `goal/018-fault-model` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 018 변경을 커밋하고 Draft PR을 만든다.
-2. CI에서 Release build, console tests, CLI batch 9개 시나리오 통과를 확인한다.
+1. PR #16 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. 이후 Inspection Result Model로 확장한다.
 
 ## 금지할 것
