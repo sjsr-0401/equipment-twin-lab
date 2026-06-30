@@ -1827,6 +1827,8 @@ Scenario JSON action과 CLI 리포트로 연결한다.
 - 콘솔 테스트 51개 통과
 - CLI batch 시나리오 9개 통과
 - CLI Markdown 리포트에서 `Motion Axes` 컬럼 확인
+- Draft PR #13 생성
+- GitHub Actions push/pull_request CI 성공
 
 막힌 점:
 
@@ -1866,6 +1868,6 @@ CLI Markdown report
 
 다음 권장 작업:
 
-1. Goal 015 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #13 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. Equipment Template / Product Recipe 설계를 시작한다.
