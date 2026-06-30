@@ -1,0 +1,52 @@
+{
+  "name": "motion-axis-timeout",
+  "description": "Verifies that a virtual motion axis creates a timeout alarm when a move takes too long.",
+  "steps": [
+    {
+      "name": "Enable X axis servo",
+      "action": "MotionServoOn",
+      "axis": "X",
+      "expectMotionState": "Ready"
+    },
+    {
+      "name": "Start X axis home",
+      "action": "StartMotionHome",
+      "axis": "X",
+      "durationMilliseconds": 1000,
+      "expectMotionState": "Homing"
+    },
+    {
+      "name": "Advance home duration",
+      "action": "AdvanceTime",
+      "advanceMilliseconds": 1000
+    },
+    {
+      "name": "Poll X axis home completion",
+      "action": "PollMotion",
+      "axis": "X",
+      "expectMotionState": "InPosition",
+      "expectPosition": 0
+    },
+    {
+      "name": "Start long X axis move",
+      "action": "StartMotionMove",
+      "axis": "X",
+      "targetPosition": 100,
+      "durationMilliseconds": 10000,
+      "expectMotionState": "Moving"
+    },
+    {
+      "name": "Advance beyond timeout",
+      "action": "AdvanceTime",
+      "advanceMilliseconds": 6000
+    },
+    {
+      "name": "Check X axis motion timeout",
+      "action": "CheckMotionTimeout",
+      "axis": "X",
+      "timeoutMilliseconds": 5000,
+      "expectMotionState": "Alarmed",
+      "expectMotionAlarmCode": "MoveTimeout"
+    }
+  ]
+}

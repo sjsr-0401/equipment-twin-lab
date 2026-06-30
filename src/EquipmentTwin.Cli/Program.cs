@@ -221,8 +221,8 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
 
     builder.AppendLine("## Summary");
     builder.AppendLine();
-    builder.AppendLine("| Scenario | Result | Final State | Active Alarm | Clear Condition | File |");
-    builder.AppendLine("|---|---:|---|---|---|---|");
+    builder.AppendLine("| Scenario | Result | Final State | Active Alarm | Clear Condition | Motion Axes | File |");
+    builder.AppendLine("|---|---:|---|---|---|---|---|");
     foreach (var run in runs)
     {
         var scenarioName = EscapeMarkdownTable(run.Result?.ScenarioName ?? Path.GetFileNameWithoutExtension(run.ScenarioPath));
@@ -230,8 +230,9 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
         var finalState = run.Result?.FinalState.ToString() ?? "NotRun";
         var activeAlarm = EscapeMarkdownTable(DescribeActiveAlarm(run));
         var clearCondition = EscapeMarkdownTable(DescribeClearCondition(run));
+        var motionAxes = EscapeMarkdownTable(DescribeMotionAxes(run));
         var fileName = EscapeMarkdownTable(run.ScenarioPath);
-        builder.AppendLine($"| {scenarioName} | {status} | {finalState} | {activeAlarm} | {clearCondition} | `{fileName}` |");
+        builder.AppendLine($"| {scenarioName} | {status} | {finalState} | {activeAlarm} | {clearCondition} | {motionAxes} | `{fileName}` |");
     }
 
     builder.AppendLine();
@@ -248,6 +249,7 @@ static string BuildMarkdownReport(IReadOnlyList<ScenarioCliRun> runs, CliOptions
         builder.AppendLine($"- Final state: `{run.Result?.FinalState.ToString() ?? "NotRun"}`");
         builder.AppendLine($"- Active alarm: `{DescribeActiveAlarm(run)}`");
         builder.AppendLine($"- Clear condition: `{DescribeClearCondition(run)}`");
+        builder.AppendLine($"- Motion axes: `{DescribeMotionAxes(run)}`");
 
         if (run.Errors.Count > 0)
         {
@@ -304,6 +306,27 @@ static string DescribeClearCondition(ScenarioCliRun run)
     var status = recovery.CanClear ? "Clearable" : "Blocked";
 
     return $"{status}: {recovery.Message}";
+}
+
+static string DescribeMotionAxes(ScenarioCliRun run)
+{
+    if (run.Runner is null || run.Runner.MotionAxes.Count == 0)
+    {
+        return "None";
+    }
+
+    return string.Join(
+        ", ",
+        run.Runner.MotionAxes.Values
+            .OrderBy(axis => axis.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(axis =>
+            {
+                var alarm = axis.LastAlarm is null
+                    ? "NoAlarm"
+                    : $"{axis.LastAlarm.Code}: {axis.LastAlarm.Message}";
+
+                return $"{axis.Name}: {axis.State} @ {axis.Position} ({alarm})";
+            }));
 }
 
 static string EscapeMarkdownTable(string value)

@@ -1,3 +1,5 @@
+using EquipmentTwin.Core.Motion;
+
 namespace EquipmentTwin.Core.Scenarios;
 
 /// <summary>
@@ -16,9 +18,23 @@ public sealed class ScenarioStep
 
     public int? AdvanceMilliseconds { get; init; }
 
+    public string? Axis { get; init; }
+
+    public double? TargetPosition { get; init; }
+
+    public int? DurationMilliseconds { get; init; }
+
+    public int? TimeoutMilliseconds { get; init; }
+
     public EquipmentState? ExpectState { get; init; }
 
     public Dictionary<string, bool> ExpectSignals { get; init; } = new();
+
+    public MotionAxisState? ExpectMotionState { get; init; }
+
+    public MotionAxisAlarmCode? ExpectMotionAlarmCode { get; init; }
+
+    public double? ExpectPosition { get; init; }
 
     public void Validate(int index)
     {
@@ -58,6 +74,41 @@ public sealed class ScenarioStep
                     throw new InvalidOperationException($"Scenario step '{Name}' requires a boolean value.");
                 }
                 break;
+
+            case ScenarioStepAction.MotionServoOn:
+            case ScenarioStepAction.PollMotion:
+                RequireAxis(index);
+                break;
+
+            case ScenarioStepAction.StartMotionHome:
+                RequireAxis(index);
+                RequireDuration();
+                break;
+
+            case ScenarioStepAction.StartMotionMove:
+                RequireAxis(index);
+                RequireDuration();
+                if (TargetPosition is null)
+                {
+                    throw new InvalidOperationException($"Scenario step '{Name}' requires targetPosition.");
+                }
+                break;
+
+            case ScenarioStepAction.CheckMotionTimeout:
+                RequireAxis(index);
+                if (TimeoutMilliseconds is null or <= 0)
+                {
+                    throw new InvalidOperationException($"Scenario step '{Name}' requires positive timeoutMilliseconds.");
+                }
+                break;
+
+            case ScenarioStepAction.ExpectMotionState:
+                RequireAxis(index);
+                if (ExpectMotionState is null)
+                {
+                    throw new InvalidOperationException($"Scenario step '{Name}' requires expectMotionState.");
+                }
+                break;
         }
     }
 
@@ -66,6 +117,22 @@ public sealed class ScenarioStep
         if (string.IsNullOrWhiteSpace(Signal))
         {
             throw new InvalidOperationException($"Scenario step #{index + 1} requires a signal name.");
+        }
+    }
+
+    private void RequireAxis(int index)
+    {
+        if (string.IsNullOrWhiteSpace(Axis))
+        {
+            throw new InvalidOperationException($"Scenario step #{index + 1} requires an axis name.");
+        }
+    }
+
+    private void RequireDuration()
+    {
+        if (DurationMilliseconds is null or <= 0)
+        {
+            throw new InvalidOperationException($"Scenario step '{Name}' requires positive durationMilliseconds.");
         }
     }
 }
