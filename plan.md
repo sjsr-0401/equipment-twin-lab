@@ -2273,6 +2273,8 @@ PASS/FAIL 결과를 Markdown report로 비교한다.
 - Template batch Markdown report
 - CI template batch 검증
 - Visual Studio template batch launch profile
+- Draft PR #20 생성
+- GitHub Actions push/pull_request CI 성공
 
 검증 결과:
 
@@ -2281,6 +2283,8 @@ PASS/FAIL 결과를 Markdown report로 비교한다.
 - 오류 0개
 - Template batch CLI 성공
 - `artifacts\template-batch-report.md` 내용 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 막힌 점:
 
@@ -2306,6 +2310,6 @@ BuildTemplateBatchMarkdownReport()
 
 다음 권장 작업:
 
-1. Goal 022 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #20을 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Fault Expected-Failure Report를 선택한다.

@@ -93,6 +93,7 @@
 - Goal 021 Draft PR #19를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #19를 main에 squash merge했다.
 - Goal 022에서 Template Batch Report를 추가했다.
+- Goal 022 Draft PR #20을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -159,7 +160,7 @@
 | 2026-07-01 | Goal 021: Template Run Markdown Report | template run 결과 Markdown 저장 기능 추가 |
 | 2026-07-01 | Goal 021 PR #19 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-07-01 | PR #19 병합 | Template Run Markdown Report main 반영 |
-| 2026-07-01 | Goal 022: Template Batch Report | 여러 recipe batch 실행과 Markdown 비교 report 추가 |
+| 2026-07-01 | Goal 022: Template Batch Report | 여러 recipe batch 실행과 Markdown 비교 report 추가, Draft PR #20 생성, CI 성공 |
 
 ## 열린 PR
 
@@ -184,6 +185,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/17` | `goal/019-inspection-result` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/18` | `goal/020-template-runner-cli` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/19` | `goal/021-template-run-report` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/20` | `goal/022-template-batch-report` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -227,11 +229,13 @@
 | 2026-07-01 | `goal/020-template-runner-cli` | pull_request | 성공 |
 | 2026-07-01 | `goal/021-template-run-report` | push | 성공 |
 | 2026-07-01 | `goal/021-template-run-report` | pull_request | 성공 |
+| 2026-07-01 | `goal/022-template-batch-report` | push | 성공 |
+| 2026-07-01 | `goal/022-template-batch-report` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 022 변경을 커밋하고 Draft PR을 만든다.
-2. CI에서 Release build, console tests 68개, CLI batch 9개, template batch report 생성을 확인한다.
+1. PR #20을 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. 이후 Inspection Scenario Selection 또는 Fault Expected-Failure Report로 확장한다.
 
 ## 금지할 것

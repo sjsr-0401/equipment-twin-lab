@@ -25,6 +25,8 @@ template 안의 모든 product recipe를 한 번에 실행하고, 장비 실행 
 - report에는 Summary와 Details를 포함했다.
 - CI에 template batch report 생성을 추가했다.
 - Visual Studio launch profile에 template batch report를 추가했다.
+- Draft PR #20을 만들었다.
+- GitHub Actions push/pull_request CI 성공을 확인했다.
 
 ## 바뀐 파일
 
@@ -48,6 +50,8 @@ template 안의 모든 product recipe를 한 번에 실행하고, 장비 실행 
 - 오류 0개
 - Template batch CLI 실행 성공
 - `artifacts\template-batch-report.md` 내용 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 ## 막힌 점과 해결 방법
 
@@ -101,7 +105,9 @@ Product FAIL   = 제품 검사 불합격
 
 ## 다음 작업
 
-다음 후보는 `Inspection Scenario Selection` 또는 `Fault Expected-Failure Report`이다.
+먼저 PR #20을 Ready로 전환하고 병합한다.
+
+그 다음 후보는 `Inspection Scenario Selection` 또는 `Fault Expected-Failure Report`이다.
 
 Inspection Scenario Selection은 같은 recipe에서 PASS/FAIL 케이스를 더 자유롭게 고르게 만든다.
 
