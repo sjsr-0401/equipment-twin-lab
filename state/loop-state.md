@@ -488,3 +488,40 @@ Completion update:
   - pull_request run `28506142593`
 - Unity screenshot generation remains blocked by inactive Unity license.
 - Next recommended goal: `Goal 032: Unity license activation result capture and README demo image`.
+
+## 2026-07-01 Update: Goal 032 in progress
+
+- PR #29 merged into `main`.
+- Current branch: `goal/032-unity-screenshot-readme-image`.
+- Unity Hub Personal license is active.
+- Unity batch screenshot now reaches compile/render.
+- First real screenshot generated:
+  - `artifacts/unity-demo/moly-ald-demo.png`
+  - `docs/demo/moly-ald-demo.png`
+
+Fixes made during Goal 032:
+
+- removed runtime dependency on `JsonUtility`;
+- removed IMGUI `GUI/GUILayout` HUD dependency;
+- disabled `-nographics` only for screenshot capture;
+- added explicit visual refresh for Editor batch screenshot;
+- copied representative image into tracked docs.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR
+- watch CI
+
+Completion update:
+
+- Draft PR #30 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/30>
+- Commit: `0afd356 feat: add verified unity demo screenshot`
+- Local validation passed.
+- Unity screenshot validation passed.
+- PR CI passed:
+  - push run `28513825158`
+  - pull_request run `28513842354`
+- Next recommended goal: `Goal 033: Unity demo polish and 3-minute recording checklist`.

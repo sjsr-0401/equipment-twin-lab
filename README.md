@@ -2,6 +2,27 @@
 
 실제 장비가 없어도 장비 SW의 핵심 구조를 검증할 수 있게 만드는 제조 장비 디지털 트윈 프로젝트다.
 
+![Unity demo screenshot: public synthetic molybdenum ALD replay](docs/demo/moly-ald-demo.png)
+
+## Unity Demo
+
+현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, chamber/wafer/film/vacuum gauge/valve 상태를 primitive 3D object로 재생한다.
+
+검증된 실행 경로:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+검증 marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
+```
+
+주의: 이 이미지는 실제 Lam/ALTUS/Halo/Halo HX 장비 CAD나 내부 sequence가 아니라, 공개/합성 공정 상태를 보여주는 포트폴리오용 replay visual이다.
+
 ## 목표
 
 - 장비 상태 전이, PLC/IO, 모션, 센서, 카메라 검사를 소프트웨어로 모델링한다.

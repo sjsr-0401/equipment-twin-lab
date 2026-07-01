@@ -85,12 +85,23 @@ $executeMethod = "EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatc
 $unityArgs = @(
     "-batchmode",
     "-quit",
-    "-nographics",
     "-projectPath",
     $ProjectPath,
     "-logFile",
     $LogPath
 )
+
+if (-not $CaptureScreenshot) {
+    $unityArgs = @(
+        "-batchmode",
+        "-quit",
+        "-nographics",
+        "-projectPath",
+        $ProjectPath,
+        "-logFile",
+        $LogPath
+    )
+}
 
 if ($CaptureScreenshot) {
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ScreenshotPath) | Out-Null

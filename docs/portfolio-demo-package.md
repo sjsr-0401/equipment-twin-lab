@@ -105,8 +105,8 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | Product/Inspection data model | 구현/테스트 완료 | `ProductRecipe`, `InspectionResult`, template CLI |
 | 공개/합성 ALD process | 구현/CLI 검증 완료 | `MolyAldRunner`, `process run` |
 | Unity timeline data contract | 구현/파일 검증 완료 | `MolyAldTimelineDocument`, sample JSON |
-| Unity primitive visual | 코드 구현/라이선스 후 실기 검증 필요 | `MolyAldPrimitiveVisualizer` |
-| Unity screenshot capture | 자동화 구현/라이선스 후 PNG 생성 필요 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
+| Unity primitive visual | 실제 Unity Editor batch 검증 완료 | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
+| Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
 
 ## 현재 주장하면 안 되는 것
 
@@ -184,9 +184,9 @@ MolyAldProcessPlayer.CurrentStep
 - Unity Editor CI
 - 실제 공정 데이터 calibration
 
-## 다음에 집에서 해야 할 확인
+## 실제 Unity screenshot 확인
 
-Unity Hub 로그인/라이선스 활성화 후 아래 명령을 실행한다.
+Unity Hub 로그인/라이선스 활성화 후 아래 명령으로 검증했다.
 
 ```powershell
 .\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
@@ -200,9 +200,14 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 artifacts/unity-demo/moly-ald-demo.png 생성
 ```
 
-성공 후 다음 작업:
+대표 이미지:
 
-- screenshot을 `docs/demo/` 같은 tracked 위치로 복사
-- README에 이미지 삽입
+```text
+docs/demo/moly-ald-demo.png
+```
+
+다음 작업:
+
 - 3분 데모 영상 체크리스트 작성
 - Unity visual에서 CAD/Blender 모델 교체 지점 설계
+- screenshot 품질 개선: camera framing, labels, simple chamber layout

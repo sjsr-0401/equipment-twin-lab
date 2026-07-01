@@ -1438,6 +1438,47 @@ O: 공개/합성 ALD 개념으로 장비 SW 구조와 검증 루프를 구현했
 ```
 
 이 명령은 Unity Hub 라이선스 활성화 후 실행해야 한다.
+
+## 2026-07-01 이해 요약: Unity Screenshot and README Demo Image
+
+이번 Goal의 핵심은 Unity 작업이 “코드만 있는 상태”에서 “실제 화면 산출물이 있는 상태”로 넘어간 것이다.
+
+한 문장 설명:
+
+> `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`은 Unity Editor를 batch mode로 실행하고, sample timeline을 로드한 뒤 대표 공정 step을 primitive 3D 장면에 반영해서 PNG로 저장한다.
+
+코드 흐름:
+
+```text
+PowerShell runner
+    -> Unity Editor batchmode
+    -> MolyAldEditorSmokeTest.RunBatchScreenshotCapture()
+    -> RunSmokeTest()
+    -> CaptureScreenshot()
+    -> Camera.Render()
+    -> docs/demo/moly-ald-demo.png
+```
+
+이번에 배운 Unity 포인트:
+
+- 라이선스가 없으면 Unity는 코드 실행 전에 멈춘다.
+- `-nographics`는 smoke test에는 좋지만 `Camera.Render()` screenshot에는 맞지 않는다.
+- Editor batch mode는 Play Mode가 아니므로 `Start()`/`Update()`만 믿으면 안 된다.
+- 캡처 전에는 `LoadTimeline()`과 `RefreshVisuals()`처럼 상태 반영을 명시 호출해야 한다.
+
+유지보수할 때 볼 파일:
+
+- `scripts/Invoke-UnitySmokeTest.ps1`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineLoader.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
+- `docs/demo/moly-ald-demo.png`
+
+현재 한계:
+
+- visual은 아직 primitive object다.
+- screenshot은 pipeline 증명용이지 최종 포트폴리오 영상 품질은 아니다.
+- 다음에는 camera framing, label, chamber layout을 개선해야 한다.
 ## 2026-07-01 이해 요약: Public Moly ALD Process Model
 
 이번 Goal의 핵심은 `실제 장비를 복제하는 것`이 아니라 `장비 SW가 공정을 어떻게 순서대로 제어하는지`를 보여주는 것이다.

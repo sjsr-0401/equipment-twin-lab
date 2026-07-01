@@ -2704,3 +2704,43 @@ Goal 032: Unity license activation result capture and README demo image
 ```
 
 집에서 Unity Hub 라이선스를 활성화한 뒤 `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`를 실행하고, 생성된 이미지를 README에 붙인다.
+
+## 57. 2026-07-01 Goal 032: Unity Screenshot and README Demo Image
+
+Goal 032는 Unity Hub 라이선스를 활성화한 뒤 실제 Unity batch screenshot을 생성하고 README에 대표 이미지를 붙인 작업이다.
+
+목표:
+
+```text
+Unity visual code가 실제 Editor에서 compile되고 screenshot PNG로 저장되는지 확인한다.
+```
+
+결과:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
+이번에 발견한 문제:
+
+- Unity license 미활성화로 batchmode가 막혀 있었다.
+- Unity 6000 asmdef compile에서 `JsonUtility`, `GUI`, `GUILayout` 의존이 실패했다.
+- `-nographics` 상태에서는 `Camera.Render()` screenshot이 crash를 냈다.
+- Editor batch screenshot에서는 Play Mode lifecycle이 돌지 않아 label이 기본값으로 남았다.
+
+수정 방향:
+
+```text
+Unity screenshot mode = graphics batchmode
+Timeline loader = stable schema parser
+HUD = IMGUI 제거, runtime summary/log
+Visualizer = explicit RefreshVisuals()
+```
+
+다음 권장 Goal:
+
+```text
+Goal 033: Unity demo polish and 3-minute recording checklist
+```
+
+대표 이미지는 생겼으므로 다음은 카메라 구도, label, 장비 배치, 녹화 checklist를 정리한다.

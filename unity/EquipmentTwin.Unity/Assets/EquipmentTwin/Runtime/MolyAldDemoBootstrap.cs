@@ -50,7 +50,7 @@ namespace EquipmentTwin.Unity.Processes
             {
                 var cameraObject = new GameObject("Moly ALD Demo Camera");
                 cameraObject.tag = "MainCamera";
-                cameraObject.transform.position = new Vector3(0f, 4.0f, -6.4f);
+                cameraObject.transform.position = new Vector3(0f, 4.2f, -7.8f);
                 cameraObject.transform.rotation = Quaternion.Euler(32f, 0f, 0f);
 
                 var camera = cameraObject.AddComponent<Camera>();
