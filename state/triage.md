@@ -198,3 +198,17 @@ PR status:
 
 - Goal 031 branch: `goal/031-portfolio-demo-package`
 - Next work after this PR: activate Unity license, run `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`, then add real screenshot to README.
+
+Completion status:
+
+- Draft PR #29: <https://github.com/sjsr-0401/equipment-twin-lab/pull/29>
+- CI: passed
+- Remaining blocker: Unity Hub license activation
+
+Next priority:
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity screenshot capture on licensed machine | Converts Unity visual code into visible portfolio proof | User/local action |
+| P1 | README demo image | Needed for first-impression GitHub portfolio page | Next |
+| P2 | 3-minute video checklist | Useful after a real screenshot exists | Later |

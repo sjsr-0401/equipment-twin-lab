@@ -477,3 +477,14 @@ Local validation update:
 - Release build: passed
 - Core console tests: passed, 80 tests
 - Public moly ALD process CLI report/timeline run: passed
+
+Completion update:
+
+- Draft PR #29 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/29>
+- Commit: `0354a51 docs: add portfolio demo package`
+- Local validation passed.
+- PR CI passed:
+  - push run `28506128034`
+  - pull_request run `28506142593`
+- Unity screenshot generation remains blocked by inactive Unity license.
+- Next recommended goal: `Goal 032: Unity license activation result capture and README demo image`.
