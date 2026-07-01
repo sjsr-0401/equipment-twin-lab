@@ -2334,6 +2334,8 @@ PR #20을 병합한 뒤 Goal 023을 시작했다.
 - selected inspection Markdown report
 - CI selected inspection 검증
 - Visual Studio selected inspection launch profile
+- Draft PR #21 생성
+- GitHub Actions push/pull_request CI 성공
 
 검증 결과:
 
@@ -2342,6 +2344,8 @@ PR #20을 병합한 뒤 Goal 023을 시작했다.
 - selected inspection CLI 성공
 - 기존 template run/batch 경로 성공
 - `artifacts\template-inspection-scenario-report.md` 내용 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 막힌 점:
 
@@ -2364,6 +2368,6 @@ Report
 
 다음 권장 작업:
 
-1. Goal 023 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #21을 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. Fault Expected-Failure Report 또는 Inspection Scenario Batch Matrix를 선택한다.

@@ -26,6 +26,8 @@
 - Visual Studio launch profile에 inspection scenario 실행 프로필을 추가했다.
 - CI에 selected inspection scenario 실행을 추가했다.
 - README, architecture, validation, Visual Studio 문서를 갱신했다.
+- Draft PR #21을 만들었다.
+- GitHub Actions push/pull_request CI 성공을 확인했다.
 
 ## 바뀐 파일
 
@@ -52,6 +54,8 @@
 - selected inspection Markdown report 생성 확인
 - 기존 default-panel template run 성공
 - 기존 template batch report 실행 성공
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 ## 막힌 점과 해결 방법
 
@@ -102,7 +106,9 @@ dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-insp
 
 ## 다음 작업
 
-다음 후보는 `Fault Expected-Failure Report` 또는 `Inspection Scenario Batch Matrix`다.
+먼저 PR #21을 Ready로 전환하고 병합한다.
+
+그 다음 후보는 `Fault Expected-Failure Report` 또는 `Inspection Scenario Batch Matrix`다.
 
 Fault Expected-Failure Report는 fault 주입처럼 CLI exit code 1이 정상 기대값인 케이스를 report/CI에서 안전하게 검증하게 만든다.
 
