@@ -1,7 +1,8 @@
 ﻿param(
     [switch] $SkipUnity,
     [string] $ReportPath,
-    [string] $ScreenshotPath
+    [string] $ScreenshotPath,
+    [string] $CueCardsPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,6 +23,13 @@ if ([string]::IsNullOrWhiteSpace($ScreenshotPath)) {
 }
 elseif (-not [System.IO.Path]::IsPathRooted($ScreenshotPath)) {
     $ScreenshotPath = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $ScreenshotPath))
+}
+
+if ([string]::IsNullOrWhiteSpace($CueCardsPath)) {
+    $CueCardsPath = Join-Path $OutputDir "recording-cue-cards.md"
+}
+elseif (-not [System.IO.Path]::IsPathRooted($CueCardsPath)) {
+    $CueCardsPath = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $CueCardsPath))
 }
 
 $ProcessReportPath = Join-Path $OutputDir "moly-ald-process-report.md"
@@ -124,6 +132,7 @@ function Write-RehearsalReport {
     $processReportRelativePath = ConvertTo-RelativePath $ProcessReportPath
     $timelineRelativePath = ConvertTo-RelativePath $TimelinePath
     $rehearsalReportRelativePath = ConvertTo-RelativePath $Path
+    $cueCardsRelativePath = ConvertTo-RelativePath $CueCardsPath
 
     $lines.Add('- 정상 공정 report: `' + $processReportRelativePath + '`')
     $lines.Add('- Unity replay timeline JSON: `' + $timelineRelativePath + '`')
@@ -134,6 +143,7 @@ function Write-RehearsalReport {
     }
 
     $lines.Add('- 리허설 결과 report: `' + $rehearsalReportRelativePath + '`')
+    $lines.Add('- 녹화 큐카드: `' + $cueCardsRelativePath + '`')
     $lines.Add("")
     $lines.Add("## 실행한 명령")
     $lines.Add("")
@@ -241,7 +251,14 @@ try {
     }
 
     Write-RehearsalReport -Path $ReportPath
+
+    $cueCardsScript = Join-Path $ScriptDir "New-PortfolioDemoCueCards.ps1"
+    if (Test-Path -LiteralPath $cueCardsScript) {
+        & $cueCardsScript -OutputPath $CueCardsPath -RehearsalReportPath $ReportPath
+    }
+
     Write-Host "Demo rehearsal report: $ReportPath"
+    Write-Host "Demo recording cue cards: $CueCardsPath"
     Write-Host "데모 리허설 통과. 결과 파일: $ReportPath"
 }
 finally {

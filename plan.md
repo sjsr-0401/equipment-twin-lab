@@ -13,6 +13,7 @@
 - 3분 포트폴리오 녹화 체크리스트는 `docs/unity-demo-recording-checklist.md`에 정리한다.
 - CAD/Blender 모델 교체 경계는 `MolyAldVisualState`와 `MolyAldImportedModelVisualBinding`으로 분리한다.
 - 3분 녹화 전 리허설은 `scripts/Invoke-PortfolioDemoRehearsal.ps1`로 실행한다.
+- 3분 녹화 한글 큐카드는 `scripts/New-PortfolioDemoCueCards.ps1`로 생성한다.
 
 ## 1. 프로젝트 한 줄 정의
 
@@ -2753,3 +2754,42 @@ Goal 033: Unity demo polish and 3-minute recording checklist
 ```
 
 대표 이미지는 생겼으므로 다음은 카메라 구도, label, 장비 배치, 녹화 checklist를 정리한다.
+
+## 58. 2026-07-01 Goal 036: Demo Narration Cue Cards
+
+Goal 036은 실제 3분 데모 녹화를 하기 전, 사용자가 그대로 읽고 따라갈 수 있는 한글 큐카드를 만드는 작업이다.
+
+목표:
+
+```text
+리허설 결과를 바탕으로 3분 데모 녹화용 한글 대본과 시간대별 화면 큐를 생성한다.
+```
+
+구현 범위:
+
+- `scripts/New-PortfolioDemoCueCards.ps1`
+- `docs/portfolio-demo-narration.md`
+- `goals/036-demo-narration-cue-cards.md`
+- `Invoke-PortfolioDemoRehearsal.ps1`에서 큐카드 자동 생성
+- README/demo package 연결
+
+핵심 설계:
+
+```text
+Rehearsal = 데모 재료 검증
+Cue cards = 녹화 중 말할 내용
+Portfolio narration = 면접 설명 기준
+```
+
+이번 단계에서 하지 않는 것:
+
+- 실제 화면 녹화
+- 음성 녹음
+- Unity camera path animation
+- 실제 장비 내부 sequence 주장
+
+다음 권장 Goal:
+
+```text
+Goal 037: 실제 3분 데모 녹화 후 설명 막힘과 화면 부족분 수정
+```

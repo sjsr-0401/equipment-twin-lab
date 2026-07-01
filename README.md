@@ -31,6 +31,10 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 
 [docs/demo-rehearsal-runner.md](docs/demo-rehearsal-runner.md)
 
+3분 녹화 한글 대본/큐카드:
+
+[docs/portfolio-demo-narration.md](docs/portfolio-demo-narration.md)
+
 CAD/Blender 모델 교체 경계:
 
 [docs/unity-model-swap-boundary.md](docs/unity-model-swap-boundary.md)

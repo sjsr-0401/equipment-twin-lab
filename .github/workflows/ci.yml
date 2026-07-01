@@ -73,11 +73,13 @@ jobs:
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           test -f scripts/Invoke-UnitySmokeTest.ps1
           test -f scripts/Invoke-PortfolioDemoRehearsal.ps1
+          test -f scripts/New-PortfolioDemoCueCards.ps1
           test -f docs/unity-smoke-test.md
           test -f docs/unity-demo-screenshot.md
           test -f docs/portfolio-demo-package.md
           test -f docs/unity-demo-recording-checklist.md
           test -f docs/demo-rehearsal-runner.md
+          test -f docs/portfolio-demo-narration.md
           test -f docs/unity-model-swap-boundary.md
           test -f docs/demo/moly-ald-demo.png
           test -f goals/031-portfolio-demo-package.md
@@ -85,6 +87,7 @@ jobs:
           test -f goals/033-unity-demo-polish-recording-checklist.md
           test -f goals/034-unity-visual-adapter-boundary.md
           test -f goals/035-demo-rehearsal-runner.md
+          test -f goals/036-demo-narration-cue-cards.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldVisualStateMapper.FromTimeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -94,6 +97,9 @@ jobs:
           grep -q "CaptureScreenshot" scripts/Invoke-UnitySmokeTest.ps1
           grep -q "pumpdown-timeout" scripts/Invoke-PortfolioDemoRehearsal.ps1
           grep -q "AllowedExitCodes @(1)" scripts/Invoke-PortfolioDemoRehearsal.ps1
+          grep -q "New-PortfolioDemoCueCards.ps1" scripts/Invoke-PortfolioDemoRehearsal.ps1
+          grep -q "recording-cue-cards.md" scripts/New-PortfolioDemoCueCards.ps1
+          grep -q "Lam/ALTUS/Halo/Halo HX" docs/portfolio-demo-narration.md
           grep -q 'LASTEXITCODE' scripts/Invoke-UnitySmokeTest.ps1
           grep -q "nographics" scripts/Invoke-UnitySmokeTest.ps1
           test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json
