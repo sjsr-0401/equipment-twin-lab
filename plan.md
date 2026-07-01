@@ -2131,3 +2131,64 @@ ProductPassed = 제품 검사 PASS/FAIL
 1. PR #17 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Template Runner CLI 또는 Inspection Scenario Selection을 선택한다.
+
+## 45. 2026-07-01 Goal 020: Template Runner CLI
+
+PR #17을 병합한 뒤 Goal 020을 시작했다.
+
+목표:
+
+```text
+사용자가 명령어로 Equipment Template과 Product Recipe를 실행하고,
+장비 실행 결과와 제품 검사 결과를 직접 볼 수 있게 한다.
+```
+
+추가한 기능:
+
+- `template run` CLI 모드
+- template JSON 경로 입력
+- recipe 이름 입력
+- `--fault <name>` fault 주입 옵션
+- Execution/Product/Inspection/Motion axes/Command log 출력
+- CI template CLI 검증
+- Visual Studio template launch profile
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 68개 통과
+- CLI batch 시나리오 9개 통과
+- `default-panel` template CLI 성공
+- `tall-part` template CLI 성공
+- fault 주입 CLI 출력 확인
+
+막힌 점:
+
+- fault 주입 케이스는 의도적으로 exit code 1을 반환한다.
+- CI에는 fault 케이스를 넣지 않고 로컬 출력 확인으로 남겼다.
+
+보류한 판단:
+
+- template Markdown report는 아직 없다.
+- template batch 실행은 아직 없다.
+- fault 예상 실패를 CI에서 검증하는 방식은 아직 정하지 않았다.
+
+소프트웨어 아키텍처:
+
+```text
+EquipmentTwin.Cli
+    ↓
+RunTemplate()
+    ↓
+TemplateRunner
+    ↓
+PrintTemplateResult()
+```
+
+다음 권장 작업:
+
+1. Goal 020 Draft PR을 만든다.
+2. CI 결과를 확인한다.
+3. Inspection Scenario Selection 또는 Template Run Markdown Report를 선택한다.
