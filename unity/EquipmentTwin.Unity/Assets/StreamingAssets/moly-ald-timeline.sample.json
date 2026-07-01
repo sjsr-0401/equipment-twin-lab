@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "equipment-twin.moly-ald.timeline.v1",
+  "source": "public-synthetic-moly-ald",
+  "recipeName": "public-moly-ald-unity-sample",
+  "success": true,
+  "finalStep": "Complete",
+  "faultScenarioName": "",
+  "stationCount": 4,
+  "cycleCount": 1,
+  "targetThicknessAngstrom": 2,
+  "estimatedThicknessAngstrom": 2,
+  "totalDurationMilliseconds": 5800,
+  "publicBasis": [
+    "Unity sample timeline for visual replay only."
+  ],
+  "steps": [
+    {
+      "index": 1,
+      "step": "LoadWafer",
+      "cycle": 0,
+      "startedAtUtc": "2026-06-25T00:00:00+00:00",
+      "completedAtUtc": "2026-06-25T00:00:02+00:00",
+      "durationMilliseconds": 2000,
+      "success": true,
+      "message": "Wafer loaded into public synthetic ALD module.",
+      "chamberPressureMtorr": 760000,
+      "waferTemperatureC": 25,
+      "valves": {
+        "metalPrecursor": false,
+        "reactant": false,
+        "purge": false
+      },
+      "estimatedThicknessAngstrom": 0
+    },
+    {
+      "index": 2,
+      "step": "PumpDown",
+      "cycle": 0,
+      "startedAtUtc": "2026-06-25T00:00:02+00:00",
+      "completedAtUtc": "2026-06-25T00:00:04+00:00",
+      "durationMilliseconds": 2000,
+      "success": true,
+      "message": "Chamber reached the synthetic process pressure setpoint.",
+      "chamberPressureMtorr": 850,
+      "waferTemperatureC": 250,
+      "valves": {
+        "metalPrecursor": false,
+        "reactant": false,
+        "purge": true
+      },
+      "estimatedThicknessAngstrom": 0
+    },
+    {
+      "index": 3,
+      "step": "DoseMetalPrecursor",
+      "cycle": 1,
+      "startedAtUtc": "2026-06-25T00:00:04+00:00",
+      "completedAtUtc": "2026-06-25T00:00:04.8+00:00",
+      "durationMilliseconds": 800,
+      "success": true,
+      "message": "Cycle 1: synthetic molybdenum precursor dose completed.",
+      "chamberPressureMtorr": 850,
+      "waferTemperatureC": 250,
+      "valves": {
+        "metalPrecursor": true,
+        "reactant": false,
+        "purge": false
+      },
+      "estimatedThicknessAngstrom": 0
+    },
+    {
+      "index": 4,
+      "step": "DoseReactant",
+      "cycle": 1,
+      "startedAtUtc": "2026-06-25T00:00:04.8+00:00",
+      "completedAtUtc": "2026-06-25T00:00:05.8+00:00",
+      "durationMilliseconds": 1000,
+      "success": true,
+      "message": "Cycle 1: synthetic reactant dose completed and film increment was applied.",
+      "chamberPressureMtorr": 850,
+      "waferTemperatureC": 250,
+      "valves": {
+        "metalPrecursor": false,
+        "reactant": true,
+        "purge": false
+      },
+      "estimatedThicknessAngstrom": 2
+    }
+  ]
+}

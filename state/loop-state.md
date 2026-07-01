@@ -324,3 +324,22 @@ Next recommended goal:
 ```text
 Goal 027: Unity Process Player Skeleton
 ```
+
+## 2026-07-01 Update: Goal 027 in progress
+
+- PR #24 merged into `main`.
+- Current branch: `goal/027-unity-process-player-skeleton`.
+- Goal 027 adds first Unity-side process player skeleton.
+- Unity folder: `unity/EquipmentTwin.Unity`.
+- Current validation boundary:
+  - .NET build/tests still run in CI.
+  - Unity skeleton file presence is checked in CI.
+  - Unity Editor compile/play is still a manual next-step validation.
+
+Next required action:
+
+- run full local validation
+- commit
+- push
+- create draft PR #25
+- watch CI

@@ -186,6 +186,46 @@ IO:
 
 - `EquipmentTwin.Cli`
 - `EquipmentTwin.Core.Tests`
+
+## Unity Skeleton Local Debugging
+
+Goal 027 adds a lightweight Unity project skeleton at:
+
+```text
+unity/EquipmentTwin.Unity
+```
+
+Recommended local flow:
+
+1. Generate the process timeline from Visual Studio or CLI:
+
+   ```powershell
+   dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --timeline artifacts\moly-ald-timeline.json
+   ```
+
+2. Copy or import that JSON into Unity as a `TextAsset`, or place it under:
+
+   ```text
+   unity/EquipmentTwin.Unity/Assets/StreamingAssets/
+   ```
+
+3. Open `unity/EquipmentTwin.Unity` in Unity Hub.
+4. Create an empty GameObject.
+5. Add `MolyAldProcessPlayer`.
+6. Add `MolyAldProcessHud`.
+7. Press Play.
+
+Breakpoints / code points to inspect:
+
+- `MolyAldTimelineLoader.FromJson()`
+- `MolyAldProcessPlayer.LoadTimeline()`
+- `MolyAldProcessPlayer.Update()`
+- `MolyAldProcessHud.OnGUI()`
+
+Important distinction:
+
+Visual Studio builds the .NET Core/CLI side. Unity Editor compiles the Unity scripts.
+
 ## Timeline JSON Debugging
 
 The `CLI - public moly ALD process` profile now writes both files:

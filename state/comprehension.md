@@ -1481,3 +1481,64 @@ process run
 
 - `EquipmentStateMachine.Reject()`의 parameter가 `prev0ious`로 잘못 바뀌어 있었다.
 - 컴파일을 막는 오타라 `previous`로 복구했다.
+
+## 2026-07-01 이해 요약: Unity Process Player Skeleton
+
+이번 Goal의 핵심은 Unity가 Core/CLI에서 만든 timeline JSON을 읽는 길을 만든 것이다.
+
+한 문장 설명:
+
+> `MolyAldProcessPlayer`는 timeline JSON을 읽어 현재 step을 시간에 따라 바꾸고, `MolyAldProcessHud`는 그 현재 step의 pressure, temperature, valve, thickness를 화면에 표시한다.
+
+코드 흐름:
+
+```text
+Assets/StreamingAssets/moly-ald-timeline.sample.json
+    -> MolyAldTimelineLoader.FromStreamingAssetsFile()
+    -> MolyAldTimelineDocumentDto
+    -> MolyAldProcessPlayer.CurrentStep
+    -> MolyAldProcessHud.OnGUI()
+```
+
+초보자 관점에서 볼 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineData.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineLoader.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessHud.cs`
+
+각 파일 역할:
+
+```text
+MolyAldTimelineData
+    JSON 구조와 같은 DTO class
+
+MolyAldTimelineLoader
+    JSON 파일을 읽고 schema version을 확인
+
+MolyAldProcessPlayer
+    현재 몇 번째 step인지, 재생 중인지, step progress가 몇 %인지 관리
+
+MolyAldProcessHud
+    화면에 현재 상태를 글자로 표시
+```
+
+중요한 개념:
+
+- Unity는 아직 공정을 계산하지 않는다.
+- Unity는 C# Core가 만든 결과를 재생한다.
+- 그래서 나중에 3D 모델을 바꿔도 process logic은 그대로 유지된다.
+
+디버깅 포인트:
+
+1. `MolyAldProcessPlayer.LoadTimeline()`
+2. `MolyAldTimelineLoader.FromJson()`
+3. `MolyAldProcessPlayer.Update()`
+4. `MolyAldProcessPlayer.AdvanceStep()`
+5. `MolyAldProcessHud.OnGUI()`
+
+현재 검증 한계:
+
+- GitHub Actions에는 Unity Editor가 없다.
+- 따라서 Unity compile/play 검증은 아직 자동화하지 않았다.
+- 현재 CI는 Unity skeleton 파일 존재와 .NET 회귀 없음을 확인한다.

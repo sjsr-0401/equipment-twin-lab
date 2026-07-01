@@ -2425,6 +2425,53 @@ exit code
 1. PR #22를 Ready로 전환하고 병합한다.
 2. `main`을 최신화한다.
 3. Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.
+
+## 52. 2026-07-01 Goal 027: Unity Process Player Skeleton
+
+Goal 027은 첫 Unity 작업이다.
+
+목표:
+
+```text
+Unity에서 moly-ald-timeline.json을 읽고 현재 process step을 재생한다.
+```
+
+이번 Goal은 화려한 3D 장면이 아니라 data contract가 Unity까지 연결되는지 확인하는 최소 player다.
+
+구현 범위:
+
+- Unity project skeleton
+- timeline DTO
+- timeline loader
+- process player
+- debug HUD
+- sample timeline
+- Unity file CI check
+
+중요한 설계 판단:
+
+```text
+Core = 공정 로직의 진실
+CLI  = timeline 생성
+Unity = timeline 재생/시각화
+```
+
+Unity가 공정 로직을 새로 계산하게 만들면 Core와 Unity가 서로 다른 결과를 낼 수 있다. 그래서 Unity는 `CurrentStep`을 표시하는 player 역할로 제한한다.
+
+다음 권장 Goal:
+
+```text
+Goal 028: Unity Chamber/Wafer/Valve Visual
+```
+
+목표:
+
+- chamber primitive
+- wafer disk
+- precursor/reactant/purge valve indicator
+- film thickness visual
+- fault/alarm visual panel
+
 ## 51. 2026-07-01 Goal 026: Process Timeline JSON Export
 
 Goal 026은 Unity 작업을 시작하기 전의 data contract 작업이다.

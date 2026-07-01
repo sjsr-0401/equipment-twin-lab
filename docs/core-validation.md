@@ -217,6 +217,42 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 - Fault Expected-Failure Report로 fault 주입처럼 실행 실패가 기대값인 케이스를 CI에서 안전하게 검증할 수 있게 됐다.
 - 다음은 여러 inspection scenario를 batch matrix로 비교하거나, fault 종류와 기대 알람을 catalog로 정리하는 단계가 적절하다.
+
+## Unity Process Player Skeleton Validation
+
+Goal 027 adds Unity scripts, but GitHub Actions does not run Unity Editor.
+
+Current CI validation checks:
+
+- .NET build still succeeds.
+- Core tests still pass.
+- process CLI still generates `moly-ald-timeline.json`.
+- Unity skeleton source files exist in the expected paths.
+
+CI file-existence check:
+
+```text
+unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineData.cs
+unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineLoader.cs
+unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
+unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessHud.cs
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json
+```
+
+What this proves:
+
+- Unity adapter files are present.
+- Core/CLI changes were not broken by adding Unity files.
+- A sample timeline exists for local Unity Editor testing.
+
+What this does not prove yet:
+
+- Unity Editor compilation.
+- Unity Play Mode behavior.
+- 3D rendering quality.
+
+Those are intentionally next-step validations once the Unity visual layer exists.
+
 ## Process Timeline JSON Export Validation
 
 Goal 026 validates that the ALD process result can be exported as Unity-ready JSON.
