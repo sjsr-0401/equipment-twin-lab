@@ -108,6 +108,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | Unity primitive visual | 실제 Unity Editor batch 검증 완료 | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
 | Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
 | 3분 녹화 체크리스트 | 문서화 완료 | `docs/unity-demo-recording-checklist.md` |
+| 3분 녹화 리허설 | 자동 실행 스크립트 추가 | `scripts/Invoke-PortfolioDemoRehearsal.ps1`, `docs/demo-rehearsal-runner.md` |
 | CAD/Blender 모델 교체 경계 | 코드/문서 경계 추가 | `MolyAldVisualState`, `MolyAldImportedModelVisualBinding`, `docs/unity-model-swap-boundary.md` |
 
 ## 현재 주장하면 안 되는 것
@@ -211,6 +212,7 @@ docs/demo/moly-ald-demo.png
 
 다음 작업:
 
+- `.\scripts\Invoke-PortfolioDemoRehearsal.ps1`로 녹화 전 리허설을 실행한다.
 - 3분 데모 영상을 실제로 녹화한다.
 - 실제 CAD/Blender asset이 생기면 `MolyAldImportedModelVisualBinding`에 model part를 연결한다.
 - screenshot 품질을 계속 개선한다: imported model, lighting, camera path, simple animation.

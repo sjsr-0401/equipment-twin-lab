@@ -287,3 +287,28 @@ Completion status:
 - Next priority:
   - record the actual 3-minute demo video and find explanation gaps;
   - add imported-model auto-binding only after a real asset naming convention exists.
+
+## 2026-07-01 Triage Update: Goal 035
+
+Active focus moved to demo recording readiness.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Demo rehearsal runner | Reduces the chance of a broken demo during recording | In progress |
+| P1 | Expected fault handling in rehearsal | Prevents `pumpdown-timeout` exit code 1 from being mistaken for a script failure | Complete |
+| P1 | Full rehearsal with Unity screenshot | Confirms the recording material exists before screen recording | Complete |
+| P2 | Actual 3-minute video recording | Needs user screen/audio action | Next |
+
+Current validation boundary:
+
+- The script prepares recording material but does not record the screen.
+- Unity screenshot requires a local Unity Editor license; use `-SkipUnity` without Unity.
+
+Completion status:
+
+- Draft PR #33: <https://github.com/sjsr-0401/equipment-twin-lab/pull/33>
+- CI: passed
+- Next priority:
+  - run the rehearsal once before recording;
+  - record the actual 3-minute demo;
+  - adjust docs/visuals based on where the explanation gets stuck.

@@ -27,6 +27,10 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 
 [docs/unity-demo-recording-checklist.md](docs/unity-demo-recording-checklist.md)
 
+3분 녹화 리허설 실행기:
+
+[docs/demo-rehearsal-runner.md](docs/demo-rehearsal-runner.md)
+
 CAD/Blender 모델 교체 경계:
 
 [docs/unity-model-swap-boundary.md](docs/unity-model-swap-boundary.md)
@@ -447,6 +451,12 @@ The 3-minute recording checklist is documented here:
 
 ```text
 docs/unity-demo-recording-checklist.md
+```
+
+The demo rehearsal runner is documented here:
+
+```text
+docs/demo-rehearsal-runner.md
 ```
 
 The CAD/Blender model swap boundary is documented here:

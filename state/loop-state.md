@@ -602,3 +602,40 @@ Completion update:
   - push run `28515480062`
   - pull_request run `28515494369`
 - Next recommended goal: `Goal 035: record the actual 3-minute demo or add imported-model auto-binding after a real asset exists`.
+
+## 2026-07-01 Update: Goal 035 in progress
+
+- PR #32 merged into `main`.
+- Current branch: `goal/035-demo-rehearsal-runner`.
+- Goal 035 adds a demo rehearsal runner for 3-minute recording prep.
+- New files:
+  - `scripts/Invoke-PortfolioDemoRehearsal.ps1`
+  - `docs/demo-rehearsal-runner.md`
+  - `goals/035-demo-rehearsal-runner.md`
+- The rehearsal runner validates:
+  - Release build
+  - Core console tests
+  - normal public moly ALD process report/timeline
+  - expected `pumpdown-timeout` fault
+  - Unity screenshot capture unless `-SkipUnity` is used
+- Local validation passed:
+  - `git diff --check`
+  - `.\scripts\Invoke-PortfolioDemoRehearsal.ps1 -SkipUnity`
+  - `.\scripts\Invoke-PortfolioDemoRehearsal.ps1`
+
+Next required action:
+
+- commit Goal 035
+- push branch
+- create draft PR
+- watch CI
+
+Completion update:
+
+- Draft PR #33 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/33>
+- Commit: `a1f2eec feat: add demo rehearsal runner`
+- Local validation passed.
+- PR CI passed:
+  - push run `28516872338`
+  - pull_request run `28516885953`
+- Next recommended goal: `Goal 036: record the actual 3-minute demo and fix explanation or visual gaps`.
