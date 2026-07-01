@@ -1,6 +1,8 @@
 param(
     [string] $UnityPath,
-    [switch] $OpenProjectOnly
+    [switch] $OpenProjectOnly,
+    [switch] $CaptureScreenshot,
+    [string] $ScreenshotPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,7 +13,9 @@ $ProjectPath = Join-Path $RepoRoot "unity\EquipmentTwin.Unity"
 $ProjectVersionPath = Join-Path $ProjectPath "ProjectSettings\ProjectVersion.txt"
 $LogDir = Join-Path $ProjectPath "Logs"
 $LogPath = Join-Path $LogDir "codex-unity-smoke-test.log"
+$DefaultScreenshotPath = Join-Path $RepoRoot "artifacts\unity-demo\moly-ald-demo.png"
 $SuccessMarker = "EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS"
+$ScreenshotMarker = "EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED"
 
 function Resolve-UnityEditor {
     param([string] $RequestedUnityPath)
@@ -64,19 +68,40 @@ Write-Host "Unity Editor: $ResolvedUnityPath"
 Write-Host "Project:      $ProjectPath"
 Write-Host "Log:          $LogPath"
 
+if ([string]::IsNullOrWhiteSpace($ScreenshotPath)) {
+    $ScreenshotPath = $DefaultScreenshotPath
+}
+elseif (-not [System.IO.Path]::IsPathRooted($ScreenshotPath)) {
+    $ScreenshotPath = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $ScreenshotPath))
+}
+
 if ($OpenProjectOnly) {
     Start-Process -FilePath $ResolvedUnityPath -ArgumentList @("-projectPath", $ProjectPath)
-    Write-Host "Unity project opened. In Unity, use Equipment Twin > Run Moly ALD Smoke Test."
+    Write-Host "Unity project opened. In Unity, use Equipment Twin > Run Moly ALD Smoke Test or Equipment Twin > Capture Moly ALD Demo Screenshot."
     exit 0
 }
 
-& $ResolvedUnityPath `
-    -batchmode `
-    -quit `
-    -nographics `
-    -projectPath $ProjectPath `
-    -executeMethod EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchSmokeTest `
-    -logFile $LogPath
+$executeMethod = "EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchSmokeTest"
+$unityArgs = @(
+    "-batchmode",
+    "-quit",
+    "-nographics",
+    "-projectPath",
+    $ProjectPath,
+    "-logFile",
+    $LogPath
+)
+
+if ($CaptureScreenshot) {
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ScreenshotPath) | Out-Null
+    $executeMethod = "EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchScreenshotCapture"
+    $unityArgs += @("-equipmentTwinScreenshot", $ScreenshotPath)
+    Write-Host "Screenshot:   $ScreenshotPath"
+}
+
+$unityArgs += @("-executeMethod", $executeMethod)
+
+& $ResolvedUnityPath @unityArgs
 
 $UnityExitCode = $LASTEXITCODE
 if (Test-Path -LiteralPath $LogPath) {
@@ -91,6 +116,20 @@ if ($UnityExitCode -ne 0) {
 if (-not (Select-String -LiteralPath $LogPath -Pattern $SuccessMarker -Quiet)) {
     Write-Host "ERROR: Unity exited successfully, but the smoke-test success marker was not found: $SuccessMarker" -ForegroundColor Red
     exit 1
+}
+
+if ($CaptureScreenshot) {
+    if (-not (Select-String -LiteralPath $LogPath -Pattern $ScreenshotMarker -Quiet)) {
+        Write-Host "ERROR: Unity exited successfully, but the screenshot marker was not found: $ScreenshotMarker" -ForegroundColor Red
+        exit 1
+    }
+
+    if (-not (Test-Path -LiteralPath $ScreenshotPath)) {
+        Write-Host "ERROR: Screenshot marker was found, but the screenshot file does not exist: $ScreenshotPath" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Unity screenshot saved: $ScreenshotPath"
 }
 
 Write-Host "Unity smoke test passed."

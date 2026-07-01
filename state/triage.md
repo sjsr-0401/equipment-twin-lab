@@ -157,3 +157,18 @@ PR status:
 - Goal 029 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/27>
 - CI status: passed
 - Next work: activate Unity Hub license, run the smoke-test script, capture first demo screenshot.
+
+## 2026-07-01 Triage Update: Goal 030
+
+Active focus moved from smoke-test execution to screenshot capture.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Screenshot capture command | Needed for README/portfolio visual proof | In progress |
+| P1 | Unity license activation | Required before actual PNG can be generated | User action |
+| P2 | README demo image | Requires a generated screenshot first | Next |
+
+Current blocker:
+
+- The repository can provide screenshot automation, but cannot activate the Unity license.
+- Actual screenshot generation remains blocked until Unity Hub login/license activation is completed.

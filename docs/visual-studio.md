@@ -291,6 +291,24 @@ Expected success marker:
 EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
 ```
 
+Screenshot capture after license activation:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+Expected output:
+
+```text
+artifacts/unity-demo/moly-ald-demo.png
+```
+
+Manual Unity menu:
+
+```text
+Equipment Twin > Capture Moly ALD Demo Screenshot
+```
+
 ## Timeline JSON Debugging
 
 The `CLI - public moly ALD process` profile now writes both files:

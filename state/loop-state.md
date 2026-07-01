@@ -415,3 +415,26 @@ Completion update:
 - PR CI passed on run `28503702866`.
 - Unity smoke-test runner reaches Unity but is blocked by inactive license.
 - Next recommended goal: `Goal 030: Unity Hub license activation and first demo screenshot`.
+
+## 2026-07-01 Update: Goal 030 in progress
+
+- PR #27 merged into `main`.
+- Current branch: `goal/030-unity-demo-screenshot-capture`.
+- Goal 030 adds screenshot capture to the Unity smoke-test harness.
+- New command:
+  - `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`
+- Default output:
+  - `artifacts/unity-demo/moly-ald-demo.png`
+
+Current validation boundary:
+
+- Script syntax and file wiring can be validated now.
+- Actual screenshot capture requires Unity Hub license activation.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR #28
+- watch CI
