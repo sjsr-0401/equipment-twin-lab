@@ -319,8 +319,8 @@ Active focus moved from rehearsal verification to narration readiness.
 
 | Priority | Work | Reason | Status |
 |---|---|---|---|
-| P1 | Demo narration cue cards | The demo can pass technically, but the user needs a Korean script to explain it clearly | In progress |
-| P1 | Rehearsal-generated cue card | Reduces English-log confusion during recording | In progress |
+| P1 | Demo narration cue cards | The demo can pass technically, but the user needs a Korean script to explain it clearly | Complete |
+| P1 | Rehearsal-generated cue card | Reduces English-log confusion during recording | Complete |
 | P2 | Actual 3-minute video recording | Requires user screen/audio action | Next |
 
 Current validation boundary:
@@ -333,3 +333,8 @@ Next priority:
 - Run `.\scripts\Invoke-PortfolioDemoRehearsal.ps1`.
 - Open `artifacts/demo-rehearsal/recording-cue-cards.md`.
 - Record the actual 3-minute demo and fix whatever explanation or visual gap appears.
+
+Completion status:
+
+- Draft PR #34: <https://github.com/sjsr-0401/equipment-twin-lab/pull/34>
+- CI: passed after replacing a fragile Korean grep check with an ASCII marker check.

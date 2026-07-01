@@ -663,3 +663,21 @@ Next required action:
 - push branch
 - create draft PR
 - watch CI
+
+Completion update:
+
+- Draft PR #34 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/34>
+- Commit: `bb3c59b feat: add demo narration cue cards`
+- Local validation passed:
+  - `git diff --check`
+  - Release build
+  - Core console tests: 80 passed
+  - cue-card script
+  - rehearsal runner with `-SkipUnity`
+  - full rehearsal runner with Unity screenshot
+- First PR CI failed on a fragile Korean grep check in the GitHub Actions file-presence step.
+- Fix pushed: use ASCII marker `Lam/ALTUS/Halo/Halo HX` for that CI check.
+- PR CI passed:
+  - push run `28522333300`
+  - pull_request run `28522335584`
+- Next recommended goal: `Goal 037: record the actual 3-minute demo and fix explanation or visual gaps`.
