@@ -1831,3 +1831,10 @@ Unity 없이 빠르게 볼 때:
 ```powershell
 .\scripts\Invoke-PortfolioDemoRehearsal.ps1 -SkipUnity
 ```
+
+후속 개선:
+
+- 리허설 report가 영어라 이해하기 어렵다는 문제가 있었다.
+- 이제 `recording-rehearsal.md`는 한국어로 생성된다.
+- 먼저 볼 부분은 `결론`과 `단계별 확인 결과`다.
+- `데모 테스트 결과: 통과`가 보이면 녹화 재료 준비는 성공이다.

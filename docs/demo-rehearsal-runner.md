@@ -42,6 +42,8 @@ artifacts/demo-rehearsal/
 Unity screenshot은 검증된 기본 Unity capture 경로에서 먼저 생성한 뒤 리허설 폴더로 복사한다.
 이 방식은 Windows 한글 경로가 Unity command-line custom argument에서 깨질 수 있는 위험을 피하기 위한 것이다.
 
+`recording-rehearsal.md`는 한국어로 생성된다. 맨 위의 `결론`과 `단계별 확인 결과`만 보면 데모가 통과했는지 바로 판단할 수 있다.
+
 ## 리허설에서 확인하는 것
 
 1. Release build가 되는가?
@@ -49,6 +51,12 @@ Unity screenshot은 검증된 기본 Unity capture 경로에서 먼저 생성한
 3. 정상 public moly ALD process가 `Complete`로 끝나는가?
 4. `pumpdown-timeout` fault가 의도적으로 실패하는가?
 5. Unity screenshot이 생성되는가?
+
+통과하면 report에 아래처럼 표시된다.
+
+```text
+데모 테스트 결과: 통과
+```
 
 ## 중요한 포인트
 

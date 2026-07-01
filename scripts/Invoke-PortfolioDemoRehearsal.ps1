@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch] $SkipUnity,
     [string] $ReportPath,
     [string] $ScreenshotPath
@@ -86,50 +86,56 @@ function Write-RehearsalReport {
     param([string] $Path)
 
     $lines = New-Object System.Collections.Generic.List[string]
-    $lines.Add("# Portfolio Demo Rehearsal Report")
+    $allPassed = -not ($StepResults | Where-Object { -not $_.Passed } | Select-Object -First 1)
+    $overallStatus = if ($allPassed) { "통과" } else { "실패" }
+
+    $lines.Add("# 포트폴리오 데모 리허설 결과")
     $lines.Add("")
-    $lines.Add("Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')")
+    $lines.Add("생성 시간: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')")
     $lines.Add("")
-    $lines.Add("## Purpose")
+    $lines.Add("## 결론")
     $lines.Add("")
-    $lines.Add("This report prepares the files and command outputs needed for a 3-minute Equipment Twin Lab demo recording.")
+    $lines.Add("데모 테스트 결과: **$overallStatus**")
     $lines.Add("")
-    $lines.Add("## Step results")
+    $lines.Add("이 파일은 3분 데모 녹화 전에 빌드, 테스트, 정상 공정, 고장 공정, Unity screenshot이 준비됐는지 확인한 결과다.")
     $lines.Add("")
-    $lines.Add("| Step | Exit code | Result |")
-    $lines.Add("|---|---:|---|")
+    $lines.Add("## 단계별 확인 결과")
+    $lines.Add("")
+    $lines.Add("| 확인 항목 | 종료 코드 | 결과 | 의미 |")
+    $lines.Add("|---|---:|---|---|")
 
     foreach ($result in $StepResults) {
-        $status = if ($result.Passed) { "PASS" } else { "FAIL" }
-        $lines.Add("| $($result.Name) | $($result.ExitCode) | $status |")
+        $status = if ($result.Passed) { "통과" } else { "실패" }
+        $meaning = Get-StepMeaning -Name $result.Name
+        $lines.Add("| $($result.Name) | $($result.ExitCode) | $status | $meaning |")
     }
 
     $lines.Add("")
-    $lines.Add("## Recording order")
+    $lines.Add("## 녹화할 때 보여줄 순서")
     $lines.Add("")
-    $lines.Add('1. Show `README.md` and the representative Unity screenshot.')
-    $lines.Add("2. Show the normal process command and report.")
-    $lines.Add('3. Show the pumpdown timeout fault command. Exit code `1` is expected for this fault demo.')
-    $lines.Add("4. Show the Unity screenshot or Unity Editor scene.")
-    $lines.Add("5. Close with the honest boundary: this is a public/synthetic process replay, not real vendor internals.")
+    $lines.Add('1. `README.md` 첫 화면과 대표 Unity screenshot을 보여준다.')
+    $lines.Add("2. 정상 공정 report를 보여준다.")
+    $lines.Add('3. `pumpdown-timeout` 고장 데모를 보여준다. 이 항목은 종료 코드 `1`이 정상이다.')
+    $lines.Add("4. Unity screenshot 또는 Unity Editor scene을 보여준다.")
+    $lines.Add("5. 실제 장비 내부 복제가 아니라 공개/합성 process replay라는 한계를 설명한다.")
     $lines.Add("")
-    $lines.Add("## Generated files")
+    $lines.Add("## 생성된 파일")
     $lines.Add("")
     $processReportRelativePath = ConvertTo-RelativePath $ProcessReportPath
     $timelineRelativePath = ConvertTo-RelativePath $TimelinePath
     $rehearsalReportRelativePath = ConvertTo-RelativePath $Path
 
-    $lines.Add('- Normal process report: `' + $processReportRelativePath + '`')
-    $lines.Add('- Timeline JSON: `' + $timelineRelativePath + '`')
+    $lines.Add('- 정상 공정 report: `' + $processReportRelativePath + '`')
+    $lines.Add('- Unity replay timeline JSON: `' + $timelineRelativePath + '`')
 
     if (-not $SkipUnity) {
         $screenshotRelativePath = ConvertTo-RelativePath $ScreenshotPath
         $lines.Add('- Unity screenshot: `' + $screenshotRelativePath + '`')
     }
 
-    $lines.Add('- Rehearsal report: `' + $rehearsalReportRelativePath + '`')
+    $lines.Add('- 리허설 결과 report: `' + $rehearsalReportRelativePath + '`')
     $lines.Add("")
-    $lines.Add("## Commands")
+    $lines.Add("## 실행한 명령")
     $lines.Add("")
 
     foreach ($result in $StepResults) {
@@ -141,14 +147,27 @@ function Write-RehearsalReport {
         $lines.Add("")
     }
 
-    $lines.Add("## Notes for recording")
+    $lines.Add("## 녹화할 때 주의할 말")
     $lines.Add("")
-    $lines.Add("- Do not say this reproduces real Lam/ALTUS/Halo/Halo HX internals.")
-    $lines.Add("- Say Core/CLI is the source of truth and Unity is the replay visual layer.")
-    $lines.Add('- If the fault command returns exit code `1`, explain that the failure is the expected fault-injection outcome.')
+    $lines.Add("- 실제 Lam/ALTUS/Halo/Halo HX 내부 구조나 recipe를 재현했다고 말하지 않는다.")
+    $lines.Add("- Core/CLI가 공정 결과의 기준이고, Unity는 그 결과를 재생하는 화면 계층이라고 말한다.")
+    $lines.Add('- `pumpdown-timeout`의 종료 코드 `1`은 고장 주입 데모의 기대 결과라고 설명한다.')
 
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $Path) | Out-Null
     Set-Content -Encoding UTF8 -Path $Path -Value $lines
+}
+
+function Get-StepMeaning {
+    param([string] $Name)
+
+    switch ($Name) {
+        "Release build" { return "프로젝트가 Release 설정으로 빌드되는지 확인" }
+        "Core console tests" { return "장비 Core 로직 테스트가 통과하는지 확인" }
+        "Normal public moly ALD process" { return "정상 합성 ALD 공정이 Complete까지 가는지 확인" }
+        "Expected pumpdown timeout fault" { return "고장 주입 시 Alarmed로 멈추는지 확인. 종료 코드 1이 정상" }
+        "Unity screenshot capture" { return "Unity 화면 산출물이 생성되는지 확인" }
+        default { return "데모 리허설 항목 확인" }
+    }
 }
 
 Push-Location $RepoRoot
@@ -223,6 +242,7 @@ try {
 
     Write-RehearsalReport -Path $ReportPath
     Write-Host "Demo rehearsal report: $ReportPath"
+    Write-Host "데모 리허설 통과. 결과 파일: $ReportPath"
 }
 finally {
     Pop-Location
