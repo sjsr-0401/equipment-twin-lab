@@ -1397,6 +1397,43 @@ Execution expectation: MET
 4. 테스트는 무엇을 증명하고, 무엇을 증명하지 못하는가?
 5. 면접에서 이 작업을 한 문장으로 어떻게 설명할 수 있는가?
 
+## 2026-07-01 이해 요약: Unity Demo Polish and Recording Checklist
+
+이번 Goal의 핵심은 새 공정 기능을 추가하는 것이 아니라, 이미 검증된 Unity replay를 포트폴리오에서 더 잘 보이게 만드는 것이다.
+
+한 문장 설명:
+
+> `MolyAldPrimitiveVisualizer`는 timeline step의 valve/pressure/temperature/thickness 값을 primitive chamber, wafer, film, gauge, valve, gas line, text label로 바꾸는 Unity visual adapter다.
+
+코드 흐름:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldPrimitiveVisualizer.RefreshVisuals()
+    -> UpdateChamber / UpdateWafer / UpdateFilm / UpdatePressure / UpdateValves / UpdateProcessLines / UpdateLabels
+    -> screenshot PNG
+```
+
+이번 작업에서 이해해야 할 설계 포인트:
+
+- Core/CLI가 공정 결과를 만든다.
+- Unity는 공정을 다시 계산하지 않는다.
+- Unity visual은 adapter라서 primitive object를 나중에 CAD/Blender model renderer로 교체할 수 있다.
+- screenshot 품질 개선은 backend 검증을 대체하지 않는다. 단지 면접관이 구조를 빨리 이해하게 돕는 presentation layer다.
+
+막힌 점과 해결:
+
+- `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` 실행 후 Unity marker와 PNG는 정상인데 PowerShell이 빈 `$LASTEXITCODE`를 실패처럼 해석할 수 있었다.
+- `scripts/Invoke-UnitySmokeTest.ps1`에서 `$LASTEXITCODE`가 `$null`이면 `0`으로 처리하도록 수정했다.
+
+유지보수할 때 볼 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `scripts/Invoke-UnitySmokeTest.ps1`
+- `docs/unity-demo-recording-checklist.md`
+
 ## 2026-07-01 이해 요약: Portfolio Demo Package
 
 이번 Goal의 핵심은 구현된 기능을 “면접에서 방어 가능한 설명”으로 바꾸는 것이다.
@@ -1691,3 +1728,8 @@ Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
 - GitHub Actions에는 Unity Editor가 없다.
 - 따라서 Unity compile/play 검증은 아직 자동화하지 않았다.
 - 현재 CI는 Unity skeleton 파일 존재와 .NET 회귀 없음을 확인한다.
+
+## 2026-07-01 최신 이해 요약 위치
+
+- Goal 033의 상세 이해 요약은 이 파일의 `Unity Demo Polish and Recording Checklist` 섹션에 있다.
+- 핵심은 `Core/CLI = 공정 source of truth`, `Unity = replay visual adapter`, `recording checklist = 포트폴리오 설명 절차`다.

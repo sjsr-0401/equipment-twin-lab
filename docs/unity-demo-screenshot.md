@@ -55,13 +55,15 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 
 ## Portfolio usage
 
-The first useful screenshot should show:
+The representative screenshot should show:
 
 - chamber body;
 - wafer disk;
 - film overlay;
 - pressure/vacuum gauge;
 - metal precursor, reactant, and purge valve indicators;
+- metal precursor, reactant, and purge gas lines;
+- title label;
 - HUD text showing recipe, step, pressure, temperature, and thickness.
 
 Do not claim this is a real equipment CAD model. It is a public/synthetic process-state visual demo.
@@ -82,3 +84,13 @@ Representative image:
 ```text
 docs/demo/moly-ald-demo.png
 ```
+
+## 2026-07-01 polish update
+
+Goal 033 improved the screenshot readability:
+
+- camera framing and field of view were tightened;
+- an equipment base plate was added;
+- gas lines were added next to the valve indicators;
+- a title label was added;
+- the PowerShell runner now treats a blank `$LASTEXITCODE` after a successful Unity invocation as `0`.

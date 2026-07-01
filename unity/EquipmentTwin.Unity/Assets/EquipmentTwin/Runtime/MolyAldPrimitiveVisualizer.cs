@@ -22,17 +22,23 @@ namespace EquipmentTwin.Unity.Processes
         [SerializeField] private float processTemperatureC = 250f;
 
         [Header("Generated visuals")]
+        [SerializeField] private Renderer basePlateRenderer;
         [SerializeField] private Renderer chamberRenderer;
         [SerializeField] private Renderer waferRenderer;
         [SerializeField] private Renderer filmRenderer;
         [SerializeField] private Renderer pressureColumnRenderer;
         [SerializeField] private Transform pressureNeedle;
+        [SerializeField] private Renderer precursorLineRenderer;
+        [SerializeField] private Renderer reactantLineRenderer;
+        [SerializeField] private Renderer purgeLineRenderer;
         [SerializeField] private Renderer precursorValveRenderer;
         [SerializeField] private Renderer reactantValveRenderer;
         [SerializeField] private Renderer purgeValveRenderer;
+        [SerializeField] private TextMesh titleLabel;
         [SerializeField] private TextMesh stepLabel;
         [SerializeField] private TextMesh valueLabel;
 
+        private static readonly Color BasePlate = new Color(0.075f, 0.09f, 0.115f);
         private static readonly Color ChamberAtAtmosphere = new Color(0.35f, 0.35f, 0.38f);
         private static readonly Color ChamberAtVacuum = new Color(0.12f, 0.28f, 0.55f);
         private static readonly Color WaferCold = new Color(0.55f, 0.58f, 0.62f);
@@ -84,6 +90,16 @@ namespace EquipmentTwin.Unity.Processes
                 sceneRoot.localPosition = Vector3.zero;
             }
 
+            if (basePlateRenderer == null)
+            {
+                basePlateRenderer = CreatePrimitive(
+                    "Equipment Base Plate",
+                    PrimitiveType.Cube,
+                    new Vector3(0f, -0.06f, 0f),
+                    new Vector3(6.2f, 0.08f, 3.25f),
+                    BasePlate);
+            }
+
             if (chamberRenderer == null)
             {
                 chamberRenderer = CreatePrimitive(
@@ -129,10 +145,34 @@ namespace EquipmentTwin.Unity.Processes
                 var needleRenderer = CreatePrimitive(
                     "Vacuum Gauge Needle",
                     PrimitiveType.Cube,
-                    new Vector3(-2.9f, 1.95f, 0f),
+                    new Vector3(-2.9f, 2.0f, 0f),
                     new Vector3(0.75f, 0.04f, 0.04f),
                     FilmFull);
                 pressureNeedle = needleRenderer.transform;
+            }
+
+            if (precursorLineRenderer == null)
+            {
+                precursorLineRenderer = CreateProcessLine(
+                    "Metal Precursor Gas Line",
+                    new Vector3(1.8f, 1.25f, 0.85f),
+                    PrecursorOn);
+            }
+
+            if (reactantLineRenderer == null)
+            {
+                reactantLineRenderer = CreateProcessLine(
+                    "Reactant Gas Line",
+                    new Vector3(1.8f, 0.75f, 0f),
+                    ReactantOn);
+            }
+
+            if (purgeLineRenderer == null)
+            {
+                purgeLineRenderer = CreateProcessLine(
+                    "Purge Gas Line",
+                    new Vector3(1.8f, 0.25f, -0.85f),
+                    PurgeOn);
             }
 
             if (precursorValveRenderer == null)
@@ -150,14 +190,19 @@ namespace EquipmentTwin.Unity.Processes
                 purgeValveRenderer = CreateValve("Purge Valve", new Vector3(2.8f, 0.25f, -0.85f));
             }
 
+            if (createLabels && titleLabel == null)
+            {
+                titleLabel = CreateLabel("Equipment Twin - Public Moly ALD Replay", new Vector3(0f, 2.9f, 0.05f), 0.052f);
+            }
+
             if (createLabels && stepLabel == null)
             {
-                stepLabel = CreateLabel("Step", new Vector3(0f, 2.55f, 0f), 0.08f);
+                stepLabel = CreateLabel("Step", new Vector3(0f, 2.55f, 0.05f), 0.082f);
             }
 
             if (createLabels && valueLabel == null)
             {
-                valueLabel = CreateLabel("Values", new Vector3(0f, 2.2f, 0f), 0.048f);
+                valueLabel = CreateLabel("Values", new Vector3(0f, 2.2f, 0.05f), 0.046f);
             }
         }
 
@@ -191,12 +236,18 @@ namespace EquipmentTwin.Unity.Processes
             UpdateFilm(thicknessRatio);
             UpdatePressure(vacuumRatio);
             UpdateValves(step);
+            UpdateProcessLines(step);
             UpdateLabels(timeline, step, pressureRatio, thicknessRatio);
         }
 
         private Renderer CreateValve(string name, Vector3 position)
         {
             return CreatePrimitive(name, PrimitiveType.Sphere, position, new Vector3(0.28f, 0.28f, 0.28f), ValveOff);
+        }
+
+        private Renderer CreateProcessLine(string name, Vector3 position, Color color)
+        {
+            return CreatePrimitive(name, PrimitiveType.Cube, position, new Vector3(1.75f, 0.035f, 0.035f), color);
         }
 
         private Renderer CreatePrimitive(string name, PrimitiveType type, Vector3 localPosition, Vector3 localScale, Color color)
@@ -269,6 +320,18 @@ namespace EquipmentTwin.Unity.Processes
             UpdateValve(purgeValveRenderer, purgeOpen, PurgeOn);
         }
 
+        private void UpdateProcessLines(MolyAldTimelineStepDto step)
+        {
+            var valves = step.valves;
+            var precursorOpen = valves != null && valves.metalPrecursor;
+            var reactantOpen = valves != null && valves.reactant;
+            var purgeOpen = valves != null && valves.purge;
+
+            UpdateLine(precursorLineRenderer, precursorOpen, PrecursorOn);
+            UpdateLine(reactantLineRenderer, reactantOpen, ReactantOn);
+            UpdateLine(purgeLineRenderer, purgeOpen, PurgeOn);
+        }
+
         private void UpdateValve(Renderer renderer, bool isOpen, Color openColor)
         {
             if (renderer == null)
@@ -280,6 +343,19 @@ namespace EquipmentTwin.Unity.Processes
                 ? new Vector3(0.38f, 0.38f, 0.38f)
                 : new Vector3(0.25f, 0.25f, 0.25f);
             SetColor(renderer, isOpen ? openColor : ValveOff);
+        }
+
+        private void UpdateLine(Renderer renderer, bool isOpen, Color openColor)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.transform.localScale = isOpen
+                ? new Vector3(1.9f, 0.055f, 0.055f)
+                : new Vector3(1.55f, 0.03f, 0.03f);
+            SetColor(renderer, isOpen ? openColor : Color.Lerp(ValveOff, openColor, 0.25f));
         }
 
         private void UpdateLabels(

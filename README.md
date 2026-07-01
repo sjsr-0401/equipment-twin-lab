@@ -6,7 +6,7 @@
 
 ## Unity Demo
 
-현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, chamber/wafer/film/vacuum gauge/valve 상태를 primitive 3D object로 재생한다.
+현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, chamber/wafer/film/vacuum gauge/valve/gas line 상태를 primitive 3D object로 재생한다.
 
 검증된 실행 경로:
 
@@ -22,6 +22,10 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 ```
 
 주의: 이 이미지는 실제 Lam/ALTUS/Halo/Halo HX 장비 CAD나 내부 sequence가 아니라, 공개/합성 공정 상태를 보여주는 포트폴리오용 replay visual이다.
+
+3분 녹화 체크리스트:
+
+[docs/unity-demo-recording-checklist.md](docs/unity-demo-recording-checklist.md)
 
 ## 목표
 
@@ -433,6 +437,12 @@ The current demo story is documented here:
 
 ```text
 docs/portfolio-demo-package.md
+```
+
+The 3-minute recording checklist is documented here:
+
+```text
+docs/unity-demo-recording-checklist.md
 ```
 
 Use it as the interview/demo script for explaining:

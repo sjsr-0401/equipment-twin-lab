@@ -107,6 +107,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | Unity timeline data contract | 구현/파일 검증 완료 | `MolyAldTimelineDocument`, sample JSON |
 | Unity primitive visual | 실제 Unity Editor batch 검증 완료 | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
 | Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
+| 3분 녹화 체크리스트 | 문서화 완료 | `docs/unity-demo-recording-checklist.md` |
 
 ## 현재 주장하면 안 되는 것
 
@@ -208,6 +209,6 @@ docs/demo/moly-ald-demo.png
 
 다음 작업:
 
-- 3분 데모 영상 체크리스트 작성
-- Unity visual에서 CAD/Blender 모델 교체 지점 설계
-- screenshot 품질 개선: camera framing, labels, simple chamber layout
+- 3분 데모 영상을 실제로 녹화한다.
+- Unity visual에서 CAD/Blender 모델 교체 지점을 설계한다.
+- screenshot 품질을 계속 개선한다: imported model, lighting, camera path, simple animation.
