@@ -151,3 +151,9 @@ Current blocker:
 
 - Unity license activation cannot be completed from repository code.
 - The project can still add the harness, scripts, and documentation so the user can run validation immediately after signing in.
+
+PR status:
+
+- Goal 029 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/27>
+- CI status: passed
+- Next work: activate Unity Hub license, run the smoke-test script, capture first demo screenshot.
