@@ -438,3 +438,12 @@ Next required action:
 - push
 - create draft PR #28
 - watch CI
+
+Completion update:
+
+- Draft PR #28 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/28>
+- Commit: `b4cdf69 feat: add unity demo screenshot capture`
+- Local validation passed.
+- PR CI passed on run `28504193106`.
+- Screenshot runner reaches Unity but actual PNG generation is blocked by inactive Unity license.
+- Next recommended goal: `Goal 031: Unity license activation, real screenshot capture, README demo image`.

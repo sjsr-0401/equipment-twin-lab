@@ -172,3 +172,9 @@ Current blocker:
 
 - The repository can provide screenshot automation, but cannot activate the Unity license.
 - Actual screenshot generation remains blocked until Unity Hub login/license activation is completed.
+
+PR status:
+
+- Goal 030 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/28>
+- CI status: passed
+- Next work: activate Unity license, run `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`, then add the generated screenshot to README/demo docs.
