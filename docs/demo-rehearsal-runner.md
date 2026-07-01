@@ -35,6 +35,7 @@ artifacts/demo-rehearsal/
 | 파일 | 용도 |
 |---|---|
 | `recording-rehearsal.md` | 녹화 전 최종 체크 리포트 |
+| `recording-cue-cards.md` | 녹화할 때 그대로 읽는 한글 큐카드 |
 | `moly-ald-process-report.md` | 정상 공정 설명용 report |
 | `moly-ald-timeline.json` | Unity replay 입력 데이터 |
 | `moly-ald-demo.png` | 리허설용 Unity screenshot |
@@ -43,6 +44,8 @@ Unity screenshot은 검증된 기본 Unity capture 경로에서 먼저 생성한
 이 방식은 Windows 한글 경로가 Unity command-line custom argument에서 깨질 수 있는 위험을 피하기 위한 것이다.
 
 `recording-rehearsal.md`는 한국어로 생성된다. 맨 위의 `결론`과 `단계별 확인 결과`만 보면 데모가 통과했는지 바로 판단할 수 있다.
+
+리허설이 끝나면 `recording-cue-cards.md`도 함께 생성된다. 이 파일은 3분 녹화 때 어떤 화면을 보여주고 어떤 말을 할지 시간대별로 정리한 한글 대본이다.
 
 ## 리허설에서 확인하는 것
 
@@ -81,6 +84,12 @@ Fault:     pumpdown-timeout
 3. pumpdown timeout fault를 보여준다.
 4. Unity screenshot 또는 Unity Editor scene을 보여준다.
 5. 실제 장비 복제가 아니라 공개/합성 process replay라는 한계를 설명한다.
+
+대본이 필요하면 아래 파일을 사용한다.
+
+```text
+artifacts/demo-rehearsal/recording-cue-cards.md
+```
 
 ## 이 스크립트가 대신하지 않는 것
 

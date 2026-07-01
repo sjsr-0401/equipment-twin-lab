@@ -639,3 +639,27 @@ Completion update:
   - push run `28516872338`
   - pull_request run `28516885953`
 - Next recommended goal: `Goal 036: record the actual 3-minute demo and fix explanation or visual gaps`.
+
+## 2026-07-01 Update: Goal 036 in progress
+
+- PR #33 merged into `main`.
+- Current branch: `goal/036-demo-narration-cue-cards`.
+- Goal 036 adds Korean demo narration cue cards.
+- New files:
+  - `scripts/New-PortfolioDemoCueCards.ps1`
+  - `docs/portfolio-demo-narration.md`
+  - `goals/036-demo-narration-cue-cards.md`
+- `Invoke-PortfolioDemoRehearsal.ps1` now creates `artifacts/demo-rehearsal/recording-cue-cards.md` after the rehearsal report.
+
+Current validation boundary:
+
+- The cue card can prepare what to say during recording.
+- It does not record screen/video/audio.
+
+Next required action:
+
+- run local validation
+- commit
+- push branch
+- create draft PR
+- watch CI
