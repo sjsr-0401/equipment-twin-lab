@@ -740,6 +740,7 @@ TemplateRunResult.ProductPassed
 
 - `TemplateRunner`를 명령어로 직접 실행한다.
 - 사용자가 template JSON과 recipe 이름을 선택할 수 있다.
+- `template batch`로 template 안의 모든 recipe를 한 번에 실행할 수 있다.
 - 선택적으로 fault scenario를 주입할 수 있다.
 - 실행 결과를 콘솔에 사람이 읽을 수 있는 형태로 출력한다.
 - `--report` 옵션으로 실행 결과를 Markdown 파일에 저장한다.
@@ -751,6 +752,7 @@ TemplateRunResult.ProductPassed
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --report artifacts\template-run-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+dotnet run --project src\EquipmentTwin.Cli -- template batch templates\vision-inspection-cell.json --report artifacts\template-batch-report.md
 ```
 
 출력 구조:
@@ -786,7 +788,9 @@ Command Log
 
 - CLI mode 추가/변경: `CliMode`, `CliOptions.Parse()`
 - template 실행 흐름: `RunTemplate()`
+- template batch 실행 흐름: `RunTemplateBatch()`
 - 콘솔 출력 형식: `PrintTemplateResult()`
 - Markdown 저장 형식: `BuildTemplateMarkdownReport()`
+- batch Markdown 저장 형식: `BuildTemplateBatchMarkdownReport()`
 - Visual Studio 실행 프로필: `launchSettings.json`
 - CI template 검증 명령: `.github/workflows/ci.yml`
