@@ -2163,6 +2163,8 @@ PR #17을 병합한 뒤 Goal 020을 시작했다.
 - `default-panel` template CLI 성공
 - `tall-part` template CLI 성공
 - fault 주입 CLI 출력 확인
+- Draft PR #18 생성
+- GitHub Actions push/pull_request 성공
 
 막힌 점:
 
@@ -2189,6 +2191,6 @@ PrintTemplateResult()
 
 다음 권장 작업:
 
-1. Goal 020 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #18 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Template Run Markdown Report를 선택한다.
