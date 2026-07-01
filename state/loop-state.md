@@ -99,6 +99,7 @@
 - Goal 023 Draft PR #21을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 - PR #21을 main에 squash merge했다.
 - Goal 024에서 Fault Expected-Failure Report를 추가했다.
+- Goal 024 Draft PR #22를 만들고 GitHub Actions push/pull_request 성공을 확인했다.
 
 ## 아직 확정하지 않은 것
 
@@ -169,7 +170,7 @@
 | 2026-07-01 | PR #20 병합 | Template Batch Report main 반영 |
 | 2026-07-01 | Goal 023: Inspection Scenario Selection | 같은 recipe에서 검사 케이스 선택 기능 추가, 테스트 72개 통과, Draft PR #21 생성, CI 성공 |
 | 2026-07-01 | PR #21 병합 | Inspection Scenario Selection main 반영 |
-| 2026-07-01 | Goal 024: Fault Expected-Failure Report | fault 실행 실패를 기대값으로 검증하는 CLI/report 추가 |
+| 2026-07-01 | Goal 024: Fault Expected-Failure Report | fault 실행 실패를 기대값으로 검증하는 CLI/report 추가, Draft PR #22 생성, CI 성공 |
 
 ## 열린 PR
 
@@ -196,6 +197,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/19` | `goal/021-template-run-report` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/20` | `goal/022-template-batch-report` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/21` | `goal/023-inspection-scenario-selection` | 병합 완료 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/22` | `goal/024-fault-expected-failure-report` | Draft, CI 성공 |
 
 ## 최근 CI 결과
 
@@ -243,11 +245,13 @@
 | 2026-07-01 | `goal/022-template-batch-report` | pull_request | 성공 |
 | 2026-07-01 | `goal/023-inspection-scenario-selection` | push | 성공 |
 | 2026-07-01 | `goal/023-inspection-scenario-selection` | pull_request | 성공 |
+| 2026-07-01 | `goal/024-fault-expected-failure-report` | push | 성공 |
+| 2026-07-01 | `goal/024-fault-expected-failure-report` | pull_request | 성공 |
 
 ## 다음 안전한 작업
 
-1. Goal 024 변경을 커밋하고 Draft PR을 만든다.
-2. CI에서 expected fault CLI를 확인한다.
+1. PR #22를 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. 이후 Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog로 확장한다.
 
 ## 금지할 것

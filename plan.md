@@ -2390,6 +2390,8 @@ CI와 report에서 안전하게 검증한다.
 - expected fault Markdown report
 - CI expected fault 검증
 - Visual Studio expected fault launch profile
+- Draft PR #22 생성
+- GitHub Actions push/pull_request CI 성공
 
 검증 결과:
 
@@ -2398,6 +2400,8 @@ CI와 report에서 안전하게 검증한다.
 - 기존 fault CLI는 옵션 없으면 exit code 1 유지
 - `--expect-execution-failure` 단독 사용은 거부
 - `artifacts\template-fault-expected-failure-report.md` 내용 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 막힌 점:
 
@@ -2418,6 +2422,6 @@ exit code
 
 다음 권장 작업:
 
-1. Goal 024 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #22를 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.

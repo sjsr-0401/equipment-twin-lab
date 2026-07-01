@@ -29,6 +29,8 @@ fault scenario는 일부러 장비 실행을 실패시키는 테스트다.
 - CI에 expected fault 실행을 추가했다.
 - Visual Studio launch profile에 expected fault 실행을 추가했다.
 - README, architecture, validation, Visual Studio 문서를 갱신했다.
+- Draft PR #22를 만들었다.
+- GitHub Actions push/pull_request CI 성공을 확인했다.
 
 ## 바뀐 파일
 
@@ -52,6 +54,8 @@ fault scenario는 일부러 장비 실행을 실패시키는 테스트다.
 - expected fault Markdown report 생성 확인
 - 기존 fault CLI는 옵션이 없으면 exit code 1 유지 확인
 - `--expect-execution-failure`를 `--fault` 없이 쓰면 거부되는 것 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
 
 ## 막힌 점과 해결 방법
 
@@ -107,7 +111,9 @@ Execution expectation MET
 
 ## 다음 작업
 
-다음 후보는 `Inspection Scenario Batch Matrix` 또는 `Fault Scenario Catalog`다.
+먼저 PR #22를 Ready로 전환하고 병합한다.
+
+그 다음 후보는 `Inspection Scenario Batch Matrix` 또는 `Fault Scenario Catalog`다.
 
 Inspection Scenario Batch Matrix는 recipe × inspection scenario 조합을 한 번에 돌려 PASS/FAIL matrix를 만든다.
 

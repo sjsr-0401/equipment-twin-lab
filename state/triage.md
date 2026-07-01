@@ -38,7 +38,7 @@
 | P1 | Template Runner CLI | 사용자가 template/recipe/fault를 명령어로 실행하고 결과를 봐야 한다 | 완료 |
 | P1 | Template Run Markdown Report | template 실행 결과를 포트폴리오용 파일로 저장해야 한다 | 완료 |
 | P1 | Template Batch Report | 여러 recipe 실행 결과를 한 번에 비교해야 한다 | 완료 |
-| P1 | Fault Expected-Failure Report | fault 주입처럼 실패가 기대값인 케이스를 안전하게 검증해야 한다 | 진행 중 |
+| P1 | Fault Expected-Failure Report | fault 주입처럼 실패가 기대값인 케이스를 안전하게 검증해야 한다 | PR 대기 |
 | P1 | Inspection Scenario Selection | 같은 제품에서 PASS/FAIL 검사 케이스를 선택할 수 있어야 한다 | 완료 |
 | P1 | Fault Scenario Catalog | fault 종류별 기대 알람과 복구 조건을 정리해야 한다 | 대기 |
 | P1 | Inspection Scenario Batch Matrix | recipe와 inspection scenario 조합을 한 번에 비교해야 한다 | 대기 |
@@ -49,8 +49,8 @@
 
 ## 오늘의 추천 작업
 
-1. Goal 024 변경을 커밋하고 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #22를 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
 3. 다음 후보로 Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.
 
 ## 보류 작업
