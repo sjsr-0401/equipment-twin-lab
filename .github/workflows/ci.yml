@@ -66,6 +66,9 @@ jobs:
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessHud.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualState.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           test -f scripts/Invoke-UnitySmokeTest.ps1
@@ -73,12 +76,17 @@ jobs:
           test -f docs/unity-demo-screenshot.md
           test -f docs/portfolio-demo-package.md
           test -f docs/unity-demo-recording-checklist.md
+          test -f docs/unity-model-swap-boundary.md
           test -f docs/demo/moly-ald-demo.png
           test -f goals/031-portfolio-demo-package.md
           test -f goals/032-unity-screenshot-readme-image.md
           test -f goals/033-unity-demo-polish-recording-checklist.md
+          test -f goals/034-unity-visual-adapter-boundary.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "MolyAldVisualStateMapper.FromTimeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "MolyAldImportedModelVisualBinding" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs
+          grep -q "ValidateVisualStateMapper" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "fieldOfView = 42f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           grep -q "CaptureScreenshot" scripts/Invoke-UnitySmokeTest.ps1
           grep -q 'LASTEXITCODE' scripts/Invoke-UnitySmokeTest.ps1

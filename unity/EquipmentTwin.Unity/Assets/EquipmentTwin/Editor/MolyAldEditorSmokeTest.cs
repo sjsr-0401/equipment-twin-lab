@@ -116,6 +116,8 @@ namespace EquipmentTwin.Unity.EditorTools
                 throw new InvalidOperationException("MolyAldDemoBootstrap was not created.");
             }
 
+            ValidateVisualStateMapper(root);
+
             Debug.Log(
                 $"{SuccessMarker}: recipe={timeline.recipeName}, steps={timeline.steps.Length}, renderers={renderers.Length}");
         }
@@ -192,6 +194,39 @@ namespace EquipmentTwin.Unity.EditorTools
 
             visualizer.EnsureScene();
             visualizer.RefreshVisuals();
+        }
+
+        private static void ValidateVisualStateMapper(GameObject root)
+        {
+            var player = root.GetComponent<MolyAldProcessPlayer>();
+            if (player == null)
+            {
+                throw new InvalidOperationException("MolyAldProcessPlayer was not found for visual-state validation.");
+            }
+
+            var visualState = MolyAldVisualStateMapper.FromTimeline(
+                player.Timeline,
+                player.CurrentStep,
+                850f,
+                760000f,
+                25f,
+                250f);
+
+            if (visualState == null)
+            {
+                throw new InvalidOperationException("Visual state mapper returned null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(visualState.StepLabel))
+            {
+                throw new InvalidOperationException("Visual state step label is empty.");
+            }
+
+            if (!visualState.ReactantOpen)
+            {
+                throw new InvalidOperationException(
+                    $"Expected the representative visual state to show reactant flow, but step was {visualState.StepName}.");
+            }
         }
 
         private static void MoveToRepresentativeStep(MolyAldProcessPlayer player)

@@ -27,6 +27,10 @@ EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 
 [docs/unity-demo-recording-checklist.md](docs/unity-demo-recording-checklist.md)
 
+CAD/Blender 모델 교체 경계:
+
+[docs/unity-model-swap-boundary.md](docs/unity-model-swap-boundary.md)
+
 ## 목표
 
 - 장비 상태 전이, PLC/IO, 모션, 센서, 카메라 검사를 소프트웨어로 모델링한다.
@@ -443,6 +447,12 @@ The 3-minute recording checklist is documented here:
 
 ```text
 docs/unity-demo-recording-checklist.md
+```
+
+The CAD/Blender model swap boundary is documented here:
+
+```text
+docs/unity-model-swap-boundary.md
 ```
 
 Use it as the interview/demo script for explaining:

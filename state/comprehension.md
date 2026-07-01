@@ -1733,3 +1733,50 @@ Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
 
 - Goal 033의 상세 이해 요약은 이 파일의 `Unity Demo Polish and Recording Checklist` 섹션에 있다.
 - 핵심은 `Core/CLI = 공정 source of truth`, `Unity = replay visual adapter`, `recording checklist = 포트폴리오 설명 절차`다.
+
+## 2026-07-01 이해 요약: Unity Visual Adapter Boundary
+
+이번 Goal의 핵심은 “예쁜 모델을 넣는 것”이 아니라, “나중에 예쁜 모델을 넣어도 공정 로직을 안 건드리게 만드는 것”이다.
+
+한 문장 설명:
+
+> `MolyAldVisualState`는 Core/CLI가 만든 timeline step을 Unity renderer가 이해할 수 있는 표시용 상태로 바꾼 중간 DTO다.
+
+코드 흐름:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldVisualStateMapper.FromTimeline()
+    -> MolyAldVisualState
+    -> MolyAldPrimitiveVisualizer.ApplyVisualState()
+    또는
+    -> MolyAldImportedModelVisualBinding.ApplyVisualState()
+```
+
+왜 중요한가:
+
+- primitive visual은 지금 당장 screenshot을 만들기 위한 임시 외형이다.
+- imported CAD/Blender model은 나중에 들어올 외형이다.
+- 둘이 process JSON을 각자 해석하면 같은 공정 표시 규칙이 여러 곳에 중복된다.
+- 그래서 process-to-visual mapping은 `MolyAldVisualStateMapper`에 모으고, renderer별 script는 표시만 담당하게 한다.
+
+유지보수할 때 볼 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualState.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs`
+- `docs/unity-model-swap-boundary.md`
+
+면접에서 말할 수 있는 문장:
+
+```text
+Unity 모델은 공정 로직을 직접 알지 않고, Core/CLI timeline에서 변환된 visual state만 받아 표시하게 설계했습니다.
+그래서 primitive object를 CAD/Blender 모델로 바꿔도 공정 sequence 검증 로직은 그대로 유지됩니다.
+```
+
+현재 한계:
+
+- 실제 imported model은 아직 없다.
+- binding component는 연결 지점이고, 최종 asset 품질을 증명하는 것은 아니다.
+- 실제 모델이 생기면 scale/pivot/material/light 조정이 별도 필요하다.

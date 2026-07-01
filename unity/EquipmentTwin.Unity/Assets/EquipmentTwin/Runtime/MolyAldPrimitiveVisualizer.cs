@@ -225,19 +225,32 @@ namespace EquipmentTwin.Unity.Processes
                 EnsureScene();
             }
 
-            var pressureRatio = PressureRatio(step.chamberPressureMtorr);
-            var vacuumRatio = 1f - pressureRatio;
-            var temperatureRatio = Mathf.InverseLerp(roomTemperatureC, processTemperatureC, step.waferTemperatureC);
-            var thicknessRatio = ThicknessRatio(timeline, step);
-            var hasFault = timeline != null && (!timeline.success || !step.success);
+            var visualState = MolyAldVisualStateMapper.FromTimeline(
+                timeline,
+                step,
+                processPressureMtorr,
+                atmospherePressureMtorr,
+                roomTemperatureC,
+                processTemperatureC);
+            ApplyVisualState(visualState);
+        }
 
-            SetColor(chamberRenderer, hasFault ? Alarm : Color.Lerp(ChamberAtVacuum, ChamberAtAtmosphere, pressureRatio));
-            SetColor(waferRenderer, Color.Lerp(WaferCold, WaferHot, temperatureRatio));
-            UpdateFilm(thicknessRatio);
-            UpdatePressure(vacuumRatio);
-            UpdateValves(step);
-            UpdateProcessLines(step);
-            UpdateLabels(timeline, step, pressureRatio, thicknessRatio);
+        public void ApplyVisualState(MolyAldVisualState visualState)
+        {
+            if (visualState == null)
+            {
+                return;
+            }
+
+            SetColor(
+                chamberRenderer,
+                visualState.HasFault ? Alarm : Color.Lerp(ChamberAtVacuum, ChamberAtAtmosphere, visualState.PressureRatio));
+            SetColor(waferRenderer, Color.Lerp(WaferCold, WaferHot, visualState.TemperatureRatio));
+            UpdateFilm(visualState.ThicknessRatio);
+            UpdatePressure(visualState.VacuumRatio);
+            UpdateValves(visualState);
+            UpdateProcessLines(visualState);
+            UpdateLabels(visualState);
         }
 
         private Renderer CreateValve(string name, Vector3 position)
@@ -308,28 +321,18 @@ namespace EquipmentTwin.Unity.Processes
             }
         }
 
-        private void UpdateValves(MolyAldTimelineStepDto step)
+        private void UpdateValves(MolyAldVisualState visualState)
         {
-            var valves = step.valves;
-            var precursorOpen = valves != null && valves.metalPrecursor;
-            var reactantOpen = valves != null && valves.reactant;
-            var purgeOpen = valves != null && valves.purge;
-
-            UpdateValve(precursorValveRenderer, precursorOpen, PrecursorOn);
-            UpdateValve(reactantValveRenderer, reactantOpen, ReactantOn);
-            UpdateValve(purgeValveRenderer, purgeOpen, PurgeOn);
+            UpdateValve(precursorValveRenderer, visualState.MetalPrecursorOpen, PrecursorOn);
+            UpdateValve(reactantValveRenderer, visualState.ReactantOpen, ReactantOn);
+            UpdateValve(purgeValveRenderer, visualState.PurgeOpen, PurgeOn);
         }
 
-        private void UpdateProcessLines(MolyAldTimelineStepDto step)
+        private void UpdateProcessLines(MolyAldVisualState visualState)
         {
-            var valves = step.valves;
-            var precursorOpen = valves != null && valves.metalPrecursor;
-            var reactantOpen = valves != null && valves.reactant;
-            var purgeOpen = valves != null && valves.purge;
-
-            UpdateLine(precursorLineRenderer, precursorOpen, PrecursorOn);
-            UpdateLine(reactantLineRenderer, reactantOpen, ReactantOn);
-            UpdateLine(purgeLineRenderer, purgeOpen, PurgeOn);
+            UpdateLine(precursorLineRenderer, visualState.MetalPrecursorOpen, PrecursorOn);
+            UpdateLine(reactantLineRenderer, visualState.ReactantOpen, ReactantOn);
+            UpdateLine(purgeLineRenderer, visualState.PurgeOpen, PurgeOn);
         }
 
         private void UpdateValve(Renderer renderer, bool isOpen, Color openColor)
@@ -358,56 +361,17 @@ namespace EquipmentTwin.Unity.Processes
             SetColor(renderer, isOpen ? openColor : Color.Lerp(ValveOff, openColor, 0.25f));
         }
 
-        private void UpdateLabels(
-            MolyAldTimelineDocumentDto timeline,
-            MolyAldTimelineStepDto step,
-            float pressureRatio,
-            float thicknessRatio)
+        private void UpdateLabels(MolyAldVisualState visualState)
         {
             if (stepLabel != null)
             {
-                var totalSteps = timeline != null && timeline.steps != null ? timeline.steps.Length : 0;
-                stepLabel.text = $"{step.index}/{totalSteps} {step.step}";
+                stepLabel.text = visualState.StepLabel;
             }
 
             if (valueLabel != null)
             {
-                var cycle = step.HasCycle ? step.cycle.ToString() : "-";
-                valueLabel.text =
-                    $"cycle {cycle} | vacuum {(1f - pressureRatio):P0} | film {thicknessRatio:P0}\n" +
-                    $"pressure {step.chamberPressureMtorr:0.#} mTorr | temp {step.waferTemperatureC:0.#} C\n" +
-                    $"valves {ValveText(step)}";
+                valueLabel.text = visualState.ValueLabel;
             }
-        }
-
-        private string ValveText(MolyAldTimelineStepDto step)
-        {
-            if (step.valves == null)
-            {
-                return "none";
-            }
-
-            return
-                $"P:{OnOff(step.valves.metalPrecursor)} " +
-                $"R:{OnOff(step.valves.reactant)} " +
-                $"G:{OnOff(step.valves.purge)}";
-        }
-
-        private float PressureRatio(float pressureMtorr)
-        {
-            var low = Mathf.Min(processPressureMtorr, atmospherePressureMtorr);
-            var high = Mathf.Max(processPressureMtorr, atmospherePressureMtorr);
-            return Mathf.InverseLerp(low, high, Mathf.Clamp(pressureMtorr, low, high));
-        }
-
-        private static float ThicknessRatio(MolyAldTimelineDocumentDto timeline, MolyAldTimelineStepDto step)
-        {
-            if (timeline == null || timeline.targetThicknessAngstrom <= 0f)
-            {
-                return 0f;
-            }
-
-            return Mathf.Clamp01(step.estimatedThicknessAngstrom / timeline.targetThicknessAngstrom);
         }
 
         private static void SetColor(Renderer renderer, Color color)
@@ -425,9 +389,5 @@ namespace EquipmentTwin.Unity.Processes
             renderer.sharedMaterial.color = color;
         }
 
-        private static string OnOff(bool value)
-        {
-            return value ? "ON" : "OFF";
-        }
     }
 }
