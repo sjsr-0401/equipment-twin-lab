@@ -2425,3 +2425,50 @@ exit code
 1. PR #22를 Ready로 전환하고 병합한다.
 2. `main`을 최신화한다.
 3. Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.
+## 50. 2026-07-01 Goal 025: Public Molybdenum ALD Process Model
+
+대표 프로젝트 방향을 `vision inspection cell` 중심에서 `public/synthetic ALD metallization equipment twin` 중심으로 확장한다.
+
+이 방향은 사용자의 실제 장비 SW/production 경험과 더 잘 맞는다. 다만 공개 저장소에서는 실제 장비 내부 정보가 아니라 공개 자료와 합성 수치만 사용한다.
+
+목표:
+
+```text
+공개 자료에서 말할 수 있는 molybdenum ALD metallization 개념을
+장비 SW 관점의 process sequence / recipe / fault / report로 구현한다.
+```
+
+이번 Goal의 범위:
+
+- public/synthetic molybdenum ALD recipe
+- dose/purge cycle process runner
+- pumpdown/temperature/precursor/purge fault model
+- Unity replay에 필요한 process step log
+- CLI `process run`
+- Markdown process report
+- CI 검증
+
+의도적으로 하지 않는 것:
+
+- 실제 ALTUS Halo/Halo HX 장비 복제
+- 실제 recipe 값 사용
+- 실제 alarm code/test procedure 사용
+- 실제 plasma/chemical/flow physics 주장
+
+Unity 연결 계획:
+
+```text
+MolyAldRunResult.Steps
+    -> JSON timeline export
+    -> Unity process player
+    -> chamber pressure gauge
+    -> wafer film thickness visual
+    -> precursor/reactant/purge valve animation
+    -> fault alarm panel
+```
+
+다음 권장 Goal:
+
+1. `Goal 026: Process Timeline JSON Export`
+2. `Goal 027: Unity Process Player Skeleton`
+3. `Goal 028: Unity Chamber/Wafer/Valve Visual`

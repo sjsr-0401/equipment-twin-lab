@@ -260,3 +260,18 @@
 - CI가 안정되기 전 자동 병합하지 않는다.
 - Unity 화면 제작에 먼저 매몰되지 않는다.
 - 이해하지 못한 코드를 포트폴리오 핵심 성과로 적지 않는다.
+## 2026-07-01 Update: Goal 025 in progress
+
+- PR #22 merged into `main`.
+- Current branch: `goal/025-public-ald-process-model`.
+- Goal 025 adds a public/synthetic molybdenum ALD process model.
+- Local validation passed:
+  - Release build
+  - Core console tests
+  - normal process CLI
+  - pumpdown fault CLI expected failure
+- Next required action:
+  - commit Goal 025
+  - push branch
+  - open draft PR #23
+  - watch CI

@@ -809,3 +809,43 @@ Command Log
 - batch Markdown 저장 형식: `BuildTemplateBatchMarkdownReport()`
 - Visual Studio 실행 프로필: `launchSettings.json`
 - CI template 검증 명령: `.github/workflows/ci.yml`
+## Public Molybdenum ALD Process Model
+
+Goal 025 adds a separate process-model layer for public/synthetic molybdenum ALD metallization.
+
+This layer is intentionally separate from the earlier `Templates` vision-inspection-cell model.
+
+```text
+processes/public-moly-ald-metallization.json
+    -> MolyAldRecipe
+    -> MolyAldRunner
+    -> MolyAldRunResult
+    -> CLI process report
+    -> future Unity replay timeline
+```
+
+Important boundary:
+
+- This is not an ALTUS Halo or Halo HX clone.
+- It does not contain real Lam recipe values or internal equipment behavior.
+- It uses public ALD/metallization concepts and synthetic demo values.
+
+Software meaning:
+
+- `MolyAldRecipe` is the operator/process-engineering input.
+- `MolyAldRunner` is the deterministic sequence controller.
+- `MolyAldStepLog` is the bridge to CLI reports and future Unity visualization.
+- Fault scenarios test how the process stops when a required condition is not met.
+
+Unity mapping:
+
+| Core field | Unity visual |
+|---|---|
+| `Step` | Current process phase label |
+| `Cycle` | ALD cycle counter |
+| `ChamberPressureMtorr` | Pressure gauge / chamber visual |
+| `WaferTemperatureC` | Temperature gauge / color |
+| `MetalPrecursorValveOpen` | Precursor valve animation |
+| `ReactantValveOpen` | Reactant valve animation |
+| `PurgeValveOpen` | Purge valve animation |
+| `EstimatedThicknessAngstrom` | Wafer film thickness overlay |

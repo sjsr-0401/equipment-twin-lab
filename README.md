@@ -239,3 +239,33 @@ dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore
 공개 저장소:
 
 <https://github.com/sjsr-0401/equipment-twin-lab>
+## Public Molybdenum ALD Process Model
+
+This repository now includes a public/synthetic molybdenum ALD metallization process model.
+
+It is inspired only by public ALD / ALTUS Halo descriptions and does not contain real equipment recipes, real vendor internals, real alarm codes, or real test procedures.
+
+Run the normal synthetic process:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --report artifacts\moly-ald-process-report.md
+```
+
+Run a synthetic pump-down fault:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --fault pumpdown-timeout
+```
+
+The process report contains a Unity-ready replay timeline:
+
+```text
+step
+cycle
+pressure
+temperature
+precursor valve
+reactant valve
+purge valve
+estimated film thickness
+```

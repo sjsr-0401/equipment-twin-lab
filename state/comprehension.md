@@ -1396,3 +1396,44 @@ Execution expectation: MET
 3. 이 코드는 시뮬레이션용인가, 실제 장비에도 가져갈 수 있는 구조인가?
 4. 테스트는 무엇을 증명하고, 무엇을 증명하지 못하는가?
 5. 면접에서 이 작업을 한 문장으로 어떻게 설명할 수 있는가?
+## 2026-07-01 이해 요약: Public Moly ALD Process Model
+
+이번 Goal의 핵심은 `실제 장비를 복제하는 것`이 아니라 `장비 SW가 공정을 어떻게 순서대로 제어하는지`를 보여주는 것이다.
+
+한 문장 설명:
+
+> `MolyAldRunner`는 합성 ALD recipe를 읽어서 Load, PumpDown, Temperature Stabilization, Dose/Purge Cycle, TransferOut을 순서대로 실행하고, Unity가 재생할 수 있는 step log를 남기는 deterministic process controller다.
+
+코드 흐름:
+
+```text
+processes/public-moly-ald-metallization.json
+    -> MolyAldRecipe.FromJson()
+    -> Validate()
+    -> MolyAldRunner.Run()
+    -> MolyAldRunResult.Steps
+    -> CLI output
+    -> Markdown report
+```
+
+초보자 관점에서 봐야 할 파일:
+
+- `src/EquipmentTwin.Core/Processes/MolyAldRecipe.cs`
+- `src/EquipmentTwin.Core/Processes/MolyAldRunner.cs`
+- `src/EquipmentTwin.Core/Processes/MolyAldStepLog.cs`
+- `processes/public-moly-ald-metallization.json`
+- `src/EquipmentTwin.Cli/Program.cs`
+
+중요한 설계 판단:
+
+- 실제 장비값 대신 synthetic 값을 사용한다.
+- fault도 실제 alarm code가 아니라 generic fault name을 사용한다.
+- Unity는 아직 없지만, Unity가 필요한 데이터는 `MolyAldStepLog`에 미리 모았다.
+
+사용자가 직접 디버깅할 때 볼 포인트:
+
+1. `RunProcess()`에서 JSON이 읽히는지 확인한다.
+2. `MolyAldRecipe.Validate()`에서 recipe 값 검증을 본다.
+3. `MolyAldRunner.Run()`의 for-loop에서 cycle이 반복되는 것을 본다.
+4. `AddStep()`에서 pressure/temperature/valve/thickness가 log로 쌓이는 것을 본다.
+5. `--fault pumpdown-timeout`을 걸면 `Alarmed`로 끝나는 것을 본다.

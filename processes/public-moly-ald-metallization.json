@@ -1,0 +1,50 @@
+{
+  "name": "public-moly-ald-metallization-demo",
+  "description": "Synthetic molybdenum ALD metallization process inspired only by public ALTUS Halo / ALD concepts. Not a real equipment recipe.",
+  "publicBasis": [
+    "Lam public materials describe ALTUS Halo as a molybdenum ALD metallization tool for advanced semiconductor devices.",
+    "Lam public materials mention quad station module architecture and void-free, low-resistivity molybdenum deposition.",
+    "This JSON uses synthetic timing, pressure, temperature, gas, and thickness values for software simulation only."
+  ],
+  "stationCount": 4,
+  "cycleCount": 4,
+  "targetThicknessAngstrom": 8.0,
+  "chamberPressureMtorr": 850.0,
+  "waferTemperatureC": 250.0,
+  "pumpDownSeconds": 12.0,
+  "temperatureStabilizeSeconds": 8.0,
+  "metalPrecursorDoseMilliseconds": 150.0,
+  "reactantDoseMilliseconds": 180.0,
+  "purgeMilliseconds": 500.0,
+  "carrierGasFlowSccm": 120.0,
+  "reactantGases": [
+    {
+      "name": "SyntheticReactantA",
+      "flowSccm": 60.0
+    }
+  ],
+  "faultScenarios": [
+    {
+      "name": "pumpdown-timeout",
+      "kind": "PumpDownTimeout",
+      "message": "Synthetic pump-down timeout: chamber pressure did not reach the public-demo setpoint."
+    },
+    {
+      "name": "temperature-not-stable",
+      "kind": "TemperatureNotStable",
+      "message": "Synthetic temperature fault: wafer temperature did not stabilize before ALD cycles."
+    },
+    {
+      "name": "precursor-dose-timeout",
+      "kind": "PrecursorDoseTimeout",
+      "triggerCycle": 2,
+      "message": "Synthetic precursor dose timeout during cycle 2."
+    },
+    {
+      "name": "purge-timeout",
+      "kind": "PurgeTimeout",
+      "triggerCycle": 3,
+      "message": "Synthetic purge timeout during cycle 3."
+    }
+  ]
+}

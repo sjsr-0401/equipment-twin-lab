@@ -63,3 +63,20 @@
 - MES 연동 어댑터 (`IMesGateway`): 장비 상태/생산이력/알람을 상위 시스템에 발행하는 인터페이스. SECS/GEM은 풀구현이 아니라 이벤트 보고 개념만 일반화. MVP의 비전 검사(Phase 4)로 생산 이력이 실제로 쌓이기 시작한 뒤 Goal로 분리. "MES 구축"이 아니라 "장비-MES 연동 계층"으로 정직하게 포지셔닝.
 
 위 항목들은 프로젝트 골격과 검증 루프가 생긴 뒤 진행한다.
+## 2026-07-01 Triage Update
+
+Current P1 focus changed from vision-inspection expansion to process-equipment modeling.
+
+Reason:
+
+- The user's work background is closer to equipment/deposition process SW than camera inspection.
+- Public/synthetic ALD metallization gives a stronger manufacturing-equipment portfolio story.
+- Vision remains optional; it should not block the representative project.
+
+Active item:
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Public molybdenum ALD process model | Shows process sequence, recipe validation, fault stop, and Unity replay data | In progress |
+| P1 | Process timeline JSON export | Needed before Unity can replay the ALD sequence cleanly | Next |
+| P1 | Unity process player skeleton | Needed for visible portfolio demo | Next |
