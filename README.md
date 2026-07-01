@@ -405,3 +405,31 @@ reactant valve
 purge valve
 estimated film thickness
 ```
+
+## Portfolio Demo Package
+
+The current demo story is documented here:
+
+```text
+docs/portfolio-demo-package.md
+```
+
+Use it as the interview/demo script for explaining:
+
+- what the project proves today;
+- why Core/CLI owns the process truth;
+- how Unity replays the timeline instead of calculating process logic;
+- what is still blocked by Unity Hub license activation;
+- what should not be claimed as real Lam/ALTUS/Halo equipment behavior.
+
+Current local Unity blocker:
+
+```text
+Unity Editor is installed, but screenshot generation requires Unity Hub license activation.
+```
+
+After activating the Unity license, run:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```

@@ -447,3 +447,44 @@ Completion update:
 - PR CI passed on run `28504193106`.
 - Screenshot runner reaches Unity but actual PNG generation is blocked by inactive Unity license.
 - Next recommended goal: `Goal 031: Unity license activation, real screenshot capture, README demo image`.
+
+## 2026-07-01 Update: Goal 031 in progress
+
+- PR #28 merged into `main`.
+- Current branch: `goal/031-portfolio-demo-package`.
+- Goal 031 documents the portfolio/demo story while Unity license activation remains a user-side blocker.
+- New files:
+  - `docs/portfolio-demo-package.md`
+  - `goals/031-portfolio-demo-package.md`
+
+Current validation boundary:
+
+- .NET build/tests and CLI process run can be validated normally.
+- CI can verify the portfolio/demo documents exist.
+- Actual Unity screenshot generation still requires Unity Hub license activation.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR
+- watch CI
+
+Local validation update:
+
+- `git diff --check`: passed
+- Release build: passed
+- Core console tests: passed, 80 tests
+- Public moly ALD process CLI report/timeline run: passed
+
+Completion update:
+
+- Draft PR #29 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/29>
+- Commit: `0354a51 docs: add portfolio demo package`
+- Local validation passed.
+- PR CI passed:
+  - push run `28506128034`
+  - pull_request run `28506142593`
+- Unity screenshot generation remains blocked by inactive Unity license.
+- Next recommended goal: `Goal 032: Unity license activation result capture and README demo image`.
