@@ -1339,6 +1339,54 @@ Defect:    SURFACE_SCRATCH
 - `src/EquipmentTwin.Cli/Program.cs`
 - `templates/vision-inspection-cell.json`
 
+## 2026-07-01 이해 요약: Fault Expected-Failure Report
+
+이번 작업은 “실패가 성공인 테스트”를 CI에서 표현하기 위한 것이다.
+
+fault scenario는 일부러 장비 실행을 실패시킨다.
+
+예:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+```
+
+이 명령은 X축 Timeout을 만들기 때문에 `Execution: FAIL`이 맞다.
+
+하지만 일반 CLI 규칙에서는 `Execution: FAIL`이면 exit code 1이고, CI는 이것을 실패로 본다.
+
+그래서 아래 옵션을 추가했다.
+
+```powershell
+--expect-execution-failure
+```
+
+이 옵션을 쓰면 결과는 이렇게 해석된다.
+
+```text
+Execution: FAIL
+Expected execution: FAIL
+Execution expectation: MET
+```
+
+중요한 점:
+
+- `TemplateRunResult.Success`의 의미는 바꾸지 않았다.
+- `Success = false`는 여전히 장비 실행 실패다.
+- 새로 추가한 것은 “그 실패가 이번 테스트의 기대값이었는가”라는 판단이다.
+
+소프트웨어적으로 중요한 함수:
+
+- `IsTemplateExecutionExpectationMet()`
+- `DescribeExpectedExecution()`
+- `DescribeTemplateExecutionExpectation()`
+
+유지보수할 때 볼 파일:
+
+- `src/EquipmentTwin.Cli/Program.cs`
+- `.github/workflows/ci.yml`
+- `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

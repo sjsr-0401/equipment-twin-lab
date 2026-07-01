@@ -748,6 +748,7 @@ TemplateRunResult.ProductPassed
 - `template batch`로 template 안의 모든 recipe를 한 번에 실행할 수 있다.
 - 선택적으로 fault scenario를 주입할 수 있다.
 - 선택적으로 inspection scenario를 선택할 수 있다.
+- `--expect-execution-failure`로 fault 실행 실패를 기대값으로 검증할 수 있다.
 - 실행 결과를 콘솔에 사람이 읽을 수 있는 형태로 출력한다.
 - `--report` 옵션으로 실행 결과를 Markdown 파일에 저장한다.
 - GitHub Actions에서 대표 template 실행을 자동 검증한다.
@@ -758,6 +759,7 @@ TemplateRunResult.ProductPassed
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --report artifacts\template-run-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout --expect-execution-failure --report artifacts\template-fault-expected-failure-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --inspection scratch-detected --report artifacts\template-inspection-scenario-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template batch templates\vision-inspection-cell.json --report artifacts\template-batch-report.md
 ```
@@ -768,6 +770,8 @@ dotnet run --project src\EquipmentTwin.Cli -- template batch templates\vision-in
 Template
 Recipe
 Execution
+Expected execution
+Execution expectation
 Product
 Fault
 Inspection scenario
@@ -788,8 +792,11 @@ Command Log
 중요한 설계 판단:
 
 - `Execution`은 장비 실행 성공/실패다.
+- `Expected execution`은 이번 실행에서 기대한 장비 실행 결과다.
+- `Execution expectation`은 실제 실행 결과가 기대값과 맞았는지다.
 - `Product`는 제품 검사 PASS/FAIL이다.
 - fault가 있으면 `Execution: FAIL`, `Product: NOT_INSPECTED`가 될 수 있다.
+- fault 실패가 의도된 테스트라면 `--expect-execution-failure`를 사용해서 `Execution: FAIL`, `Execution expectation: MET`로 기록한다.
 - 제품 검사 Fail은 장비 실행 Fail이 아니다.
 
 유지보수 포인트:

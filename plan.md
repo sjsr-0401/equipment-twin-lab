@@ -2371,3 +2371,53 @@ Report
 1. PR #21을 Ready로 전환하고 병합한다.
 2. `main`을 최신화한다.
 3. Fault Expected-Failure Report 또는 Inspection Scenario Batch Matrix를 선택한다.
+
+## 49. 2026-07-01 Goal 024: Fault Expected-Failure Report
+
+PR #21을 병합한 뒤 Goal 024를 시작했다.
+
+목표:
+
+```text
+fault 주입처럼 실행 실패가 정상 기대값인 케이스를
+CI와 report에서 안전하게 검증한다.
+```
+
+추가한 기능:
+
+- CLI `--expect-execution-failure`
+- expected execution / execution expectation 출력
+- expected fault Markdown report
+- CI expected fault 검증
+- Visual Studio expected fault launch profile
+
+검증 결과:
+
+- Release 빌드 성공
+- expected fault CLI 성공
+- 기존 fault CLI는 옵션 없으면 exit code 1 유지
+- `--expect-execution-failure` 단독 사용은 거부
+- `artifacts\template-fault-expected-failure-report.md` 내용 확인
+
+막힌 점:
+
+- fault 실패 자체는 정상인데 CI exit code가 실패로 처리되는 문제가 있었다.
+- 실행 결과 의미를 바꾸지 않고, 별도 expectation layer로 해결했다.
+
+소프트웨어 아키텍처:
+
+```text
+TemplateRunResult.Success
+    ↓
+Expected execution
+    ↓
+Expectation MET/NOT_MET
+    ↓
+exit code
+```
+
+다음 권장 작업:
+
+1. Goal 024 Draft PR을 만든다.
+2. CI 결과를 확인한다.
+3. Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.

@@ -31,6 +31,11 @@
       "workingDirectory": "..\\..",
       "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel --fault x-axis-move-timeout"
     },
+    "CLI - template expected fault": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel --fault x-axis-move-timeout --expect-execution-failure --report artifacts\\template-fault-expected-failure-report.md"
+    },
     "CLI - template inspection scenario": {
       "commandName": "Project",
       "workingDirectory": "..\\..",
