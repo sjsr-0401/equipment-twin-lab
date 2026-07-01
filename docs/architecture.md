@@ -611,7 +611,8 @@ TemplateRunResult
 주의:
 
 - 현재 Template Runner는 모션 축과 모션 fault만 실행한다.
-- IO 시뮬레이션과 검사 결과는 아직 연결하지 않았다.
+- IO 시뮬레이션은 아직 연결하지 않았다.
+- 검사 결과는 `ProductRecipe.InspectionResult`를 통해 데이터 기반으로 생성한다.
 - 실제 장비 recipe 엔진이 아니라 configurable twin을 위한 첫 실행 계층이다.
 
 ## 12. Fault Model
@@ -664,3 +665,65 @@ TemplateRunResult.Success = false
 
 - 이 fault model은 실제 고장 물리 모델이 아니다.
 - 현재는 소프트웨어 시뮬레이션에서 재현 가능한 대표 트러블 조건을 정의하는 단계다.
+
+## 13. Inspection Result Model
+
+파일:
+
+- `src/EquipmentTwin.Core/Templates/InspectionOutcome.cs`
+- `src/EquipmentTwin.Core/Templates/InspectionResultSpec.cs`
+- `src/EquipmentTwin.Core/Templates/InspectionResult.cs`
+- `src/EquipmentTwin.Core/Templates/ProductRecipe.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunResult.cs`
+- `templates/vision-inspection-cell.json`
+
+역할:
+
+- 실제 카메라가 없어도 제품 검사 PASS/FAIL을 데이터로 표현한다.
+- `DatasetCamera`, `UnityCamera` 같은 inspection mode를 가진 recipe는 `inspectionResult`를 반드시 정의해야 한다.
+- 검사 결과에는 outcome, defect code, message, measurement를 담는다.
+- Template Runner는 모션 실행이 정상 완료된 뒤에만 검사 결과를 만든다.
+- 모션 fault가 발생하면 검사 결과를 만들지 않는다.
+
+아키텍처 흐름:
+
+```text
+ProductRecipe JSON
+    ↓
+InspectionResultSpec
+    ↓
+ProductRecipe.Validate()
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+TemplateRunResult.InspectionResult
+```
+
+중요한 설계 판단:
+
+```text
+TemplateRunResult.Success
+    = 장비 실행이 알람 없이 완료됐는가
+
+TemplateRunResult.ProductPassed
+    = 제품 검사 결과가 PASS인가
+```
+
+둘은 같은 값이 아니다.
+
+예를 들어 `tall-part`는 장비가 정상으로 움직여도 제품 검사 결과는 `HEIGHT_OVER_LIMIT`로 Fail이 될 수 있다.
+
+유지보수 포인트:
+
+- 검사 outcome 종류 추가: `InspectionOutcome`
+- recipe 검사 결과 필드/검증 변경: `InspectionResultSpec`
+- 실행 결과에 검사 항목 추가: `InspectionResult`
+- 검사 생성 시점 변경: `TemplateRunner.CreateInspectionResult()`
+- 샘플 PASS/FAIL 데이터 변경: `templates/vision-inspection-cell.json`
+
+주의:
+
+- 현재는 실제 이미지 처리 결과가 아니다.
+- 데이터 기반 가상 검사 결과다.
+- 나중에 실제 카메라, 데이터셋 카메라, Unity 가상 카메라가 붙어도 같은 `InspectionResult` 구조로 결과를 넘기게 만드는 것이 목표다.

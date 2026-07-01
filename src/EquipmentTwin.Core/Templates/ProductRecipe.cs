@@ -11,6 +11,8 @@ public sealed class ProductRecipe
 
     public InspectionMode InspectionMode { get; init; } = InspectionMode.None;
 
+    public InspectionResultSpec? InspectionResult { get; init; }
+
     public Dictionary<string, double> AxisTargets { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
     public void Validate(int index, IReadOnlySet<string> knownAxisNames)
@@ -23,6 +25,29 @@ public sealed class ProductRecipe
         if (string.IsNullOrWhiteSpace(ProductCode))
         {
             throw new InvalidOperationException($"Product recipe '{Name}' requires a productCode.");
+        }
+
+        switch (InspectionMode)
+        {
+            case InspectionMode.None:
+                if (InspectionResult is not null)
+                {
+                    throw new InvalidOperationException($"Product recipe '{Name}' must not contain inspectionResult when inspectionMode is None.");
+                }
+                break;
+
+            case InspectionMode.DatasetCamera:
+            case InspectionMode.UnityCamera:
+                if (InspectionResult is null)
+                {
+                    throw new InvalidOperationException($"Product recipe '{Name}' requires inspectionResult when inspectionMode is {InspectionMode}.");
+                }
+
+                InspectionResult.Validate(Name);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Product recipe '{Name}' has unsupported inspectionMode '{InspectionMode}'.");
         }
 
         if (AxisTargets.Count == 0)

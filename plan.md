@@ -2060,3 +2060,74 @@ TemplateRunResult.Success = false
 1. PR #16 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Inspection Result Model을 시작한다.
+
+## 44. 2026-07-01 Goal 019: Inspection Result Model
+
+PR #16을 병합한 뒤 Goal 019를 시작했다.
+
+목표:
+
+```text
+실제 카메라가 없어도 제품 검사 PASS/FAIL을 데이터로 표현하고,
+TemplateRunner 실행 결과에 검사 결과를 남긴다.
+```
+
+추가한 코드:
+
+- `InspectionOutcome`
+- `InspectionResultSpec`
+- `InspectionResult`
+- `ProductRecipe.InspectionResult`
+- `TemplateRunResult.InspectionResult`
+- `TemplateRunResult.ProductPassed`
+
+추가한 샘플 검사 결과:
+
+- `default-panel`: PASS
+- `tall-part`: `HEIGHT_OVER_LIMIT` Fail
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- 콘솔 테스트 68개 통과
+- CLI batch 시나리오 9개 통과
+- Draft PR #17 생성
+- GitHub Actions push/pull_request 성공
+
+막힌 점:
+
+- 실제 카메라가 없으므로 이미지 기반 검사는 아직 구현하지 않았다.
+- 지금은 recipe 안의 `inspectionResult`를 데이터 기반 가상 검사 결과로 사용한다.
+
+보류한 판단:
+
+- 같은 recipe에서 PASS/FAIL inspection scenario를 선택하는 구조는 아직 없다.
+- 실제 dataset camera adapter와 Unity camera adapter는 아직 없다.
+- tolerance, defect classification은 MVP 이후로 미뤘다.
+
+소프트웨어 아키텍처:
+
+```text
+ProductRecipe
+    ↓
+InspectionResultSpec
+    ↓
+TemplateRunner
+    ↓
+TemplateRunResult.InspectionResult
+```
+
+중요한 설계 판단:
+
+```text
+Success       = 장비 실행 성공
+ProductPassed = 제품 검사 PASS/FAIL
+```
+
+다음 권장 작업:
+
+1. PR #17 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
+3. Template Runner CLI 또는 Inspection Scenario Selection을 선택한다.
