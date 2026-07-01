@@ -263,3 +263,27 @@ Completion status:
 - Next priority:
   - record the actual 3-minute demo video, or
   - design the CAD/Blender model swap boundary before importing assets.
+
+## 2026-07-01 Triage Update: Goal 034
+
+Active focus moved to the CAD/Blender model swap boundary.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity visual adapter boundary | Prevents process logic from being duplicated in every future model renderer | In progress |
+| P1 | Imported model binding component | Gives future CAD/Blender assets a concrete connection point | In progress |
+| P2 | Name-based auto-binding | Useful only after a real imported model exists | Later |
+| P2 | Actual 3-minute video recording | Still valuable, but code boundary was chosen first to reduce model-swap risk | Next |
+
+Current validation boundary:
+
+- The project still has no real imported CAD/Blender asset.
+- Goal 034 proves the software boundary, not the final imported-model visual quality.
+
+Completion status:
+
+- Draft PR #32: <https://github.com/sjsr-0401/equipment-twin-lab/pull/32>
+- CI: passed
+- Next priority:
+  - record the actual 3-minute demo video and find explanation gaps;
+  - add imported-model auto-binding only after a real asset naming convention exists.

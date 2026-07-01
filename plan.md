@@ -11,6 +11,7 @@
 - Unity는 timeline JSON을 읽어 chamber/wafer/film/vacuum gauge/valve/gas line을 primitive 3D object로 재생한다.
 - 실제 Unity Editor batch screenshot이 생성되었고 README 대표 이미지로 연결되어 있다.
 - 3분 포트폴리오 녹화 체크리스트는 `docs/unity-demo-recording-checklist.md`에 정리한다.
+- CAD/Blender 모델 교체 경계는 `MolyAldVisualState`와 `MolyAldImportedModelVisualBinding`으로 분리한다.
 
 ## 1. 프로젝트 한 줄 정의
 

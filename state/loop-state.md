@@ -562,3 +562,43 @@ Completion update:
   - push run `28514554674`
   - pull_request run `28514568014`
 - Next recommended goal: `Goal 034: record the 3-minute demo video or design CAD/Blender model swap points`.
+
+## 2026-07-01 Update: Goal 034 in progress
+
+- PR #31 merged into `main`.
+- Current branch: `goal/034-unity-visual-adapter-boundary`.
+- Goal 034 adds the Unity visual adapter boundary for future CAD/Blender model swaps.
+- New Unity runtime boundary:
+  - `MolyAldVisualState`
+  - `MolyAldVisualStateMapper`
+  - `MolyAldImportedModelVisualBinding`
+- `MolyAldPrimitiveVisualizer` now applies `MolyAldVisualState` instead of directly owning all timeline-to-renderer mapping.
+- Documentation:
+  - `docs/unity-model-swap-boundary.md`
+  - `goals/034-unity-visual-adapter-boundary.md`
+
+Next required action:
+
+- commit Goal 034
+- push branch
+- create draft PR
+- watch CI
+
+Local validation update:
+
+- `git diff --check`: passed
+- Release build: passed
+- Core console tests: 80 passed
+- public moly ALD process report/timeline CLI: passed
+- Unity screenshot capture: passed
+
+Completion update:
+
+- Draft PR #32 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/32>
+- Commit: `6d002b5 feat: add unity visual adapter boundary`
+- Local validation passed.
+- Unity screenshot validation passed.
+- PR CI passed:
+  - push run `28515480062`
+  - pull_request run `28515494369`
+- Next recommended goal: `Goal 035: record the actual 3-minute demo or add imported-model auto-binding after a real asset exists`.
