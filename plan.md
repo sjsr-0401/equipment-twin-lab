@@ -2636,3 +2636,29 @@ Goal 030: Unity Play Mode screenshot/demo capture
 ```
 
 Unity 라이선스가 활성화되면 실제 화면 스크린샷을 남기고 README에 데모 이미지/절차를 붙인다.
+
+## 55. 2026-07-01 Goal 030: Unity Demo Screenshot Capture
+
+Goal 030은 Unity demo를 포트폴리오 산출물로 남기는 첫 단계다.
+
+목표:
+
+```text
+Unity smoke test가 통과한 뒤 demo screenshot PNG를 자동 저장한다.
+```
+
+구현 범위:
+
+- PowerShell `-CaptureScreenshot` 옵션
+- Unity Editor batch screenshot method
+- Unity menu screenshot command
+- screenshot output document
+- CI wiring check
+
+다음 권장 Goal:
+
+```text
+Goal 031: README demo image and portfolio explanation
+```
+
+스크린샷이 실제로 생성되면 README에 이미지와 3분 데모 설명을 추가한다.

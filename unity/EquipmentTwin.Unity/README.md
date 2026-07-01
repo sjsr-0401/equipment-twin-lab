@@ -90,6 +90,18 @@ Expected marker:
 EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
 ```
 
+Screenshot capture:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+Manual menu:
+
+```text
+Equipment Twin > Capture Moly ALD Demo Screenshot
+```
+
 ## Design boundary
 
 This Unity skeleton is a visual replay of public/synthetic software-state data. It is not a physics simulation and does not represent real equipment internals.

@@ -70,4 +70,7 @@ jobs:
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           test -f scripts/Invoke-UnitySmokeTest.ps1
           test -f docs/unity-smoke-test.md
+          test -f docs/unity-demo-screenshot.md
+          grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+          grep -q "CaptureScreenshot" scripts/Invoke-UnitySmokeTest.ps1
           test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json

@@ -335,6 +335,18 @@ Detailed checklist:
 docs/unity-smoke-test.md
 ```
 
+To capture the first demo screenshot after Unity Hub license activation:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+Default screenshot output:
+
+```text
+artifacts/unity-demo/moly-ald-demo.png
+```
+
 ## Process Timeline JSON Export
 
 The public molybdenum ALD process can export a Unity-ready JSON timeline.

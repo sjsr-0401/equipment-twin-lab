@@ -1579,6 +1579,30 @@ docs/unity-smoke-test.md
 - Unity 메뉴/검증 자동화는 `Assets/EquipmentTwin/Editor`에 둔다.
 - Unity 라이선스 문제는 코드 문제가 아니라 실행 환경 문제다.
 
+## 2026-07-01 이해 요약: Unity Demo Screenshot Capture
+
+이번 Goal의 핵심은 Unity 화면을 포트폴리오 이미지로 남기는 경로를 만든 것이다.
+
+한 문장 설명:
+
+> `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`은 smoke test를 실행한 뒤 Unity camera를 PNG로 렌더링해서 `artifacts/unity-demo/moly-ald-demo.png`에 저장한다.
+
+코드 흐름:
+
+```text
+Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+    -> RunBatchScreenshotCapture()
+    -> RunSmokeTest()
+    -> CaptureScreenshot()
+    -> RenderCameraToPng()
+```
+
+중요한 유지보수 원칙:
+
+- screenshot은 결과물이라 `artifacts/` 아래에 둔다.
+- `artifacts/`는 gitignore되어 있으므로 이미지 파일은 자동 커밋되지 않는다.
+- README에 이미지를 넣고 싶으면, 나중에 의도적으로 docs/demo 같은 tracked 위치로 옮겨야 한다.
+
 현재 검증 한계:
 
 - GitHub Actions에는 Unity Editor가 없다.

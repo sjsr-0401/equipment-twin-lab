@@ -909,6 +909,22 @@ The success marker is:
 EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
 ```
 
+Goal 030 extends the harness with screenshot capture:
+
+```text
+Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+    -> RunBatchScreenshotCapture
+    -> create demo scene
+    -> render Camera to PNG
+    -> artifacts/unity-demo/moly-ald-demo.png
+```
+
+The screenshot marker is:
+
+```text
+EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
+```
+
 Important boundary:
 
 - CI still validates .NET and Unity file wiring.

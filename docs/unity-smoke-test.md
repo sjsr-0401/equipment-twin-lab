@@ -41,6 +41,32 @@ The script writes:
 unity/EquipmentTwin.Unity/Logs/codex-unity-smoke-test.log
 ```
 
+## Capture demo screenshot
+
+After the smoke test passes, capture a portfolio screenshot:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+Default output:
+
+```text
+artifacts/unity-demo/moly-ald-demo.png
+```
+
+Custom output:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot -ScreenshotPath artifacts\unity-demo\my-demo.png
+```
+
+Expected screenshot marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
+```
+
 ## Manual Unity smoke test
 
 If batchmode is blocked by licensing, use Unity Hub:
@@ -50,8 +76,9 @@ If batchmode is blocked by licensing, use Unity Hub:
 3. In the Unity menu, run `Equipment Twin > Run Moly ALD Smoke Test`.
 4. Confirm the Console logs `EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS`.
 5. In the Unity menu, run `Equipment Twin > Create Moly ALD Demo Scene`.
-6. Press Play.
-7. Confirm the generated chamber, wafer, film overlay, pressure gauge, and three valve indicators appear.
+6. In the Unity menu, run `Equipment Twin > Capture Moly ALD Demo Screenshot`.
+7. Press Play.
+8. Confirm the generated chamber, wafer, film overlay, pressure gauge, and three valve indicators appear.
 
 ## What the smoke test checks
 
@@ -61,6 +88,7 @@ If batchmode is blocked by licensing, use Unity Hub:
 - demo GameObject can be created;
 - player, HUD, primitive visualizer, and bootstrap components are present;
 - primitive renderer objects are generated.
+- optional screenshot capture writes a PNG file.
 
 ## What it does not prove
 

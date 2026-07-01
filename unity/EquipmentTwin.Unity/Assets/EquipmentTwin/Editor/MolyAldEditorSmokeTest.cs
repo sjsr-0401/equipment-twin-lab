@@ -11,6 +11,7 @@ namespace EquipmentTwin.Unity.EditorTools
     public static class MolyAldEditorSmokeTest
     {
         public const string SuccessMarker = "EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS";
+        public const string ScreenshotMarker = "EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED";
         public const string TimelineFileName = "moly-ald-timeline.sample.json";
 
         [MenuItem("Equipment Twin/Create Moly ALD Demo Scene")]
@@ -38,11 +39,38 @@ namespace EquipmentTwin.Unity.EditorTools
             RunSmokeTest();
         }
 
+        [MenuItem("Equipment Twin/Capture Moly ALD Demo Screenshot")]
+        public static void CaptureScreenshotFromMenu()
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                Debug.Log("Moly ALD screenshot capture was cancelled.");
+                return;
+            }
+
+            CaptureScreenshot();
+        }
+
         public static void RunBatchSmokeTest()
         {
             try
             {
                 RunSmokeTest();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                EditorApplication.Exit(1);
+            }
+        }
+
+        public static void RunBatchScreenshotCapture()
+        {
+            try
+            {
+                RunSmokeTest();
+                CaptureScreenshot();
                 EditorApplication.Exit(0);
             }
             catch (Exception ex)
@@ -90,6 +118,41 @@ namespace EquipmentTwin.Unity.EditorTools
 
             Debug.Log(
                 $"{SuccessMarker}: recipe={timeline.recipeName}, steps={timeline.steps.Length}, renderers={renderers.Length}");
+        }
+
+        public static string CaptureScreenshot()
+        {
+            var root = FindDemoRoot();
+            if (root == null)
+            {
+                root = CreateDemoScene();
+            }
+
+            var visualizer = root.GetComponent<MolyAldPrimitiveVisualizer>();
+            if (visualizer == null)
+            {
+                throw new InvalidOperationException("MolyAldPrimitiveVisualizer was not found for screenshot capture.");
+            }
+
+            visualizer.EnsureScene();
+
+            var camera = Camera.main != null ? Camera.main : UnityEngine.Object.FindObjectOfType<Camera>();
+            if (camera == null)
+            {
+                CreateCamera();
+                camera = Camera.main != null ? Camera.main : UnityEngine.Object.FindObjectOfType<Camera>();
+            }
+
+            if (camera == null)
+            {
+                throw new InvalidOperationException("No camera is available for screenshot capture.");
+            }
+
+            var outputPath = ResolveScreenshotPath();
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+            RenderCameraToPng(camera, outputPath, 1280, 720);
+            Debug.Log($"{ScreenshotMarker}: {outputPath}");
+            return outputPath;
         }
 
         public static GameObject CreateDemoScene()
@@ -149,6 +212,58 @@ namespace EquipmentTwin.Unity.EditorTools
             var camera = cameraObject.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.04f, 0.045f, 0.055f);
+        }
+
+        private static GameObject FindDemoRoot()
+        {
+            var player = UnityEngine.Object.FindObjectOfType<MolyAldProcessPlayer>();
+            return player != null ? player.gameObject : null;
+        }
+
+        private static string ResolveScreenshotPath()
+        {
+            var args = Environment.GetCommandLineArgs();
+            for (var index = 0; index < args.Length - 1; index++)
+            {
+                if (string.Equals(args[index], "-equipmentTwinScreenshot", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Path.GetFullPath(args[index + 1]);
+                }
+            }
+
+            return Path.GetFullPath(Path.Combine(
+                Application.dataPath,
+                "..",
+                "..",
+                "..",
+                "artifacts",
+                "unity-demo",
+                "moly-ald-demo.png"));
+        }
+
+        private static void RenderCameraToPng(Camera camera, string outputPath, int width, int height)
+        {
+            var previousTargetTexture = camera.targetTexture;
+            var previousActiveTexture = RenderTexture.active;
+            var renderTexture = new RenderTexture(width, height, 24);
+            var texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+
+            try
+            {
+                camera.targetTexture = renderTexture;
+                RenderTexture.active = renderTexture;
+                camera.Render();
+                texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                texture.Apply();
+                File.WriteAllBytes(outputPath, texture.EncodeToPNG());
+            }
+            finally
+            {
+                camera.targetTexture = previousTargetTexture;
+                RenderTexture.active = previousActiveTexture;
+                UnityEngine.Object.DestroyImmediate(texture);
+                UnityEngine.Object.DestroyImmediate(renderTexture);
+            }
         }
 
         private static void CreateLight()
