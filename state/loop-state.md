@@ -275,3 +275,17 @@
   - push branch
   - open draft PR #23
   - watch CI
+## 2026-07-01 Update: Goal 025 PR created
+
+- PR #23: `https://github.com/sjsr-0401/equipment-twin-lab/pull/23`
+- Branch: `goal/025-public-ald-process-model`
+- Commit: `bb92a4c feat: add public moly ald process model`
+- State: Draft
+- push CI: success
+- pull_request CI: success
+
+Next recommended goal:
+
+```text
+Goal 026: Process Timeline JSON Export
+```
