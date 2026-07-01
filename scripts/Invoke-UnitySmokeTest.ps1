@@ -114,7 +114,7 @@ $unityArgs += @("-executeMethod", $executeMethod)
 
 & $ResolvedUnityPath @unityArgs
 
-$UnityExitCode = $LASTEXITCODE
+$UnityExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
 if (Test-Path -LiteralPath $LogPath) {
     Get-Content -Tail 80 -LiteralPath $LogPath
 }

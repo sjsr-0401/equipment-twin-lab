@@ -239,3 +239,27 @@ PR status:
 - Goal 032 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/30>
 - CI status: passed
 - Next work: improve the Unity demo scene readability and prepare a 3-minute recording checklist.
+
+## 2026-07-01 Triage Update: Goal 033
+
+Active focus moved from first screenshot proof to portfolio recording readiness.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity demo polish | The screenshot exists, but it needs clearer process-state visuals for portfolio use | In progress |
+| P1 | 3-minute recording checklist | The user needs a repeatable script to explain the project without overclaiming | In progress |
+| P2 | CAD/Blender model swap design | Useful after the primitive visual story is clear | Next |
+
+Current validation boundary:
+
+- Unity screenshot generation works locally with Unity Hub Personal license.
+- GitHub Actions still validates .NET and file-level Unity wiring only; it does not run Unity Editor.
+- The demo must continue to avoid claims about real vendor internals.
+
+Completion status:
+
+- Draft PR #31: <https://github.com/sjsr-0401/equipment-twin-lab/pull/31>
+- CI: passed
+- Next priority:
+  - record the actual 3-minute demo video, or
+  - design the CAD/Blender model swap boundary before importing assets.

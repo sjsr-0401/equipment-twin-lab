@@ -1,9 +1,16 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v1.1 — CLI batch 실행과 Markdown 리포트 추가
+> 상태: 초안 v1.2 — Unity screenshot과 3분 데모 체크리스트 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
+
+## 2026-07-01 현재 진행 업데이트
+
+- Core/CLI는 공개/합성 molybdenum ALD 공정 report와 Unity timeline JSON을 생성한다.
+- Unity는 timeline JSON을 읽어 chamber/wafer/film/vacuum gauge/valve/gas line을 primitive 3D object로 재생한다.
+- 실제 Unity Editor batch screenshot이 생성되었고 README 대표 이미지로 연결되어 있다.
+- 3분 포트폴리오 녹화 체크리스트는 `docs/unity-demo-recording-checklist.md`에 정리한다.
 
 ## 1. 프로젝트 한 줄 정의
 

@@ -525,3 +525,40 @@ Completion update:
   - push run `28513825158`
   - pull_request run `28513842354`
 - Next recommended goal: `Goal 033: Unity demo polish and 3-minute recording checklist`.
+
+## 2026-07-01 Update: Goal 033 in progress
+
+- PR #30 merged into `main`.
+- Current branch: `goal/033-unity-demo-polish-recording-checklist`.
+- Goal 033 improves Unity demo readability and adds a 3-minute recording checklist.
+- Visual changes:
+  - equipment base plate;
+  - gas lines for metal precursor, reactant, and purge;
+  - title label;
+  - tighter demo camera framing/FOV.
+- Script fix:
+  - `Invoke-UnitySmokeTest.ps1` now treats a blank `$LASTEXITCODE` as `0` after Unity returns successfully.
+- Local validation passed:
+  - `git diff --check`
+  - Release build
+  - Core console tests: 80 passed
+  - public moly ALD process report/timeline CLI
+  - Unity screenshot capture with success markers
+
+Next required action:
+
+- commit Goal 033
+- push branch
+- create draft PR
+- watch CI
+
+Completion update:
+
+- Draft PR #31 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/31>
+- Commit: `d4b76b4 feat: polish unity demo recording flow`
+- Local validation passed.
+- Unity screenshot validation passed.
+- PR CI passed:
+  - push run `28514554674`
+  - pull_request run `28514568014`
+- Next recommended goal: `Goal 034: record the 3-minute demo video or design CAD/Blender model swap points`.
