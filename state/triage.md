@@ -233,3 +233,9 @@ New risk:
 
 - The screenshot proves the pipeline but still looks like an MVP primitive scene.
 - Next work should improve visual clarity, not add more backend features.
+
+PR status:
+
+- Goal 032 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/30>
+- CI status: passed
+- Next work: improve the Unity demo scene readability and prepare a 3-minute recording checklist.
