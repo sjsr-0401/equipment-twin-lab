@@ -308,6 +308,33 @@ Visual mapping:
 | `valves.purge` | purge valve sphere |
 | `estimatedThicknessAngstrom` | film overlay disk size/color |
 
+## Unity Smoke Test
+
+After activating the Unity Editor license in Unity Hub, run:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1
+```
+
+Expected success marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+```
+
+Manual Unity menu path:
+
+```text
+Equipment Twin > Run Moly ALD Smoke Test
+Equipment Twin > Create Moly ALD Demo Scene
+```
+
+Detailed checklist:
+
+```text
+docs/unity-smoke-test.md
+```
+
 ## Process Timeline JSON Export
 
 The public molybdenum ALD process can export a Unity-ready JSON timeline.

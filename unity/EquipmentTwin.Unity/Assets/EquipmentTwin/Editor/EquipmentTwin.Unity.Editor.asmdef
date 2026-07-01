@@ -1,0 +1,18 @@
+{
+  "name": "EquipmentTwin.Unity.Editor",
+  "rootNamespace": "EquipmentTwin.Unity.Editor",
+  "references": [
+    "EquipmentTwin.Unity.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

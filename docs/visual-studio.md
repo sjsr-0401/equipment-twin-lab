@@ -258,6 +258,39 @@ Current local blocker:
 - Batchmode compile was attempted, but Unity reported `No valid Unity Editor license found`.
 - After activating the Unity license in Unity Hub, rerun the local Play Mode smoke test.
 
+## Unity Smoke Test Harness
+
+After Unity Hub sign-in/license activation, run from repository root:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1
+```
+
+The script runs Unity in batchmode and calls:
+
+```text
+EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchSmokeTest
+```
+
+If batchmode is blocked, open the project manually:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -OpenProjectOnly
+```
+
+Then use the Unity menu:
+
+```text
+Equipment Twin > Run Moly ALD Smoke Test
+Equipment Twin > Create Moly ALD Demo Scene
+```
+
+Expected success marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+```
+
 ## Timeline JSON Debugging
 
 The `CLI - public moly ALD process` profile now writes both files:

@@ -283,6 +283,44 @@ Manual Unity smoke test:
 5. Press Play.
 6. Confirm the chamber, wafer, film overlay, pressure column, gauge needle, and three valve spheres update while the process advances.
 
+## Unity Smoke Test Harness
+
+Goal 029 adds a repeatable smoke-test harness for the Unity side.
+
+Files:
+
+```text
+unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+scripts/Invoke-UnitySmokeTest.ps1
+docs/unity-smoke-test.md
+```
+
+Batch command:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1
+```
+
+Manual Unity command:
+
+```text
+Equipment Twin > Run Moly ALD Smoke Test
+```
+
+Expected marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+```
+
+What it checks:
+
+- sample timeline JSON exists;
+- Unity timeline loader parses the sample;
+- demo scene root can be created;
+- player, HUD, visualizer, and bootstrap components are present;
+- primitive renderers are generated.
+
 ## Process Timeline JSON Export Validation
 
 Goal 026 validates that the ALD process result can be exported as Unity-ready JSON.
