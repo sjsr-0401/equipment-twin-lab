@@ -114,3 +114,25 @@ PR status:
 - Goal 027 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/25>
 - CI status: passed
 - Next work: add simple Unity chamber/wafer/valve visuals and local Unity Editor validation notes.
+
+## 2026-07-01 Triage Update: Goal 028
+
+Active focus moved from Unity timeline replay to visible primitive process visualization.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity Chamber/Wafer/Valve Visual | Needed for visible portfolio demo | In progress |
+| P1 | Unity Editor local smoke test | Needed because CI does not compile Unity scripts | Next |
+| P2 | Imported CAD/Blender model swap points | Useful after primitives prove data flow | Later |
+
+Current blocker:
+
+- Unity Editor is not available in the current automation environment.
+- Workaround: CI checks file presence and .NET regression; local Unity Play Mode remains manual.
+
+PR status:
+
+- Goal 028 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/26>
+- CI status: passed
+- Current blocker update: Unity Editor is installed, but batchmode compile is blocked by `No valid Unity Editor license found`.
+- Next work: activate/sign in through Unity Hub, then run Play Mode smoke test.

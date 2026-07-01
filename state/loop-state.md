@@ -351,3 +351,33 @@ Completion update:
 - Local validation passed.
 - PR CI passed on run `28501761492`.
 - Next recommended goal: `Goal 028: Unity Chamber/Wafer/Valve Visual`.
+
+## 2026-07-01 Update: Goal 028 in progress
+
+- PR #25 merged into `main`.
+- Current branch: `goal/028-unity-chamber-wafer-valve-visual`.
+- Goal 028 adds primitive Unity visuals driven by `MolyAldProcessPlayer.CurrentStep`.
+- New visual components:
+  - `MolyAldPrimitiveVisualizer`
+  - `MolyAldDemoBootstrap`
+- Current validation boundary:
+  - .NET build/tests still run locally and in CI.
+  - Unity runtime script file presence is checked in CI.
+  - Unity Editor compile/play is still manual.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR #26
+- watch CI
+
+Completion update:
+
+- Draft PR #26 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/26>
+- Commit: `afeb2f6 feat: add unity primitive process visual`
+- Local validation passed.
+- PR CI passed on run `28502801252`.
+- Unity batchmode compile was blocked by inactive Unity license.
+- Next recommended goal: `Goal 029: Unity Hub license activation + Play Mode smoke test checklist`.

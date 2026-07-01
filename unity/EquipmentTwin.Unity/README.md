@@ -19,6 +19,7 @@ This folder is intentionally lightweight. It does not try to generate a complete
 4. Add these components:
    - `MolyAldProcessPlayer`
    - `MolyAldProcessHud`
+   - `MolyAldPrimitiveVisualizer`
 5. Assign a timeline JSON as a `TextAsset`, or place a JSON file under `Assets/StreamingAssets/`.
 
 Sample file:
@@ -41,7 +42,32 @@ MolyAldProcessPlayer
 
 MolyAldProcessHud
     Minimal debug UI rendered with OnGUI
+
+MolyAldPrimitiveVisualizer
+    Auto-created primitive chamber/wafer/valve/pressure visuals
+
+MolyAldDemoBootstrap
+    Optional one-component setup helper for player, HUD, visualizer, camera, and light
 ```
+
+## Fastest visual setup
+
+1. Create one empty GameObject.
+2. Add only `MolyAldDemoBootstrap`.
+3. Press Play.
+
+The bootstrap component adds the player, HUD, primitive visualizer, camera, and directional light automatically.
+
+Primitive mapping:
+
+| Timeline value | Visual |
+|---|---|
+| Chamber pressure | chamber color, vacuum column, gauge needle |
+| Wafer temperature | wafer color |
+| Metal precursor valve | orange valve sphere |
+| Reactant valve | blue valve sphere |
+| Purge valve | green valve sphere |
+| Film thickness | film overlay disk size/color |
 
 ## Design boundary
 
