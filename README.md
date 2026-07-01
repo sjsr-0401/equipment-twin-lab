@@ -171,7 +171,7 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 제품 PASS 케이스:
 
 ```powershell
-dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --report artifacts\template-run-report.md
 ```
 
 제품 FAIL 케이스:
@@ -193,6 +193,8 @@ Execution = 장비 실행 성공/실패
 Product   = 제품 검사 PASS/FAIL
 ```
 
+`--report`를 넣으면 같은 결과를 Markdown 파일로 저장한다. 이 파일은 포트폴리오나 작업 로그에 붙이기 쉽다.
+
 ## 자동 검증
 
 GitHub Actions CI가 push/PR마다 아래 검증을 실행한다.
@@ -204,7 +206,7 @@ dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csp
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/normal-cycle.json
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/loading-timeout.json --default-timeouts
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts/scenario-report.md
-dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json default-panel
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json default-panel --report artifacts/template-run-report.md
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json tall-part
 ```
 

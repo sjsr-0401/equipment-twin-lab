@@ -2194,3 +2194,62 @@ PrintTemplateResult()
 1. PR #18 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Template Run Markdown Report를 선택한다.
+
+## 46. 2026-07-01 Goal 021: Template Run Markdown Report
+
+PR #18을 병합한 뒤 Goal 021을 시작했다.
+
+목표:
+
+```text
+template run 실행 결과를 Markdown report로 저장할 수 있게 한다.
+```
+
+추가한 기능:
+
+- `template run ... --report <path>`
+- Template run Markdown report 생성
+- Summary / Inspection / Motion Axes / Command Log 섹션
+- CI template report 생성 검증
+- Visual Studio launch profile report 옵션
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- `default-panel --report artifacts\template-run-report.md` 실행 성공
+- `tall-part` template CLI 성공
+- 생성된 Markdown 내용 확인
+- Draft PR #19 생성
+- GitHub Actions push/pull_request 성공
+
+막힌 점:
+
+- template CLI 두 개를 병렬 실행했을 때 DLL lock이 발생했다.
+- 이후 순차 실행으로 검증했다.
+- report 파일은 생성 시간이 매번 달라진다.
+- 결과물은 커밋하지 않고 기능만 검증했다.
+
+보류한 판단:
+
+- template batch report는 아직 없다.
+- 여러 recipe를 한 번에 실행하는 기능은 아직 없다.
+
+소프트웨어 아키텍처:
+
+```text
+RunTemplate()
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+BuildTemplateMarkdownReport()
+    ↓
+WriteTemplateMarkdownReport()
+```
+
+다음 권장 작업:
+
+1. PR #19 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
+3. Inspection Scenario Selection 또는 Template Batch Report를 선택한다.
