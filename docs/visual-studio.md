@@ -166,6 +166,7 @@ IO:
 - `EquipmentTwin.Cli`의 launch profile은 작업 폴더를 repo root로 맞춘다.
 - 시나리오 경로는 repo root 기준으로 `scenarios\normal-cycle.json`처럼 적는다.
 - batch 리포트 경로도 repo root 기준으로 `artifacts\scenario-report.md`처럼 적는다.
+- template report 경로도 repo root 기준으로 `artifacts\template-run-report.md`처럼 적는다.
 
 관련 파일:
 

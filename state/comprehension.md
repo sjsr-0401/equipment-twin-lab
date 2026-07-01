@@ -1193,6 +1193,52 @@ PrintTemplateResult()
 - 여러 template/recipe를 batch로 실행할지
 - fault 케이스를 CI에서 예상 실패로 검증할지
 
+## 2026-07-01 이해 요약: Template Run Markdown Report
+
+### 오늘 한 일
+
+- PR #18을 병합했다.
+- Template run 결과를 Markdown report로 저장할 수 있게 했다.
+- `--report artifacts\template-run-report.md` 옵션을 추가했다.
+
+### 왜 필요한가
+
+콘솔 출력은 지나가면 사라진다.
+
+Markdown report는 실행 결과를 파일로 남겨서 포트폴리오, 작업 로그, 리뷰 자료로 사용할 수 있다.
+
+### 내가 이해해야 할 개념
+
+```text
+Core = 실행 결과를 만든다
+CLI  = 실행 결과를 사람이 읽는 문서로 바꾼다
+```
+
+Core와 출력 형식을 분리해야 나중에 Unity, 웹 UI, DB 저장으로 확장하기 쉽다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+TemplateRunResult
+    ↓
+BuildTemplateMarkdownReport()
+    ↓
+artifacts/template-run-report.md
+```
+
+### 유지보수 포인트
+
+- report 옵션 파싱: `src/EquipmentTwin.Cli/Program.cs`
+- report 생성 함수: `BuildTemplateMarkdownReport()`
+- report 저장 함수: `WriteTemplateMarkdownReport()`
+- CI 명령: `.github/workflows/ci.yml`
+
+### 아직 모르는 것
+
+- 여러 recipe를 batch로 실행할지
+- report 파일을 포트폴리오 샘플로 커밋할지
+- fault 실패 report를 자동 검증할지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

@@ -742,12 +742,13 @@ TemplateRunResult.ProductPassed
 - 사용자가 template JSON과 recipe 이름을 선택할 수 있다.
 - 선택적으로 fault scenario를 주입할 수 있다.
 - 실행 결과를 콘솔에 사람이 읽을 수 있는 형태로 출력한다.
+- `--report` 옵션으로 실행 결과를 Markdown 파일에 저장한다.
 - GitHub Actions에서 대표 template 실행을 자동 검증한다.
 
 사용 예:
 
 ```powershell
-dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --report artifacts\template-run-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
 ```
@@ -765,6 +766,15 @@ Motion axes
 Command log
 ```
 
+Markdown report 구조:
+
+```text
+Summary
+Inspection
+Motion Axes
+Command Log
+```
+
 중요한 설계 판단:
 
 - `Execution`은 장비 실행 성공/실패다.
@@ -777,5 +787,6 @@ Command log
 - CLI mode 추가/변경: `CliMode`, `CliOptions.Parse()`
 - template 실행 흐름: `RunTemplate()`
 - 콘솔 출력 형식: `PrintTemplateResult()`
+- Markdown 저장 형식: `BuildTemplateMarkdownReport()`
 - Visual Studio 실행 프로필: `launchSettings.json`
 - CI template 검증 명령: `.github/workflows/ci.yml`

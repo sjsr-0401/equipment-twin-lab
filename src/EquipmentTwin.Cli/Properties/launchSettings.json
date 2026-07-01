@@ -19,7 +19,7 @@
     "CLI - template default panel": {
       "commandName": "Project",
       "workingDirectory": "..\\..",
-      "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel"
+      "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel --report artifacts\\template-run-report.md"
     },
     "CLI - template tall part": {
       "commandName": "Project",

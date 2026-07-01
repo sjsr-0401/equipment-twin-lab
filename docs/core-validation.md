@@ -32,6 +32,7 @@
 - Template Runner가 정상 모션 완료 후 검사 결과를 남기는가
 - 장비 실행 성공과 제품 검사 PASS/FAIL을 분리하는가
 - CLI에서 template/recipe를 직접 실행하고 장비 실행 결과와 제품 검사 결과를 보여주는가
+- template 실행 결과를 Markdown report로 저장하는가
 
 검증하지 않는 것:
 
@@ -82,7 +83,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | Template Runner | 선택한 template/recipe를 가상 모션 실행으로 변환하는가 | `TemplateRunner.cs` | 콘솔 테스트 |
 | Fault Model | 선택한 트러블 조건을 모션 실행 중 주입하는가 | `FaultScenario.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
 | Inspection Result Model | 제품 검사 PASS/FAIL과 측정값을 데이터로 남기는가 | `InspectionResult.cs`, `ProductRecipe.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
-| Template Runner CLI | template/recipe를 명령어로 실행하고 결과를 출력하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
+| Template Runner CLI | template/recipe를 명령어로 실행하고 결과를 출력/저장하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
 
 ## 4. 현재 시나리오 세트
 
@@ -121,6 +122,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 - scenario batch CLI
 - template default-panel CLI
 - template tall-part CLI
+- template run Markdown report 생성
 
 ## 6. 실무 관점에서 의미 있는 부분
 
@@ -200,10 +202,10 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 ## 10. 다음 권장 작업
 
-다음 구현 후보는 `Inspection Scenario Selection` 또는 `Template Run Markdown Report`이다.
+다음 구현 후보는 `Inspection Scenario Selection` 또는 `Template Batch Report`이다.
 
 이유:
 
 - Inspection Result Model로 제품 PASS/FAIL은 데이터로 표현할 수 있게 됐다.
-- Template Runner CLI로 사용자가 template, recipe, fault를 선택해 실행할 수 있게 됐다.
-- 다음은 같은 recipe에서 PASS/FAIL inspection scenario를 선택하거나 template 실행 결과를 Markdown 리포트로 저장하는 단계가 적절하다.
+- Template Runner CLI로 사용자가 template, recipe, fault를 선택해 실행하고 결과를 Markdown으로 저장할 수 있게 됐다.
+- 다음은 같은 recipe에서 PASS/FAIL inspection scenario를 선택하거나 여러 template/recipe를 batch로 실행하는 단계가 적절하다.

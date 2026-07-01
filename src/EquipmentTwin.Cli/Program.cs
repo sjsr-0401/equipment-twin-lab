@@ -76,6 +76,14 @@ static int RunTemplate(CliOptions options)
     var result = runner.RunRecipe(template, options.RecipeName!, options.FaultScenarioName);
 
     PrintTemplateResult(result);
+
+    if (!string.IsNullOrWhiteSpace(options.ReportPath))
+    {
+        WriteTemplateMarkdownReport(options.ReportPath, result, options);
+        Console.WriteLine();
+        Console.WriteLine($"Report: {options.ReportPath}");
+    }
+
     return result.Success ? 0 : 1;
 }
 
@@ -132,19 +140,20 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- run <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
-          dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--report <report.md>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/loading-timeout.json --default-timeouts
           dotnet run --project src/EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts/scenario-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel
+          dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --report artifacts/template-run-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout
 
         Options:
           --default-timeouts       Use the default MVP timeout policy.
           --fault <name>           Inject a template fault scenario during template run.
-          --report <path>          Write a Markdown batch report.
+          --report <path>          Write a Markdown batch or template report.
           --initial-utc <value>    Set initial UTC time. Example: 2026-06-25T00:00:00Z
           -h, --help               Show this help.
         """);
@@ -243,6 +252,86 @@ static string DescribeDefect(InspectionResult inspectionResult)
     return string.IsNullOrWhiteSpace(inspectionResult.DefectCode)
         ? "None"
         : inspectionResult.DefectCode;
+}
+
+static void WriteTemplateMarkdownReport(string reportPath, TemplateRunResult result, CliOptions options)
+{
+    var directory = Path.GetDirectoryName(reportPath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    File.WriteAllText(reportPath, BuildTemplateMarkdownReport(result, options), Encoding.UTF8);
+}
+
+static string BuildTemplateMarkdownReport(TemplateRunResult result, CliOptions options)
+{
+    var builder = new StringBuilder();
+
+    builder.AppendLine("# Equipment Twin Template Run Report");
+    builder.AppendLine();
+    builder.AppendLine($"- Generated UTC: `{DateTimeOffset.UtcNow:O}`");
+    builder.AppendLine($"- Initial run UTC: `{options.InitialUtc:O}`");
+    builder.AppendLine($"- Template file: `{options.TemplatePath}`");
+    builder.AppendLine($"- Template: `{result.TemplateName}`");
+    builder.AppendLine($"- Recipe: `{result.Recipe.Name}`");
+    builder.AppendLine($"- Product code: `{result.Recipe.ProductCode}`");
+    builder.AppendLine($"- Fault: `{result.FaultScenario?.Name ?? "None"}`");
+    builder.AppendLine();
+
+    builder.AppendLine("## Summary");
+    builder.AppendLine();
+    builder.AppendLine("| Execution | Product | Inspection Mode | Inspection Outcome | Defect |");
+    builder.AppendLine("|---|---|---|---|---|");
+    builder.AppendLine(
+        $"| {(result.Success ? "PASS" : "FAIL")} | {DescribeProductResult(result)} | {result.InspectionResult?.Mode.ToString() ?? "None"} | {result.InspectionResult?.Outcome.ToString() ?? "NotRun"} | {EscapeMarkdownTable(result.InspectionResult is null ? "None" : DescribeDefect(result.InspectionResult))} |");
+    builder.AppendLine();
+
+    if (result.InspectionResult is not null)
+    {
+        builder.AppendLine("## Inspection");
+        builder.AppendLine();
+        builder.AppendLine($"- Message: `{EscapeMarkdownTable(result.InspectionResult.Message)}`");
+
+        if (result.InspectionResult.Measurements.Count > 0)
+        {
+            builder.AppendLine();
+            builder.AppendLine("| Measurement | Value |");
+            builder.AppendLine("|---|---:|");
+            foreach (var measurement in result.InspectionResult.Measurements.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                builder.AppendLine($"| {EscapeMarkdownTable(measurement.Key)} | {measurement.Value} |");
+            }
+        }
+
+        builder.AppendLine();
+    }
+
+    builder.AppendLine("## Motion Axes");
+    builder.AppendLine();
+    builder.AppendLine("| Axis | State | Position | Alarm |");
+    builder.AppendLine("|---|---|---:|---|");
+    foreach (var axis in result.MotionAxes.Values.OrderBy(axis => axis.Name, StringComparer.OrdinalIgnoreCase))
+    {
+        var alarm = axis.LastAlarm is null
+            ? "NoAlarm"
+            : $"{axis.LastAlarm.Code}: {axis.LastAlarm.Message}";
+        builder.AppendLine($"| {EscapeMarkdownTable(axis.Name)} | {axis.State} | {axis.Position} | {EscapeMarkdownTable(alarm)} |");
+    }
+
+    builder.AppendLine();
+    builder.AppendLine("## Command Log");
+    builder.AppendLine();
+    builder.AppendLine("| Step | Axis | Result | State | Message |");
+    builder.AppendLine("|---|---|---|---|---|");
+    foreach (var log in result.CommandLog)
+    {
+        var status = log.Result.Accepted ? "ACCEPTED" : "REJECTED";
+        builder.AppendLine($"| {EscapeMarkdownTable(log.Step)} | {EscapeMarkdownTable(log.AxisName)} | {status} | {log.Result.State} | {EscapeMarkdownTable(log.Result.Message)} |");
+    }
+
+    return builder.ToString();
 }
 
 static void PrintBatchResult(IReadOnlyList<ScenarioCliRun> runs)
@@ -523,11 +612,6 @@ internal sealed record CliOptions(
                     break;
 
                 case "--report":
-                    if (mode == CliMode.Template)
-                    {
-                        throw new ArgumentException("--report cannot be used with template run.");
-                    }
-
                     if (position + 1 >= args.Length)
                     {
                         throw new ArgumentException("--report requires a path.");
