@@ -86,13 +86,13 @@ namespace EquipmentTwin.Unity.EditorTools
             ValidateTimeline(timeline);
 
             var root = CreateDemoScene();
+            PrepareDemoStateForCapture(root);
+
             var visualizer = root.GetComponent<MolyAldPrimitiveVisualizer>();
             if (visualizer == null)
             {
                 throw new InvalidOperationException("MolyAldPrimitiveVisualizer was not created.");
             }
-
-            visualizer.EnsureScene();
 
             var renderers = root.GetComponentsInChildren<Renderer>(true);
             if (renderers.Length < 6)
@@ -134,7 +134,7 @@ namespace EquipmentTwin.Unity.EditorTools
                 throw new InvalidOperationException("MolyAldPrimitiveVisualizer was not found for screenshot capture.");
             }
 
-            visualizer.EnsureScene();
+            PrepareDemoStateForCapture(root);
 
             var camera = Camera.main != null ? Camera.main : UnityEngine.Object.FindObjectOfType<Camera>();
             if (camera == null)
@@ -173,6 +173,52 @@ namespace EquipmentTwin.Unity.EditorTools
             return root;
         }
 
+        private static void PrepareDemoStateForCapture(GameObject root)
+        {
+            var player = root.GetComponent<MolyAldProcessPlayer>();
+            if (player == null)
+            {
+                throw new InvalidOperationException("MolyAldProcessPlayer was not found.");
+            }
+
+            player.LoadTimeline();
+            MoveToRepresentativeStep(player);
+
+            var visualizer = root.GetComponent<MolyAldPrimitiveVisualizer>();
+            if (visualizer == null)
+            {
+                throw new InvalidOperationException("MolyAldPrimitiveVisualizer was not found.");
+            }
+
+            visualizer.EnsureScene();
+            visualizer.RefreshVisuals();
+        }
+
+        private static void MoveToRepresentativeStep(MolyAldProcessPlayer player)
+        {
+            var timeline = player.Timeline;
+            if (timeline == null || timeline.steps == null || timeline.steps.Length == 0)
+            {
+                return;
+            }
+
+            var targetIndex = 0;
+            for (var index = 0; index < timeline.steps.Length; index++)
+            {
+                var step = timeline.steps[index];
+                if (step != null && string.Equals(step.step, "DoseReactant", StringComparison.OrdinalIgnoreCase))
+                {
+                    targetIndex = index;
+                    break;
+                }
+            }
+
+            for (var index = 0; index < targetIndex; index++)
+            {
+                player.AdvanceStep();
+            }
+        }
+
         private static MolyAldTimelineDocumentDto LoadSampleTimeline()
         {
             var path = Path.Combine(Application.streamingAssetsPath, TimelineFileName);
@@ -206,7 +252,7 @@ namespace EquipmentTwin.Unity.EditorTools
         {
             var cameraObject = new GameObject("Moly ALD Smoke Test Camera");
             cameraObject.tag = "MainCamera";
-            cameraObject.transform.position = new Vector3(0f, 4f, -6.4f);
+            cameraObject.transform.position = new Vector3(0f, 4.2f, -7.8f);
             cameraObject.transform.rotation = Quaternion.Euler(32f, 0f, 0f);
 
             var camera = cameraObject.AddComponent<Camera>();

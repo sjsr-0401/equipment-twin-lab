@@ -212,3 +212,24 @@ Next priority:
 | P1 | Unity screenshot capture on licensed machine | Converts Unity visual code into visible portfolio proof | User/local action |
 | P1 | README demo image | Needed for first-impression GitHub portfolio page | Next |
 | P2 | 3-minute video checklist | Useful after a real screenshot exists | Later |
+
+## 2026-07-01 Triage Update: Goal 032
+
+Active focus moved from screenshot capture to demo polish.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity screenshot capture | First visible proof of Unity visual layer | Completed |
+| P1 | README demo image | First-impression GitHub portfolio page | Completed |
+| P1 | Unity demo polish | Current screenshot is functional but primitive | Next |
+| P2 | 3-minute recording checklist | Needed before portfolio video | Next |
+
+Current blocker resolved:
+
+- Unity Hub license activation is complete.
+- Unity batch screenshot generation is working.
+
+New risk:
+
+- The screenshot proves the pipeline but still looks like an MVP primitive scene.
+- Next work should improve visual clarity, not add more backend features.

@@ -69,6 +69,11 @@ namespace EquipmentTwin.Unity.Processes
             UpdateVisuals();
         }
 
+        public void RefreshVisuals()
+        {
+            UpdateVisuals();
+        }
+
         public void EnsureScene()
         {
             if (sceneRoot == null)
@@ -147,12 +152,12 @@ namespace EquipmentTwin.Unity.Processes
 
             if (createLabels && stepLabel == null)
             {
-                stepLabel = CreateLabel("Step Label", new Vector3(0f, 2.35f, 0f), 0.15f);
+                stepLabel = CreateLabel("Step", new Vector3(0f, 2.55f, 0f), 0.08f);
             }
 
             if (createLabels && valueLabel == null)
             {
-                valueLabel = CreateLabel("Value Label", new Vector3(0f, 2.05f, 0f), 0.105f);
+                valueLabel = CreateLabel("Values", new Vector3(0f, 2.2f, 0f), 0.048f);
             }
         }
 
@@ -293,8 +298,9 @@ namespace EquipmentTwin.Unity.Processes
             {
                 var cycle = step.HasCycle ? step.cycle.ToString() : "-";
                 valueLabel.text =
-                    $"cycle {cycle} | pressure {step.chamberPressureMtorr:0.#} mTorr | temp {step.waferTemperatureC:0.#} C\n" +
-                    $"vacuum {(1f - pressureRatio):P0} | film {thicknessRatio:P0} | valves {ValveText(step)}";
+                    $"cycle {cycle} | vacuum {(1f - pressureRatio):P0} | film {thicknessRatio:P0}\n" +
+                    $"pressure {step.chamberPressureMtorr:0.#} mTorr | temp {step.waferTemperatureC:0.#} C\n" +
+                    $"valves {ValveText(step)}";
             }
         }
 
@@ -335,7 +341,12 @@ namespace EquipmentTwin.Unity.Processes
                 return;
             }
 
-            renderer.material.color = color;
+            if (renderer.sharedMaterial == null || renderer.sharedMaterial.name.StartsWith("Default", System.StringComparison.OrdinalIgnoreCase))
+            {
+                renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            }
+
+            renderer.sharedMaterial.color = color;
         }
 
         private static string OnOff(bool value)

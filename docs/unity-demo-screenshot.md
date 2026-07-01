@@ -22,6 +22,12 @@ Default output:
 artifacts/unity-demo/moly-ald-demo.png
 ```
 
+Tracked portfolio copy:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
 Custom output:
 
 ```powershell
@@ -37,6 +43,8 @@ Equipment Twin > Capture Moly ALD Demo Screenshot
 ```
 
 The command creates the demo scene if one does not exist, renders the active camera, and writes a PNG.
+
+In screenshot mode the PowerShell runner intentionally does not pass `-nographics`, because `Camera.Render()` needs a graphics context.
 
 ## Expected markers
 
@@ -57,3 +65,20 @@ The first useful screenshot should show:
 - HUD text showing recipe, step, pressure, temperature, and thickness.
 
 Do not claim this is a real equipment CAD model. It is a public/synthetic process-state visual demo.
+
+## Verified local result
+
+Verified on 2026-07-01 with Unity `6000.3.2f1`.
+
+Confirmed markers:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
+```
+
+Representative image:
+
+```text
+docs/demo/moly-ald-demo.png
+```
