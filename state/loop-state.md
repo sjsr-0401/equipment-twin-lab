@@ -591,3 +591,14 @@ Local validation update:
 - Core console tests: 80 passed
 - public moly ALD process report/timeline CLI: passed
 - Unity screenshot capture: passed
+
+Completion update:
+
+- Draft PR #32 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/32>
+- Commit: `6d002b5 feat: add unity visual adapter boundary`
+- Local validation passed.
+- Unity screenshot validation passed.
+- PR CI passed:
+  - push run `28515480062`
+  - pull_request run `28515494369`
+- Next recommended goal: `Goal 035: record the actual 3-minute demo or add imported-model auto-binding after a real asset exists`.
