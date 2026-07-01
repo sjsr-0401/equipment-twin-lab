@@ -877,6 +877,44 @@ Important architecture boundary:
 
 This keeps future CAD/Blender replacement simple: replace primitive renderers with imported model renderers, but keep `MolyAldProcessPlayer.CurrentStep` as the data source.
 
+## Unity Smoke Test Harness
+
+Goal 029 adds a local Unity validation harness.
+
+```text
+PowerShell runner
+    -> Unity batchmode
+    -> MolyAldEditorSmokeTest.RunBatchSmokeTest
+    -> sample timeline parse
+    -> generated demo scene
+    -> component/renderer checks
+```
+
+The smoke test lives in an Editor-only assembly:
+
+```text
+Assets/EquipmentTwin/Editor/EquipmentTwin.Unity.Editor.asmdef
+Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+```
+
+Why Editor-only:
+
+- menu items require `UnityEditor`;
+- batch smoke tests should not ship in runtime builds;
+- runtime process player/visualizer remain separate from validation tooling.
+
+The success marker is:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+```
+
+Important boundary:
+
+- CI still validates .NET and Unity file wiring.
+- Real Unity compilation requires an active Unity license.
+- The smoke-test harness makes that manual validation repeatable after license activation.
+
 ## Process Timeline JSON Export
 
 Goal 026 adds a stable JSON export between the C# process model and future Unity visualization.

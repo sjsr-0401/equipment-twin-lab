@@ -1537,6 +1537,48 @@ MolyAldProcessHud
 4. `MolyAldProcessPlayer.AdvanceStep()`
 5. `MolyAldProcessHud.OnGUI()`
 
+## 2026-07-01 이해 요약: Unity Smoke Test Harness
+
+이번 Goal의 핵심은 Unity visual 검증을 “기억에 의존하는 수동 작업”에서 “반복 가능한 명령/메뉴”로 바꾸는 것이다.
+
+한 문장 설명:
+
+> `Invoke-UnitySmokeTest.ps1`은 Unity를 batchmode로 열고, `MolyAldEditorSmokeTest.RunBatchSmokeTest()`를 실행해서 sample timeline 파싱과 demo scene 생성이 되는지 확인한다.
+
+코드 흐름:
+
+```text
+scripts/Invoke-UnitySmokeTest.ps1
+    -> Unity.exe
+    -> -executeMethod EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchSmokeTest
+    -> MolyAldTimelineLoader.FromJson()
+    -> MolyAldPrimitiveVisualizer.EnsureScene()
+    -> renderer/component validation
+```
+
+파일별 역할:
+
+```text
+EquipmentTwin.Unity.Editor.asmdef
+    Unity Editor 전용 assembly 정의
+
+MolyAldEditorSmokeTest
+    Unity menu와 batchmode smoke test entry point
+
+Invoke-UnitySmokeTest.ps1
+    Windows PowerShell에서 Unity.exe를 찾아 smoke test를 실행
+
+docs/unity-smoke-test.md
+    사용자가 따라 할 체크리스트
+```
+
+중요한 유지보수 원칙:
+
+- Editor smoke test는 runtime 기능이 아니다.
+- Runtime 쪽 장비 표시 코드는 `Assets/EquipmentTwin/Runtime`에 둔다.
+- Unity 메뉴/검증 자동화는 `Assets/EquipmentTwin/Editor`에 둔다.
+- Unity 라이선스 문제는 코드 문제가 아니라 실행 환경 문제다.
+
 현재 검증 한계:
 
 - GitHub Actions에는 Unity Editor가 없다.

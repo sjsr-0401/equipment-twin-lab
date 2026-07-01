@@ -2602,3 +2602,37 @@ Goal 029: Unity Editor Local Smoke Test + Screenshot/Demo Checklist
 ```
 
 실제로 Unity Hub에서 열고 Play Mode에서 어떤 화면이 나오는지 확인하는 절차를 고정한다.
+
+## 54. 2026-07-01 Goal 029: Unity Smoke Test Harness
+
+Goal 029는 Unity visual이 “내 컴퓨터에서 실제로 열리는지”를 반복 확인하는 장치를 만든다.
+
+목표:
+
+```text
+Unity Hub 라이선스 활성화 후 한 명령으로 Unity smoke test를 실행한다.
+```
+
+구현 범위:
+
+- Unity Editor menu
+- Unity batchmode executeMethod
+- PowerShell runner
+- smoke-test checklist
+- CI file-presence check
+
+핵심 설계:
+
+```text
+Runtime = 데모가 실제로 쓰는 코드
+Editor = Unity 안에서 검증/생성 도와주는 코드
+Script = Windows에서 Unity batchmode 실행하는 자동화
+```
+
+다음 권장 Goal:
+
+```text
+Goal 030: Unity Play Mode screenshot/demo capture
+```
+
+Unity 라이선스가 활성화되면 실제 화면 스크린샷을 남기고 README에 데모 이미지/절차를 붙인다.

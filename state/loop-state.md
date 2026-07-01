@@ -381,3 +381,37 @@ Completion update:
 - PR CI passed on run `28502801252`.
 - Unity batchmode compile was blocked by inactive Unity license.
 - Next recommended goal: `Goal 029: Unity Hub license activation + Play Mode smoke test checklist`.
+
+## 2026-07-01 Update: Goal 029 in progress
+
+- PR #26 merged into `main`.
+- Current branch: `goal/029-unity-smoke-test-harness`.
+- Goal 029 adds repeatable Unity smoke-test tooling.
+- New files:
+  - `scripts/Invoke-UnitySmokeTest.ps1`
+  - `docs/unity-smoke-test.md`
+  - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+  - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/EquipmentTwin.Unity.Editor.asmdef`
+
+Current validation boundary:
+
+- .NET build/tests can be validated normally.
+- Unity smoke-test script can be syntax/wiring checked.
+- Actual Unity compile/run still requires Unity Hub license activation.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR #27
+- watch CI
+
+Completion update:
+
+- Draft PR #27 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/27>
+- Commit: `e2b6b84 feat: add unity smoke test harness`
+- Local validation passed.
+- PR CI passed on run `28503702866`.
+- Unity smoke-test runner reaches Unity but is blocked by inactive license.
+- Next recommended goal: `Goal 030: Unity Hub license activation and first demo screenshot`.

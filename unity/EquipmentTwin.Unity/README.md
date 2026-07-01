@@ -69,6 +69,27 @@ Primitive mapping:
 | Purge valve | green valve sphere |
 | Film thickness | film overlay disk size/color |
 
+## Smoke test
+
+After Unity Hub sign-in/license activation, run from the repository root:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1
+```
+
+Or use the Unity menu:
+
+```text
+Equipment Twin > Run Moly ALD Smoke Test
+Equipment Twin > Create Moly ALD Demo Scene
+```
+
+Expected marker:
+
+```text
+EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
+```
+
 ## Design boundary
 
 This Unity skeleton is a visual replay of public/synthetic software-state data. It is not a physics simulation and does not represent real equipment internals.

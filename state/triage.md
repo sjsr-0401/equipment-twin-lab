@@ -136,3 +136,24 @@ PR status:
 - CI status: passed
 - Current blocker update: Unity Editor is installed, but batchmode compile is blocked by `No valid Unity Editor license found`.
 - Next work: activate/sign in through Unity Hub, then run Play Mode smoke test.
+
+## 2026-07-01 Triage Update: Goal 029
+
+Active focus moved from primitive visual implementation to repeatable Unity validation.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity smoke-test harness | Makes Unity validation repeatable after license activation | In progress |
+| P1 | Unity Hub license activation | Required before Unity batchmode/Play Mode can compile | User action |
+| P2 | Demo screenshot capture | Useful for portfolio README after smoke test passes | Next |
+
+Current blocker:
+
+- Unity license activation cannot be completed from repository code.
+- The project can still add the harness, scripts, and documentation so the user can run validation immediately after signing in.
+
+PR status:
+
+- Goal 029 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/27>
+- CI status: passed
+- Next work: activate Unity Hub license, run the smoke-test script, capture first demo screenshot.
