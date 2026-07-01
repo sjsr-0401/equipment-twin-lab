@@ -80,7 +80,7 @@ static int RunTemplate(CliOptions options)
         options.FaultScenarioName,
         options.InspectionScenarioName);
 
-    PrintTemplateResult(result);
+    PrintTemplateResult(result, options);
 
     if (!string.IsNullOrWhiteSpace(options.ReportPath))
     {
@@ -89,7 +89,7 @@ static int RunTemplate(CliOptions options)
         Console.WriteLine($"Report: {options.ReportPath}");
     }
 
-    return result.Success ? 0 : 1;
+    return IsTemplateExecutionExpectationMet(result, options) ? 0 : 1;
 }
 
 static int RunTemplateBatch(CliOptions options)
@@ -170,7 +170,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- run <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
-          dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--inspection <scenario-name>] [--report <report.md>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--inspection <scenario-name>] [--expect-execution-failure] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template batch <template.json> [--report <report.md>] [--initial-utc <iso-utc>]
 
         Examples:
@@ -180,6 +180,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --report artifacts/template-run-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+          dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout --expect-execution-failure --report artifacts/template-fault-expected-failure-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --inspection scratch-detected
           dotnet run --project src/EquipmentTwin.Cli -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
 
@@ -187,6 +188,8 @@ static void PrintUsage()
           --default-timeouts       Use the default MVP timeout policy.
           --fault <name>           Inject a template fault scenario during template run.
           --inspection <name>      Select a named inspection scenario during template run.
+          --expect-execution-failure
+                                 Treat failed template execution as the expected result.
           --report <path>          Write a Markdown batch or template report.
           --initial-utc <value>    Set initial UTC time. Example: 2026-06-25T00:00:00Z
           -h, --help               Show this help.
@@ -224,11 +227,13 @@ static void PrintResult(ScenarioRunResult result, ScenarioRunner runner)
     }
 }
 
-static void PrintTemplateResult(TemplateRunResult result)
+static void PrintTemplateResult(TemplateRunResult result, CliOptions options)
 {
     Console.WriteLine($"Template:  {result.TemplateName}");
     Console.WriteLine($"Recipe:    {result.Recipe.Name} ({result.Recipe.ProductCode})");
     Console.WriteLine($"Execution: {(result.Success ? "PASS" : "FAIL")}");
+    Console.WriteLine($"Expected execution: {DescribeExpectedExecution(options)}");
+    Console.WriteLine($"Execution expectation: {DescribeTemplateExecutionExpectation(result, options)}");
     Console.WriteLine($"Product:   {DescribeProductResult(result)}");
     Console.WriteLine($"Fault:     {result.FaultScenario?.Name ?? "None"}");
     Console.WriteLine($"Inspection scenario: {DescribeInspectionScenario(result)}");
@@ -280,6 +285,23 @@ static string DescribeProductResult(TemplateRunResult result)
         false => "FAIL",
         null => "NOT_INSPECTED"
     };
+}
+
+static string DescribeExpectedExecution(CliOptions options)
+{
+    return options.ExpectExecutionFailure ? "FAIL" : "PASS";
+}
+
+static string DescribeTemplateExecutionExpectation(TemplateRunResult result, CliOptions options)
+{
+    return IsTemplateExecutionExpectationMet(result, options) ? "MET" : "NOT_MET";
+}
+
+static bool IsTemplateExecutionExpectationMet(TemplateRunResult result, CliOptions options)
+{
+    return options.ExpectExecutionFailure
+        ? !result.Success
+        : result.Success;
 }
 
 static string DescribeDefect(InspectionResult inspectionResult)
@@ -352,14 +374,16 @@ static string BuildTemplateMarkdownReport(TemplateRunResult result, CliOptions o
     builder.AppendLine($"- Product code: `{result.Recipe.ProductCode}`");
     builder.AppendLine($"- Fault: `{result.FaultScenario?.Name ?? "None"}`");
     builder.AppendLine($"- Inspection scenario: `{DescribeInspectionScenario(result)}`");
+    builder.AppendLine($"- Expected execution: `{DescribeExpectedExecution(options)}`");
+    builder.AppendLine($"- Execution expectation: `{DescribeTemplateExecutionExpectation(result, options)}`");
     builder.AppendLine();
 
     builder.AppendLine("## Summary");
     builder.AppendLine();
-    builder.AppendLine("| Execution | Product | Inspection Scenario | Inspection Mode | Inspection Outcome | Defect |");
-    builder.AppendLine("|---|---|---|---|---|---|");
+    builder.AppendLine("| Execution | Expected Execution | Expectation | Product | Inspection Scenario | Inspection Mode | Inspection Outcome | Defect |");
+    builder.AppendLine("|---|---|---|---|---|---|---|---|");
     builder.AppendLine(
-        $"| {(result.Success ? "PASS" : "FAIL")} | {DescribeProductResult(result)} | {EscapeMarkdownTable(DescribeInspectionScenario(result))} | {result.InspectionResult?.Mode.ToString() ?? "None"} | {result.InspectionResult?.Outcome.ToString() ?? "NotRun"} | {EscapeMarkdownTable(result.InspectionResult is null ? "None" : DescribeDefect(result.InspectionResult))} |");
+        $"| {(result.Success ? "PASS" : "FAIL")} | {DescribeExpectedExecution(options)} | {DescribeTemplateExecutionExpectation(result, options)} | {DescribeProductResult(result)} | {EscapeMarkdownTable(DescribeInspectionScenario(result))} | {result.InspectionResult?.Mode.ToString() ?? "None"} | {result.InspectionResult?.Outcome.ToString() ?? "NotRun"} | {EscapeMarkdownTable(result.InspectionResult is null ? "None" : DescribeDefect(result.InspectionResult))} |");
     builder.AppendLine();
 
     if (result.InspectionResult is not null)
@@ -705,7 +729,8 @@ internal sealed record CliOptions(
     string? TemplatePath,
     string? RecipeName,
     string? FaultScenarioName,
-    string? InspectionScenarioName)
+    string? InspectionScenarioName,
+    bool ExpectExecutionFailure)
 {
     private static bool IsTemplateMode(CliMode mode)
     {
@@ -787,6 +812,7 @@ internal sealed record CliOptions(
         string? reportPath = null;
         string? faultScenarioName = null;
         string? inspectionScenarioName = null;
+        var expectExecutionFailure = false;
 
         while (position < args.Length)
         {
@@ -834,6 +860,16 @@ internal sealed record CliOptions(
                     position += 2;
                     break;
 
+                case "--expect-execution-failure":
+                    if (mode != CliMode.TemplateRun)
+                    {
+                        throw new ArgumentException("--expect-execution-failure can only be used with template run.");
+                    }
+
+                    expectExecutionFailure = true;
+                    position++;
+                    break;
+
                 case "--report":
                     if (position + 1 >= args.Length)
                     {
@@ -870,7 +906,12 @@ internal sealed record CliOptions(
                 throw new FileNotFoundException($"Template file was not found: {templatePath}");
             }
 
-            return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName);
+            if (expectExecutionFailure && string.IsNullOrWhiteSpace(faultScenarioName))
+            {
+                throw new ArgumentException("--expect-execution-failure requires --fault so the expected failure is explicit.");
+            }
+
+            return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
         }
 
         if (mode == CliMode.Run && !File.Exists(scenarioPath))
@@ -878,7 +919,7 @@ internal sealed record CliOptions(
             throw new FileNotFoundException($"Scenario file was not found: {scenarioPath}");
         }
 
-        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName);
+        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
     }
 }
 

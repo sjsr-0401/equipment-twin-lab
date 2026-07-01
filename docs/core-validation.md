@@ -28,6 +28,7 @@
 - recipe가 존재하지 않는 축을 참조하면 거부되는가
 - Template Runner가 선택한 recipe의 목표 위치까지 가상 축을 실행하는가
 - Fault Scenario가 선택되면 Template Runner가 모션 Timeout 또는 Servo Alarm을 주입하는가
+- fault 실행 실패가 기대값일 때 CI에서 성공으로 검증할 수 있는가
 - ProductRecipe가 검사 PASS/FAIL 결과와 측정값을 데이터로 정의하는가
 - ProductRecipe가 같은 제품의 여러 inspection scenario를 이름으로 선택하게 하는가
 - Template Runner가 정상 모션 완료 후 검사 결과를 남기는가
@@ -84,6 +85,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | Equipment Template | 장비 축과 제품 recipe를 데이터로 정의하고 검증하는가 | `EquipmentTemplate.cs`, `templates/` | 콘솔 테스트 |
 | Template Runner | 선택한 template/recipe를 가상 모션 실행으로 변환하는가 | `TemplateRunner.cs` | 콘솔 테스트 |
 | Fault Model | 선택한 트러블 조건을 모션 실행 중 주입하는가 | `FaultScenario.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
+| Fault Expected-Failure Report | fault로 인한 실행 실패를 기대값으로 report/CI에서 검증하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
 | Inspection Result Model | 제품 검사 PASS/FAIL과 측정값을 데이터로 남기는가 | `InspectionResult.cs`, `ProductRecipe.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
 | Inspection Scenario Selection | 같은 recipe에서 선택한 검사 케이스로 PASS/FAIL을 바꾸는가 | `InspectionScenario.cs`, `ProductRecipe.cs`, `TemplateRunner.cs` | 콘솔 테스트, CLI, CI |
 | Template Runner CLI | template/recipe를 명령어로 실행하고 결과를 출력/저장하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
@@ -127,6 +129,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 - template default-panel CLI
 - template tall-part CLI
 - template selected inspection scenario CLI
+- template expected fault CLI
 - template run Markdown report 생성
 - template batch Markdown report 생성
 
@@ -208,9 +211,9 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 ## 10. 다음 권장 작업
 
-다음 구현 후보는 `Fault Expected-Failure Report` 또는 `Inspection Scenario Batch Matrix`이다.
+다음 구현 후보는 `Inspection Scenario Batch Matrix` 또는 `Fault Scenario Catalog`이다.
 
 이유:
 
-- Inspection Scenario Selection으로 같은 recipe의 PASS/FAIL 검사 케이스를 선택할 수 있게 됐다.
-- 다음은 fault 주입처럼 실패가 기대값인 케이스를 report/CI에서 안전하게 검증하거나, 여러 inspection scenario를 batch matrix로 비교하는 단계가 적절하다.
+- Fault Expected-Failure Report로 fault 주입처럼 실행 실패가 기대값인 케이스를 CI에서 안전하게 검증할 수 있게 됐다.
+- 다음은 여러 inspection scenario를 batch matrix로 비교하거나, fault 종류와 기대 알람을 catalog로 정리하는 단계가 적절하다.
