@@ -1396,6 +1396,48 @@ Execution expectation: MET
 3. 이 코드는 시뮬레이션용인가, 실제 장비에도 가져갈 수 있는 구조인가?
 4. 테스트는 무엇을 증명하고, 무엇을 증명하지 못하는가?
 5. 면접에서 이 작업을 한 문장으로 어떻게 설명할 수 있는가?
+
+## 2026-07-01 이해 요약: Portfolio Demo Package
+
+이번 Goal의 핵심은 구현된 기능을 “면접에서 방어 가능한 설명”으로 바꾸는 것이다.
+
+한 문장 설명:
+
+> `docs/portfolio-demo-package.md`는 Core/CLI가 공정 결과를 만들고 Unity가 그 결과를 재생한다는 구조를 3분 데모 스크립트, 증명 범위, 한계, 면접 답변으로 정리한 문서다.
+
+코드/문서 흐름:
+
+```text
+MolyAldRunner
+    -> MolyAldRunResult
+    -> MolyAldTimelineDocument
+    -> artifacts/moly-ald-timeline.json
+    -> MolyAldProcessPlayer
+    -> MolyAldPrimitiveVisualizer
+    -> portfolio demo explanation
+```
+
+중요한 유지보수 원칙:
+
+- README는 첫 방문자용이다.
+- `docs/architecture.md`는 코드 구조 설명용이다.
+- `docs/portfolio-demo-package.md`는 면접/demo script용이다.
+- 같은 내용을 세 문서에 복붙하지 말고, 역할별로 연결한다.
+
+면접에서 조심할 표현:
+
+```text
+X: 실제 Halo HX 동작을 구현했습니다.
+O: 공개/합성 ALD 개념으로 장비 SW 구조와 검증 루프를 구현했습니다.
+```
+
+현재 남은 사용자 액션:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+이 명령은 Unity Hub 라이선스 활성화 후 실행해야 한다.
 ## 2026-07-01 이해 요약: Public Moly ALD Process Model
 
 이번 Goal의 핵심은 `실제 장비를 복제하는 것`이 아니라 `장비 SW가 공정을 어떻게 순서대로 제어하는지`를 보여주는 것이다.

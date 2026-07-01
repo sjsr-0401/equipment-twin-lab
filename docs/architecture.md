@@ -1005,3 +1005,29 @@ Unity mapping:
 | `ReactantValveOpen` | Reactant valve animation |
 | `PurgeValveOpen` | Purge valve animation |
 | `EstimatedThicknessAngstrom` | Wafer film thickness overlay |
+
+## Portfolio Demo Boundary
+
+Goal 031 adds a portfolio-facing explanation layer without changing the Core/Unity runtime boundary.
+
+```text
+Core/CLI
+    -> process result
+    -> timeline JSON
+    -> Unity replay
+    -> screenshot/video/demo script
+```
+
+The demo package is intentionally a documentation layer:
+
+- `docs/portfolio-demo-package.md` explains the 3-minute demo flow.
+- `README.md` links the demo package for first-time visitors.
+- Core remains responsible for sequence and fault decisions.
+- Unity remains responsible for visualization and replay.
+
+Important interview boundary:
+
+- This project uses public/synthetic ALD concepts.
+- It is not a clone of ALTUS, Halo, Halo HX, or any real vendor equipment.
+- It does not contain real recipes, alarm tables, IO maps, or internal test procedures.
+- The value is the software architecture: state, IO, motion, process sequence, fault injection, reports, timeline export, and visual replay.

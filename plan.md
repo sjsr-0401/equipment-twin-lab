@@ -2662,3 +2662,45 @@ Goal 031: README demo image and portfolio explanation
 ```
 
 스크린샷이 실제로 생성되면 README에 이미지와 3분 데모 설명을 추가한다.
+
+## 56. 2026-07-01 Goal 031: Portfolio Demo Package
+
+Goal 031은 Unity 라이선스 때문에 실제 screenshot을 아직 만들 수 없는 상태에서, 지금까지 만든 결과물을 면접/포트폴리오에서 설명 가능한 형태로 고정하는 작업이다.
+
+목표:
+
+```text
+Core/CLI/Unity replay 흐름을 3분 데모 스크립트와 정직한 한계 설명으로 정리한다.
+```
+
+구현 범위:
+
+- portfolio demo package 문서
+- README 연결
+- architecture demo boundary 정리
+- Goal 문서
+- CI file-presence check
+
+핵심 설계:
+
+```text
+Core/CLI = source of truth
+Timeline JSON = software contract
+Unity = replay and visualization
+Portfolio docs = interview explanation layer
+```
+
+이번 단계에서 하지 않는 것:
+
+- Unity Hub 로그인/라이선스 활성화
+- 실제 screenshot PNG 생성
+- 실제 장비 내부 sequence 주장
+- 실제 비전 알고리즘 구현
+
+다음 권장 Goal:
+
+```text
+Goal 032: Unity license activation result capture and README demo image
+```
+
+집에서 Unity Hub 라이선스를 활성화한 뒤 `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`를 실행하고, 생성된 이미지를 README에 붙인다.

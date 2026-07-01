@@ -178,3 +178,23 @@ PR status:
 - Goal 030 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/28>
 - CI status: passed
 - Next work: activate Unity license, run `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`, then add the generated screenshot to README/demo docs.
+
+## 2026-07-01 Triage Update: Goal 031
+
+Active focus moved from screenshot execution to portfolio/demo explanation because Unity license activation requires user-side interaction.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Portfolio demo package | Needed so the project is explainable before the first real screenshot | In progress |
+| P1 | Unity license activation | Required before actual PNG/video capture | User action |
+| P1 | README demo image | Requires generated screenshot first | Next |
+
+Current blocker:
+
+- Unity Hub license activation cannot be completed while the user is outside.
+- The repository can still document the demo flow, honest boundaries, and next verification command.
+
+PR status:
+
+- Goal 031 branch: `goal/031-portfolio-demo-package`
+- Next work after this PR: activate Unity license, run `.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot`, then add real screenshot to README.
