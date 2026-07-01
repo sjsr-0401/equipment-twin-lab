@@ -278,6 +278,36 @@ The default player path points to:
 Assets/StreamingAssets/moly-ald-timeline.sample.json
 ```
 
+## Unity Primitive Process Visual
+
+Goal 028 adds the first visible 3D process layer.
+
+Recommended Unity setup:
+
+1. Open `unity/EquipmentTwin.Unity` in Unity Hub.
+2. Create one empty GameObject.
+3. Add `MolyAldDemoBootstrap`.
+4. Press Play.
+
+`MolyAldDemoBootstrap` automatically adds:
+
+- `MolyAldProcessPlayer`
+- `MolyAldProcessHud`
+- `MolyAldPrimitiveVisualizer`
+- a demo camera
+- a directional light
+
+Visual mapping:
+
+| Timeline field | Unity primitive visual |
+|---|---|
+| `chamberPressureMtorr` | chamber color, vacuum column, gauge needle |
+| `waferTemperatureC` | wafer color |
+| `valves.metalPrecursor` | precursor valve sphere |
+| `valves.reactant` | reactant valve sphere |
+| `valves.purge` | purge valve sphere |
+| `estimatedThicknessAngstrom` | film overlay disk size/color |
+
 ## Process Timeline JSON Export
 
 The public molybdenum ALD process can export a Unity-ready JSON timeline.

@@ -253,6 +253,36 @@ What this does not prove yet:
 
 Those are intentionally next-step validations once the Unity visual layer exists.
 
+## Unity Primitive Visual Validation
+
+Goal 028 adds runtime Unity visual scripts:
+
+- `MolyAldPrimitiveVisualizer`
+- `MolyAldDemoBootstrap`
+
+Current automated validation:
+
+- .NET solution still builds.
+- Core tests still pass.
+- process CLI still generates the ALD timeline.
+- CI checks that Unity runtime scripts exist at expected paths.
+- sample timeline JSON still parses locally.
+
+Current manual validation boundary:
+
+- Unity Editor compilation is still not executed by GitHub Actions.
+- Local Unity `6000.3.2f1` exists, but batchmode compile was blocked by Unity licensing: `No valid Unity Editor license found`.
+- Unity Play Mode must be checked locally after opening `unity/EquipmentTwin.Unity`.
+
+Manual Unity smoke test:
+
+1. Open `unity/EquipmentTwin.Unity` in Unity Hub.
+2. Confirm Unity Hub is signed in and the Editor license is active.
+3. Create one empty GameObject.
+4. Add `MolyAldDemoBootstrap`.
+5. Press Play.
+6. Confirm the chamber, wafer, film overlay, pressure column, gauge needle, and three valve spheres update while the process advances.
+
 ## Process Timeline JSON Export Validation
 
 Goal 026 validates that the ALD process result can be exported as Unity-ready JSON.

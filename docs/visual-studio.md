@@ -226,6 +226,38 @@ Important distinction:
 
 Visual Studio builds the .NET Core/CLI side. Unity Editor compiles the Unity scripts.
 
+## Unity Primitive Visual Debugging
+
+Goal 028 adds visible Unity primitives.
+
+Recommended debug path:
+
+1. Open `unity/EquipmentTwin.Unity` in Unity Hub.
+2. Confirm Unity Hub is signed in and the Editor license is active.
+3. Create an empty GameObject.
+4. Add `MolyAldDemoBootstrap`.
+5. Press Play.
+
+Breakpoints / inspection points:
+
+- `MolyAldDemoBootstrap.Awake()`
+- `MolyAldPrimitiveVisualizer.EnsureScene()`
+- `MolyAldPrimitiveVisualizer.UpdateVisuals()`
+- `MolyAldPrimitiveVisualizer.UpdateValves()`
+- `MolyAldPrimitiveVisualizer.UpdateFilm()`
+
+Software meaning:
+
+- `MolyAldDemoBootstrap` is setup automation.
+- `MolyAldPrimitiveVisualizer` is display mapping.
+- `MolyAldProcessPlayer` remains the timeline playback state machine.
+
+Current local blocker:
+
+- Unity `6000.3.2f1` is installed.
+- Batchmode compile was attempted, but Unity reported `No valid Unity Editor license found`.
+- After activating the Unity license in Unity Hub, rerun the local Play Mode smoke test.
+
 ## Timeline JSON Debugging
 
 The `CLI - public moly ALD process` profile now writes both files:

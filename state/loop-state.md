@@ -351,3 +351,24 @@ Completion update:
 - Local validation passed.
 - PR CI passed on run `28501761492`.
 - Next recommended goal: `Goal 028: Unity Chamber/Wafer/Valve Visual`.
+
+## 2026-07-01 Update: Goal 028 in progress
+
+- PR #25 merged into `main`.
+- Current branch: `goal/028-unity-chamber-wafer-valve-visual`.
+- Goal 028 adds primitive Unity visuals driven by `MolyAldProcessPlayer.CurrentStep`.
+- New visual components:
+  - `MolyAldPrimitiveVisualizer`
+  - `MolyAldDemoBootstrap`
+- Current validation boundary:
+  - .NET build/tests still run locally and in CI.
+  - Unity runtime script file presence is checked in CI.
+  - Unity Editor compile/play is still manual.
+
+Next required action:
+
+- run local validation
+- commit
+- push
+- create draft PR #26
+- watch CI

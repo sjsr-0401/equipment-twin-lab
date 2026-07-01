@@ -852,6 +852,31 @@ MolyAldProcessPlayer.CurrentStep
     -> alarm panel
 ```
 
+## Unity Primitive Visual Layer
+
+Goal 028 adds a visual adapter over the existing Unity timeline player.
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldPrimitiveVisualizer
+    -> chamber primitive
+    -> wafer primitive
+    -> film overlay primitive
+    -> pressure gauge primitive
+    -> valve indicator primitives
+```
+
+`MolyAldDemoBootstrap` exists to reduce manual Unity setup. A user can create one empty GameObject, attach the bootstrap component, and press Play.
+
+Important architecture boundary:
+
+- Core/CLI still owns process calculation.
+- Unity still owns display only.
+- `MolyAldPrimitiveVisualizer` must not decide whether a process step passes or fails.
+- Visual behavior is derived from timeline values already produced by Core.
+
+This keeps future CAD/Blender replacement simple: replace primitive renderers with imported model renderers, but keep `MolyAldProcessPlayer.CurrentStep` as the data source.
+
 ## Process Timeline JSON Export
 
 Goal 026 adds a stable JSON export between the C# process model and future Unity visualization.

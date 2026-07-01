@@ -2559,3 +2559,46 @@ MolyAldRunResult.Steps
 1. `Goal 026: Process Timeline JSON Export`
 2. `Goal 027: Unity Process Player Skeleton`
 3. `Goal 028: Unity Chamber/Wafer/Valve Visual`
+
+## 53. 2026-07-01 Goal 028: Unity Chamber/Wafer/Valve Visual
+
+Goal 028은 처음으로 “눈에 보이는 장비 화면”을 만든다.
+
+목표:
+
+```text
+timeline JSON의 현재 step을 Unity primitive object로 시각화한다.
+```
+
+구현 범위:
+
+- chamber primitive
+- wafer primitive
+- film thickness overlay
+- pressure/vacuum gauge
+- precursor / reactant / purge valve indicator
+- one-component demo bootstrap
+- Unity manual smoke test guide
+
+핵심 설계:
+
+```text
+Core/CLI = process truth
+Unity Player = timeline playback
+Unity Visualizer = display mapping
+```
+
+이번 단계에서 하지 않는 것:
+
+- 실제 CAD 모델
+- 실제 장비 구조 주장
+- Unity physics simulation
+- 실제 증착 물리 시뮬레이션
+
+다음 권장 Goal:
+
+```text
+Goal 029: Unity Editor Local Smoke Test + Screenshot/Demo Checklist
+```
+
+실제로 Unity Hub에서 열고 Play Mode에서 어떤 화면이 나오는지 확인하는 절차를 고정한다.

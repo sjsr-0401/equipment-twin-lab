@@ -59,10 +59,12 @@ jobs:
       - name: Run public moly ALD process through CLI
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md --timeline artifacts/moly-ald-timeline.json
 
-      - name: Verify Unity process player skeleton files
+      - name: Verify Unity process player and primitive visual files
         run: |
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineData.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineLoader.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessHud.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json

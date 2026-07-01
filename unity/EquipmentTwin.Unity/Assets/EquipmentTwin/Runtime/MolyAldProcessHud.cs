@@ -13,6 +13,14 @@ namespace EquipmentTwin.Unity.Processes
             player = GetComponent<MolyAldProcessPlayer>();
         }
 
+        private void Awake()
+        {
+            if (player == null)
+            {
+                player = GetComponent<MolyAldProcessPlayer>();
+            }
+        }
+
         private void OnGUI()
         {
             if (player == null)
