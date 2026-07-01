@@ -57,4 +57,4 @@ jobs:
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
 
       - name: Run public moly ALD process through CLI
-        run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md
+        run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md --timeline artifacts/moly-ald-timeline.json

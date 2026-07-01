@@ -217,6 +217,46 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 - Fault Expected-Failure Report로 fault 주입처럼 실행 실패가 기대값인 케이스를 CI에서 안전하게 검증할 수 있게 됐다.
 - 다음은 여러 inspection scenario를 batch matrix로 비교하거나, fault 종류와 기대 알람을 catalog로 정리하는 단계가 적절하다.
+## Process Timeline JSON Export Validation
+
+Goal 026 validates that the ALD process result can be exported as Unity-ready JSON.
+
+Validated by console tests:
+
+- `Moly ALD timeline document maps run result`
+- `Moly ALD timeline JSON uses Unity friendly shape`
+
+Validated by CLI:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --report artifacts\moly-ald-process-report.md --timeline artifacts\moly-ald-timeline.json
+```
+
+Expected output includes:
+
+```text
+Report: artifacts\moly-ald-process-report.md
+Timeline: artifacts\moly-ald-timeline.json
+```
+
+Fault timeline validation:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --fault pumpdown-timeout --timeline artifacts\moly-ald-fault-timeline.json
+```
+
+Expected behavior:
+
+- CLI exits with code `1` because the process fault is a real execution failure.
+- The fault timeline file is still written.
+- The JSON contains `success: false`, `finalStep: "Alarmed"`, and `faultScenarioName: "pumpdown-timeout"`.
+
+What this proves:
+
+- Unity does not need to parse Markdown.
+- The process runner produces a stable software-consumable data contract.
+- Normal and fault process paths can both be replayed visually later.
+
 ## Public Molybdenum ALD Process Validation
 
 Goal 025 validates a public/synthetic molybdenum ALD process model.

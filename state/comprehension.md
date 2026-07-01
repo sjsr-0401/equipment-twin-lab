@@ -1437,3 +1437,47 @@ processes/public-moly-ald-metallization.json
 3. `MolyAldRunner.Run()`의 for-loop에서 cycle이 반복되는 것을 본다.
 4. `AddStep()`에서 pressure/temperature/valve/thickness가 log로 쌓이는 것을 본다.
 5. `--fault pumpdown-timeout`을 걸면 `Alarmed`로 끝나는 것을 본다.
+## 2026-07-01 이해 요약: Process Timeline JSON Export
+
+이번 Goal의 핵심은 `Unity가 읽을 데이터 계약`을 만든 것이다.
+
+한 문장 설명:
+
+> `MolyAldTimelineDocument`는 `MolyAldRunResult`를 Unity가 바로 읽을 수 있는 JSON 구조로 바꾸는 DTO다.
+
+코드 흐름:
+
+```text
+process run
+    -> MolyAldRunner.Run()
+    -> MolyAldRunResult
+    -> MolyAldTimelineDocument.FromRunResult()
+    -> ToJson()
+    -> artifacts/moly-ald-timeline.json
+```
+
+초보자 관점에서 봐야 할 파일:
+
+- `src/EquipmentTwin.Core/Processes/MolyAldTimelineDocument.cs`
+- `src/EquipmentTwin.Core/Processes/MolyAldTimelineStep.cs`
+- `src/EquipmentTwin.Core/Processes/MolyAldTimelineValves.cs`
+- `src/EquipmentTwin.Cli/Program.cs`
+
+왜 Core에 만들었나:
+
+- CLI는 실행하고 저장하는 껍데기다.
+- 데이터 구조는 장비 모델의 일부이므로 Core에 있어야 한다.
+- 그래야 나중에 Unity adapter나 다른 UI도 같은 schema를 재사용할 수 있다.
+
+디버깅할 때 볼 포인트:
+
+1. `RunProcess()`에서 `TimelinePath`가 들어왔는지 본다.
+2. `WriteProcessTimelineJson()`에서 파일 경로와 결과 객체를 본다.
+3. `MolyAldTimelineDocument.FromRunResult()`에서 run result가 timeline으로 매핑되는 것을 본다.
+4. `MolyAldTimelineStep.FromStepLog()`에서 valve state가 `valves` object로 묶이는 것을 본다.
+5. 생성된 JSON에서 `steps[0]`, `steps[1]`을 확인한다.
+
+이번에 발견한 blocker:
+
+- `EquipmentStateMachine.Reject()`의 parameter가 `prev0ious`로 잘못 바뀌어 있었다.
+- 컴파일을 막는 오타라 `previous`로 복구했다.

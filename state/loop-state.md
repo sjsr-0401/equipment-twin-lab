@@ -289,3 +289,38 @@ Next recommended goal:
 ```text
 Goal 026: Process Timeline JSON Export
 ```
+## 2026-07-01 Update: Goal 026 in progress
+
+- PR #23 merged into `main`.
+- Current branch: `goal/026-process-timeline-json-export`.
+- Goal 026 adds process timeline JSON export for Unity replay.
+- Pre-existing/merge-time blocker fixed:
+  - `EquipmentStateMachine.Reject()` parameter typo `prev0ious` -> `previous`.
+- Local validation so far:
+  - Release build success
+  - Core console tests success
+  - normal process report/timeline CLI success
+  - pumpdown fault timeline CLI expected failure success
+
+Next required action:
+
+- run full CI-like validation
+- commit
+- push
+- create draft PR #24
+- watch CI
+## 2026-07-01 Update: Goal 026 PR created
+
+- PR #24: `https://github.com/sjsr-0401/equipment-twin-lab/pull/24`
+- Branch: `goal/026-process-timeline-json-export`
+- Commit: `c471b09 feat: add process timeline json export`
+- State: Draft
+- Merge state: Clean
+- push CI: success
+- pull_request CI: success
+
+Next recommended goal:
+
+```text
+Goal 027: Unity Process Player Skeleton
+```

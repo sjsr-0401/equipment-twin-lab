@@ -49,7 +49,7 @@
     "CLI - public moly ALD process": {
       "commandName": "Project",
       "workingDirectory": "..\\..",
-      "commandLineArgs": "process run processes\\public-moly-ald-metallization.json --report artifacts\\moly-ald-process-report.md"
+      "commandLineArgs": "process run processes\\public-moly-ald-metallization.json --report artifacts\\moly-ald-process-report.md --timeline artifacts\\moly-ald-timeline.json"
     },
     "CLI - public moly ALD pumpdown fault": {
       "commandName": "Project",

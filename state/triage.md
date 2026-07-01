@@ -80,3 +80,16 @@ Active item:
 | P1 | Public molybdenum ALD process model | Shows process sequence, recipe validation, fault stop, and Unity replay data | In progress |
 | P1 | Process timeline JSON export | Needed before Unity can replay the ALD sequence cleanly | Next |
 | P1 | Unity process player skeleton | Needed for visible portfolio demo | Next |
+## 2026-07-01 Triage Update: Goal 026
+
+Goal 026 changed the next Unity dependency from "concept" to "data contract".
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Process Timeline JSON Export | Unity needs structured replay data, not Markdown parsing | In progress |
+| P1 | Unity Process Player Skeleton | Next visible demo step | Next |
+| P1 | Unity Chamber/Wafer/Valve Visual | Needed for portfolio video | Next |
+
+Current blocker handled:
+
+- `EquipmentStateMachine.cs` typo `prev0ious` was fixed because it broke compilation.

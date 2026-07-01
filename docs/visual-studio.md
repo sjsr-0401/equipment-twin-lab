@@ -186,6 +186,32 @@ IO:
 
 - `EquipmentTwin.Cli`
 - `EquipmentTwin.Core.Tests`
+## Timeline JSON Debugging
+
+The `CLI - public moly ALD process` profile now writes both files:
+
+```text
+artifacts\moly-ald-process-report.md
+artifacts\moly-ald-timeline.json
+```
+
+Use these breakpoints when debugging timeline export:
+
+- `RunProcess()` in `src/EquipmentTwin.Cli/Program.cs`
+- `WriteProcessTimelineJson()`
+- `MolyAldTimelineDocument.FromRunResult()`
+- `MolyAldTimelineStep.FromStepLog()`
+
+Debug flow:
+
+```text
+MolyAldRunner.Run()
+    -> MolyAldRunResult
+    -> MolyAldTimelineDocument.FromRunResult()
+    -> ToJson()
+    -> artifacts\moly-ald-timeline.json
+```
+
 ## Public Moly ALD Process Debug Profiles
 
 Goal 025 adds two Visual Studio launch profiles to `EquipmentTwin.Cli`.

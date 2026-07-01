@@ -135,6 +135,13 @@ static int RunProcess(CliOptions options)
         Console.WriteLine($"Report: {options.ReportPath}");
     }
 
+    if (!string.IsNullOrWhiteSpace(options.TimelinePath))
+    {
+        WriteProcessTimelineJson(options.TimelinePath, result);
+        Console.WriteLine();
+        Console.WriteLine($"Timeline: {options.TimelinePath}");
+    }
+
     return result.Success ? 0 : 1;
 }
 
@@ -193,7 +200,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--inspection <scenario-name>] [--expect-execution-failure] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template batch <template.json> [--report <report.md>] [--initial-utc <iso-utc>]
-          dotnet run --project src/EquipmentTwin.Cli -- process run <process-recipe.json> [--fault <fault-name>] [--report <report.md>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- process run <process-recipe.json> [--fault <fault-name>] [--report <report.md>] [--timeline <timeline.json>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
@@ -205,7 +212,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout --expect-execution-failure --report artifacts/template-fault-expected-failure-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --inspection scratch-detected
           dotnet run --project src/EquipmentTwin.Cli -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
-          dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md
+          dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md --timeline artifacts/moly-ald-timeline.json
           dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --fault pumpdown-timeout
 
         Options:
@@ -214,7 +221,8 @@ static void PrintUsage()
           --inspection <name>      Select a named inspection scenario during template run.
           --expect-execution-failure
                                  Treat failed template execution as the expected result.
-          --report <path>          Write a Markdown batch or template report.
+          --report <path>          Write a Markdown batch, template, or process report.
+          --timeline <path>        Write a process timeline JSON for Unity replay.
           --initial-utc <value>    Set initial UTC time. Example: 2026-06-25T00:00:00Z
           -h, --help               Show this help.
         """);
@@ -494,6 +502,18 @@ static void WriteProcessMarkdownReport(string reportPath, MolyAldRunResult resul
     }
 
     File.WriteAllText(reportPath, BuildProcessMarkdownReport(result, options), Encoding.UTF8);
+}
+
+static void WriteProcessTimelineJson(string timelinePath, MolyAldRunResult result)
+{
+    var directory = Path.GetDirectoryName(timelinePath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    var timeline = MolyAldTimelineDocument.FromRunResult(result);
+    File.WriteAllText(timelinePath, timeline.ToJson(), Encoding.UTF8);
 }
 
 static string BuildProcessMarkdownReport(MolyAldRunResult result, CliOptions options)
@@ -843,6 +863,7 @@ internal sealed record CliOptions(
     bool UseDefaultTimeouts,
     DateTimeOffset InitialUtc,
     string? ReportPath,
+    string? TimelinePath,
     string? TemplatePath,
     string? RecipeName,
     string? FaultScenarioName,
@@ -953,6 +974,7 @@ internal sealed record CliOptions(
         var useDefaultTimeouts = false;
         var initialUtc = new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero);
         string? reportPath = null;
+        string? timelinePath = null;
         string? faultScenarioName = null;
         string? inspectionScenarioName = null;
         var expectExecutionFailure = false;
@@ -1023,6 +1045,21 @@ internal sealed record CliOptions(
                     position += 2;
                     break;
 
+                case "--timeline":
+                    if (mode != CliMode.ProcessRun)
+                    {
+                        throw new ArgumentException("--timeline can only be used with process run.");
+                    }
+
+                    if (position + 1 >= args.Length)
+                    {
+                        throw new ArgumentException("--timeline requires a path.");
+                    }
+
+                    timelinePath = args[position + 1];
+                    position += 2;
+                    break;
+
                 case "--initial-utc":
                     if (position + 1 >= args.Length)
                     {
@@ -1054,7 +1091,7 @@ internal sealed record CliOptions(
                 throw new ArgumentException("--expect-execution-failure requires --fault so the expected failure is explicit.");
             }
 
-            return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
+            return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, timelinePath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
         }
 
         if ((mode == CliMode.Run || mode == CliMode.ProcessRun) && !File.Exists(scenarioPath))
@@ -1063,7 +1100,7 @@ internal sealed record CliOptions(
             throw new FileNotFoundException($"{pathKind} file was not found: {scenarioPath}");
         }
 
-        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
+        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, timelinePath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
     }
 }
 

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using EquipmentTwin.Core;
 using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
@@ -75,6 +76,8 @@ var tests = new (string Name, Action Body)[]
     ("Moly ALD runner injects pumpdown fault", MolyAldRunnerInjectsPumpdownFault),
     ("Moly ALD recipe rejects invalid cycle count", MolyAldRecipeRejectsInvalidCycleCount),
     ("Moly ALD recipe rejects duplicate fault names", MolyAldRecipeRejectsDuplicateFaultNames),
+    ("Moly ALD timeline document maps run result", MolyAldTimelineDocumentMapsRunResult),
+    ("Moly ALD timeline JSON uses Unity friendly shape", MolyAldTimelineJsonUsesUnityFriendlyShape),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -1211,6 +1214,54 @@ static void MolyAldRecipeRejectsDuplicateFaultNames()
             }
             """),
         "Moly ALD recipe must reject duplicate fault scenario names.");
+}
+
+static void MolyAldTimelineDocumentMapsRunResult()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+
+    var result = runner.Run(recipe);
+    var document = MolyAldTimelineDocument.FromRunResult(result);
+
+    AssertEqual(MolyAldTimelineDocument.CurrentSchemaVersion, document.SchemaVersion, "Timeline schema version mismatch.");
+    AssertEqual("public-synthetic-moly-ald", document.Source, "Timeline source mismatch.");
+    AssertEqual(result.RecipeName, document.RecipeName, "Timeline recipe name mismatch.");
+    AssertEqual(true, document.Success, "Timeline success mismatch.");
+    AssertEqual("Complete", document.FinalStep, "Timeline final step mismatch.");
+    AssertEqual(null, document.FaultScenarioName, "Normal timeline must not include a fault scenario.");
+    AssertEqual(recipe.StationCount, document.StationCount, "Timeline station count mismatch.");
+    AssertEqual(recipe.CycleCount, document.CycleCount, "Timeline cycle count mismatch.");
+    AssertEqual(result.EstimatedThicknessAngstrom, document.EstimatedThicknessAngstrom, "Timeline thickness mismatch.");
+    AssertEqual(result.Steps.Count, document.Steps.Count, "Timeline step count mismatch.");
+    AssertEqual("DoseReactant", document.Steps.First(step => step.Step == "DoseReactant").Step, "Timeline step name mismatch.");
+}
+
+static void MolyAldTimelineJsonUsesUnityFriendlyShape()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+    var result = runner.Run(recipe, "pumpdown-timeout");
+
+    var json = MolyAldTimelineDocument.FromRunResult(result).ToJson();
+    using var document = JsonDocument.Parse(json);
+    var root = document.RootElement;
+
+    AssertEqual(MolyAldTimelineDocument.CurrentSchemaVersion, root.GetProperty("schemaVersion").GetString(), "JSON schema version mismatch.");
+    AssertEqual("public-moly-ald-metallization-demo", root.GetProperty("recipeName").GetString(), "JSON recipe name mismatch.");
+    AssertEqual(false, root.GetProperty("success").GetBoolean(), "JSON fault success mismatch.");
+    AssertEqual("Alarmed", root.GetProperty("finalStep").GetString(), "JSON final step mismatch.");
+    AssertEqual("pumpdown-timeout", root.GetProperty("faultScenarioName").GetString(), "JSON fault name mismatch.");
+
+    var steps = root.GetProperty("steps");
+    AssertEqual(2, steps.GetArrayLength(), "Fault timeline should stop after two steps.");
+
+    var failedStep = steps[1];
+    AssertEqual("PumpDown", failedStep.GetProperty("step").GetString(), "JSON failed step mismatch.");
+    AssertEqual(false, failedStep.GetProperty("success").GetBoolean(), "JSON failed step success mismatch.");
+    AssertEqual(false, failedStep.GetProperty("valves").GetProperty("metalPrecursor").GetBoolean(), "JSON precursor valve mismatch.");
+    AssertEqual(false, failedStep.GetProperty("valves").GetProperty("reactant").GetBoolean(), "JSON reactant valve mismatch.");
+    AssertEqual(false, failedStep.GetProperty("valves").GetProperty("purge").GetBoolean(), "JSON purge valve mismatch.");
 }
 
 static void ScenarioJsonLoadsNormalCycleFile()
