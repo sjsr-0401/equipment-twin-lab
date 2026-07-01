@@ -1239,6 +1239,54 @@ artifacts/template-run-report.md
 - report 파일을 포트폴리오 샘플로 커밋할지
 - fault 실패 report를 자동 검증할지
 
+## 2026-07-01 이해 요약: Template Batch Report
+
+### 오늘 한 일
+
+- PR #19를 병합했다.
+- `template batch` 명령을 추가했다.
+- template 안의 모든 recipe를 한 번에 실행하고 Markdown report로 비교하게 했다.
+
+### 왜 필요한가
+
+단일 recipe 실행은 한 제품만 보여준다.
+
+batch report는 여러 제품 조건을 한 번에 보여주므로 데모와 포트폴리오 설명력이 더 좋다.
+
+### 내가 이해해야 할 개념
+
+```text
+Execution PASS = 장비 실행 성공
+Product FAIL   = 제품 검사 불합격
+```
+
+제품이 FAIL이어도 장비가 정상 실행됐으면 batch 실행은 성공이다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+EquipmentTemplate.ProductRecipes
+    ↓
+RunRecipe(recipe.Name)
+    ↓
+TemplateBatchRun
+    ↓
+Template Batch Report
+```
+
+### 유지보수 포인트
+
+- batch 실행: `RunTemplateBatch()`
+- batch 콘솔 출력: `PrintTemplateBatchResult()`
+- batch report 생성: `BuildTemplateBatchMarkdownReport()`
+- template batch 상태: `TemplateBatchRun`
+
+### 아직 모르는 것
+
+- fault case를 batch에 포함할지
+- recipe별 inspection scenario를 어떻게 선택할지
+- batch 결과를 포트폴리오 샘플로 커밋할지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

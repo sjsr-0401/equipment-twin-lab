@@ -22,7 +22,8 @@ static int Run(string[] args)
         {
             CliMode.Run => RunSingleScenario(options),
             CliMode.Batch => RunBatch(options),
-            CliMode.Template => RunTemplate(options),
+            CliMode.TemplateRun => RunTemplate(options),
+            CliMode.TemplateBatch => RunTemplateBatch(options),
             _ => throw new InvalidOperationException($"Unsupported CLI mode '{options.Mode}'.")
         };
     }
@@ -87,6 +88,31 @@ static int RunTemplate(CliOptions options)
     return result.Success ? 0 : 1;
 }
 
+static int RunTemplateBatch(CliOptions options)
+{
+    var json = File.ReadAllText(options.TemplatePath!);
+    var template = EquipmentTemplate.FromJson(json);
+    var runs = template.ProductRecipes
+        .Select(recipe =>
+        {
+            var runner = new TemplateRunner(new ManualClock(options.InitialUtc));
+            var result = runner.RunRecipe(template, recipe.Name);
+            return new TemplateBatchRun(recipe.Name, result);
+        })
+        .ToArray();
+
+    PrintTemplateBatchResult(template, runs);
+
+    if (!string.IsNullOrWhiteSpace(options.ReportPath))
+    {
+        WriteTemplateBatchMarkdownReport(options.ReportPath, template, runs, options);
+        Console.WriteLine();
+        Console.WriteLine($"Report: {options.ReportPath}");
+    }
+
+    return runs.All(run => run.Result.Success) ? 0 : 1;
+}
+
 static ScenarioCliRun ExecuteScenario(string scenarioPath, CliOptions options)
 {
     try
@@ -141,6 +167,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- run <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--report <report.md>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- template batch <template.json> [--report <report.md>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
@@ -149,6 +176,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --report artifacts/template-run-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+          dotnet run --project src/EquipmentTwin.Cli -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
 
         Options:
           --default-timeouts       Use the default MVP timeout policy.
@@ -254,6 +282,37 @@ static string DescribeDefect(InspectionResult inspectionResult)
         : inspectionResult.DefectCode;
 }
 
+static void PrintTemplateBatchResult(EquipmentTemplate template, IReadOnlyList<TemplateBatchRun> runs)
+{
+    var executionPassed = runs.Count(run => run.Result.Success);
+    var executionFailed = runs.Count - executionPassed;
+    var productPassed = runs.Count(run => run.Result.ProductPassed == true);
+    var productFailed = runs.Count(run => run.Result.ProductPassed == false);
+    var notInspected = runs.Count(run => run.Result.ProductPassed is null);
+
+    Console.WriteLine("Template batch");
+    Console.WriteLine($"Template:         {template.Name}");
+    Console.WriteLine($"Execution result: {(executionFailed == 0 ? "PASS" : "FAIL")}");
+    Console.WriteLine($"Recipes:          {runs.Count}");
+    Console.WriteLine($"Execution pass:   {executionPassed}");
+    Console.WriteLine($"Execution fail:   {executionFailed}");
+    Console.WriteLine($"Product pass:     {productPassed}");
+    Console.WriteLine($"Product fail:     {productFailed}");
+    Console.WriteLine($"Not inspected:    {notInspected}");
+    Console.WriteLine();
+
+    foreach (var run in runs)
+    {
+        var execution = run.Result.Success ? "PASS" : "FAIL";
+        var product = DescribeProductResult(run.Result);
+        var defect = run.Result.InspectionResult is null
+            ? "None"
+            : DescribeDefect(run.Result.InspectionResult);
+
+        Console.WriteLine($"{execution} {run.RecipeName} -> Product {product} ({defect})");
+    }
+}
+
 static void WriteTemplateMarkdownReport(string reportPath, TemplateRunResult result, CliOptions options)
 {
     var directory = Path.GetDirectoryName(reportPath);
@@ -332,6 +391,115 @@ static string BuildTemplateMarkdownReport(TemplateRunResult result, CliOptions o
     }
 
     return builder.ToString();
+}
+
+static void WriteTemplateBatchMarkdownReport(
+    string reportPath,
+    EquipmentTemplate template,
+    IReadOnlyList<TemplateBatchRun> runs,
+    CliOptions options)
+{
+    var directory = Path.GetDirectoryName(reportPath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    File.WriteAllText(reportPath, BuildTemplateBatchMarkdownReport(template, runs, options), Encoding.UTF8);
+}
+
+static string BuildTemplateBatchMarkdownReport(
+    EquipmentTemplate template,
+    IReadOnlyList<TemplateBatchRun> runs,
+    CliOptions options)
+{
+    var executionPassed = runs.Count(run => run.Result.Success);
+    var executionFailed = runs.Count - executionPassed;
+    var productPassed = runs.Count(run => run.Result.ProductPassed == true);
+    var productFailed = runs.Count(run => run.Result.ProductPassed == false);
+    var notInspected = runs.Count(run => run.Result.ProductPassed is null);
+    var builder = new StringBuilder();
+
+    builder.AppendLine("# Equipment Twin Template Batch Report");
+    builder.AppendLine();
+    builder.AppendLine($"- Generated UTC: `{DateTimeOffset.UtcNow:O}`");
+    builder.AppendLine($"- Initial run UTC: `{options.InitialUtc:O}`");
+    builder.AppendLine($"- Template file: `{options.TemplatePath}`");
+    builder.AppendLine($"- Template: `{template.Name}`");
+    builder.AppendLine($"- Recipes: `{runs.Count}`");
+    builder.AppendLine($"- Execution passed: `{executionPassed}`");
+    builder.AppendLine($"- Execution failed: `{executionFailed}`");
+    builder.AppendLine($"- Product passed: `{productPassed}`");
+    builder.AppendLine($"- Product failed: `{productFailed}`");
+    builder.AppendLine($"- Not inspected: `{notInspected}`");
+    builder.AppendLine();
+
+    builder.AppendLine("## Summary");
+    builder.AppendLine();
+    builder.AppendLine("| Recipe | Product Code | Execution | Product | Inspection | Defect | Motion Axes |");
+    builder.AppendLine("|---|---|---|---|---|---|---|");
+    foreach (var run in runs)
+    {
+        var result = run.Result;
+        var inspection = result.InspectionResult?.Outcome.ToString() ?? "NotRun";
+        var defect = result.InspectionResult is null ? "None" : DescribeDefect(result.InspectionResult);
+        var axes = DescribeTemplateMotionAxes(result);
+        builder.AppendLine($"| {EscapeMarkdownTable(result.Recipe.Name)} | {EscapeMarkdownTable(result.Recipe.ProductCode)} | {(result.Success ? "PASS" : "FAIL")} | {DescribeProductResult(result)} | {inspection} | {EscapeMarkdownTable(defect)} | {EscapeMarkdownTable(axes)} |");
+    }
+
+    builder.AppendLine();
+    builder.AppendLine("## Details");
+    builder.AppendLine();
+
+    foreach (var run in runs)
+    {
+        var result = run.Result;
+        builder.AppendLine($"### {result.Recipe.Name}");
+        builder.AppendLine();
+        builder.AppendLine($"- Product code: `{result.Recipe.ProductCode}`");
+        builder.AppendLine($"- Execution: `{(result.Success ? "PASS" : "FAIL")}`");
+        builder.AppendLine($"- Product: `{DescribeProductResult(result)}`");
+        builder.AppendLine($"- Fault: `{result.FaultScenario?.Name ?? "None"}`");
+
+        if (result.InspectionResult is not null)
+        {
+            builder.AppendLine($"- Inspection mode: `{result.InspectionResult.Mode}`");
+            builder.AppendLine($"- Inspection outcome: `{result.InspectionResult.Outcome}`");
+            builder.AppendLine($"- Defect: `{DescribeDefect(result.InspectionResult)}`");
+            builder.AppendLine($"- Message: `{EscapeMarkdownTable(result.InspectionResult.Message)}`");
+
+            if (result.InspectionResult.Measurements.Count > 0)
+            {
+                builder.AppendLine();
+                builder.AppendLine("| Measurement | Value |");
+                builder.AppendLine("|---|---:|");
+                foreach (var measurement in result.InspectionResult.Measurements.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    builder.AppendLine($"| {EscapeMarkdownTable(measurement.Key)} | {measurement.Value} |");
+                }
+            }
+        }
+
+        builder.AppendLine();
+    }
+
+    return builder.ToString();
+}
+
+static string DescribeTemplateMotionAxes(TemplateRunResult result)
+{
+    return string.Join(
+        ", ",
+        result.MotionAxes.Values
+            .OrderBy(axis => axis.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(axis =>
+            {
+                var alarm = axis.LastAlarm is null
+                    ? "NoAlarm"
+                    : $"{axis.LastAlarm.Code}: {axis.LastAlarm.Message}";
+
+                return $"{axis.Name}: {axis.State} @ {axis.Position} ({alarm})";
+            }));
 }
 
 static void PrintBatchResult(IReadOnlyList<ScenarioCliRun> runs)
@@ -509,7 +677,8 @@ internal enum CliMode
 {
     Run,
     Batch,
-    Template
+    TemplateRun,
+    TemplateBatch
 }
 
 internal sealed record CliOptions(
@@ -522,6 +691,11 @@ internal sealed record CliOptions(
     string? RecipeName,
     string? FaultScenarioName)
 {
+    private static bool IsTemplateMode(CliMode mode)
+    {
+        return mode is CliMode.TemplateRun or CliMode.TemplateBatch;
+    }
+
     public static CliOptions Parse(string[] args)
     {
         var position = 0;
@@ -538,36 +712,53 @@ internal sealed record CliOptions(
         }
         else if (args[position].Equals("template", StringComparison.OrdinalIgnoreCase))
         {
-            mode = CliMode.Template;
             position++;
 
-            if (position < args.Length && args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
+            if (position >= args.Length)
             {
+                throw new ArgumentException("Template command is required. Use 'template run' or 'template batch'.");
+            }
+
+            if (args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
+            {
+                mode = CliMode.TemplateRun;
                 position++;
+            }
+            else if (args[position].Equals("batch", StringComparison.OrdinalIgnoreCase))
+            {
+                mode = CliMode.TemplateBatch;
+                position++;
+            }
+            else
+            {
+                throw new ArgumentException("Template command must be 'run' or 'batch'.");
             }
         }
 
         if (position >= args.Length)
         {
-            throw new ArgumentException(mode == CliMode.Template ? "Template path is required." : "Scenario path is required.");
+            throw new ArgumentException(IsTemplateMode(mode) ? "Template path is required." : "Scenario path is required.");
         }
 
         var scenarioPath = string.Empty;
         string? templatePath = null;
         string? recipeName = null;
 
-        if (mode == CliMode.Template)
+        if (IsTemplateMode(mode))
         {
             templatePath = args[position];
             position++;
 
-            if (position >= args.Length)
+            if (mode == CliMode.TemplateRun)
             {
-                throw new ArgumentException("Recipe name is required.");
-            }
+                if (position >= args.Length)
+                {
+                    throw new ArgumentException("Recipe name is required.");
+                }
 
-            recipeName = args[position];
-            position++;
+                recipeName = args[position];
+                position++;
+            }
         }
         else
         {
@@ -587,9 +778,9 @@ internal sealed record CliOptions(
             switch (arg)
             {
                 case "--default-timeouts":
-                    if (mode == CliMode.Template)
+                    if (IsTemplateMode(mode))
                     {
-                        throw new ArgumentException("--default-timeouts cannot be used with template run.");
+                        throw new ArgumentException("--default-timeouts cannot be used with template commands.");
                     }
 
                     useDefaultTimeouts = true;
@@ -597,7 +788,7 @@ internal sealed record CliOptions(
                     break;
 
                 case "--fault":
-                    if (mode != CliMode.Template)
+                    if (mode != CliMode.TemplateRun)
                     {
                         throw new ArgumentException("--fault can only be used with template run.");
                     }
@@ -640,7 +831,7 @@ internal sealed record CliOptions(
             }
         }
 
-        if (mode == CliMode.Template)
+        if (IsTemplateMode(mode))
         {
             if (!File.Exists(templatePath))
             {
@@ -658,6 +849,10 @@ internal sealed record CliOptions(
         return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName);
     }
 }
+
+internal sealed record TemplateBatchRun(
+    string RecipeName,
+    TemplateRunResult Result);
 
 internal sealed record ScenarioCliRun(
     string ScenarioPath,

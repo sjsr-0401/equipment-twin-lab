@@ -30,6 +30,11 @@
       "commandName": "Project",
       "workingDirectory": "..\\..",
       "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel --fault x-axis-move-timeout"
+    },
+    "CLI - template batch report": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "template batch templates\\vision-inspection-cell.json --report artifacts\\template-batch-report.md"
     }
   }
 }

@@ -2253,3 +2253,59 @@ WriteTemplateMarkdownReport()
 1. PR #19 병합 여부를 결정한다.
 2. 병합 후 `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Template Batch Report를 선택한다.
+
+## 47. 2026-07-01 Goal 022: Template Batch Report
+
+PR #19를 병합한 뒤 Goal 022를 시작했다.
+
+목표:
+
+```text
+template 안의 모든 recipe를 한 번에 실행하고,
+PASS/FAIL 결과를 Markdown report로 비교한다.
+```
+
+추가한 기능:
+
+- `template batch <template.json>`
+- template 안의 모든 product recipe 실행
+- Execution/Product PASS/FAIL 요약
+- Template batch Markdown report
+- CI template batch 검증
+- Visual Studio template batch launch profile
+
+검증 결과:
+
+- Release 빌드 성공
+- 경고 0개
+- 오류 0개
+- Template batch CLI 성공
+- `artifacts\template-batch-report.md` 내용 확인
+
+막힌 점:
+
+- C# top-level file에서 local function과 type 선언 순서 오류가 발생했다.
+- `IsTemplateMode()`를 `CliOptions` 내부 static method로 옮겨 해결했다.
+
+보류한 판단:
+
+- fault scenario batch는 아직 없다.
+- recipe별 fault/inspection scenario manifest는 아직 없다.
+
+소프트웨어 아키텍처:
+
+```text
+ProductRecipes
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+TemplateBatchRun[]
+    ↓
+BuildTemplateBatchMarkdownReport()
+```
+
+다음 권장 작업:
+
+1. Goal 022 Draft PR을 만든다.
+2. CI 결과를 확인한다.
+3. Inspection Scenario Selection 또는 Fault Expected-Failure Report를 선택한다.
