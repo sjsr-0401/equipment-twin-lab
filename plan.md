@@ -2313,3 +2313,61 @@ BuildTemplateBatchMarkdownReport()
 1. PR #20을 Ready로 전환하고 병합한다.
 2. `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Fault Expected-Failure Report를 선택한다.
+
+## 48. 2026-07-01 Goal 023: Inspection Scenario Selection
+
+PR #20을 병합한 뒤 Goal 023을 시작했다.
+
+목표:
+
+```text
+같은 recipe에서 검사 케이스를 이름으로 선택해서
+제품 PASS/FAIL 결과를 바꿀 수 있게 한다.
+```
+
+추가한 기능:
+
+- `InspectionScenario` 모델
+- `ProductRecipe.InspectionScenarios`
+- `TemplateRunner.RunRecipe(..., inspectionScenarioName)`
+- CLI `--inspection <name>`
+- selected inspection Markdown report
+- CI selected inspection 검증
+- Visual Studio selected inspection launch profile
+- Draft PR #21 생성
+- GitHub Actions push/pull_request CI 성공
+
+검증 결과:
+
+- Release 빌드 성공
+- Core 콘솔 테스트 72개 통과
+- selected inspection CLI 성공
+- 기존 template run/batch 경로 성공
+- `artifacts\template-inspection-scenario-report.md` 내용 확인
+- GitHub Actions push CI 성공
+- GitHub Actions pull_request CI 성공
+
+막힌 점:
+
+- `InspectionResult.ScenarioName`을 생성 이후 할당하는 방식은 C# `init` 속성 규칙과 맞지 않을 수 있었다.
+- 생성자 인자로 scenario name을 전달하게 바꿨다.
+
+소프트웨어 아키텍처:
+
+```text
+ProductRecipe.InspectionScenarios
+    ↓
+CLI --inspection
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+InspectionResult
+    ↓
+Report
+```
+
+다음 권장 작업:
+
+1. PR #21을 Ready로 전환하고 병합한다.
+2. `main`을 최신화한다.
+3. Fault Expected-Failure Report 또는 Inspection Scenario Batch Matrix를 선택한다.

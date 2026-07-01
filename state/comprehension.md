@@ -1287,6 +1287,58 @@ Template Batch Report
 - recipe별 inspection scenario를 어떻게 선택할지
 - batch 결과를 포트폴리오 샘플로 커밋할지
 
+## 2026-07-01 이해 요약: Inspection Scenario Selection
+
+이번 작업에서 같은 recipe 안에 여러 검사 케이스를 둘 수 있게 했다.
+
+중요한 구조:
+
+```text
+inspectionResult
+    = 기본 검사 결과
+
+inspectionScenarios
+    = 이름으로 선택할 수 있는 추가 검사 케이스
+```
+
+예:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --inspection scratch-detected
+```
+
+이 명령은 `default-panel`의 모션 target은 그대로 사용한다.
+
+대신 검사 결과는 기본 PASS가 아니라 `scratch-detected` 케이스를 사용한다.
+
+결과:
+
+```text
+Execution: PASS
+Product:   FAIL
+Defect:    SURFACE_SCRATCH
+```
+
+소프트웨어적으로 중요한 점:
+
+- `InspectionScenario`는 검사 케이스 이름과 `InspectionResultSpec`을 묶는다.
+- `ProductRecipe.ResolveInspectionResult()`가 기본 검사 결과와 선택 검사 결과 중 어떤 것을 쓸지 결정한다.
+- `TemplateRunner.RunRecipe()`는 optional `inspectionScenarioName`을 받는다.
+- `InspectionResult`는 선택된 scenario name을 보존한다.
+- CLI는 `--inspection <name>`을 받아 report에 표시한다.
+
+이 기능은 실제 비전 알고리즘이 아니다.
+
+하지만 실제 카메라가 붙기 전까지는 데이터 기반으로 PASS/FAIL 조건을 재현하는 구조다.
+
+유지보수할 때 볼 파일:
+
+- `src/EquipmentTwin.Core/Templates/InspectionScenario.cs`
+- `src/EquipmentTwin.Core/Templates/ProductRecipe.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
+- `src/EquipmentTwin.Cli/Program.cs`
+- `templates/vision-inspection-cell.json`
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

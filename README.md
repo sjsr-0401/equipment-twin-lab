@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계, 알람 복구 조건, CLI 리포트 알람/복구 조건 표시, 가상 모션 축 모델, 모션 시나리오 JSON action, CLI 리포트 모션 축 표시, Equipment Template / Product Recipe 최소 모델, Template Runner, Fault Model, Inspection Result Model, Template Runner CLI, Template Run/Batch Markdown Report까지 포함한다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계, 알람 복구 조건, CLI 리포트 알람/복구 조건 표시, 가상 모션 축 모델, 모션 시나리오 JSON action, CLI 리포트 모션 축 표시, Equipment Template / Product Recipe 최소 모델, Template Runner, Fault Model, Inspection Result Model, Inspection Scenario Selection, Template Runner CLI, Template Run/Batch Markdown Report까지 포함한다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -38,10 +38,13 @@ Disabled → Ready → Homing → InPosition → Moving → InPosition
 ```text
 ProductRecipe
 → InspectionResultSpec
+→ InspectionScenario
 → TemplateRunResult.InspectionResult
 ```
 
 장비 실행 성공과 제품 검사 PASS/FAIL은 분리한다. 예를 들어 장비는 정상 동작했지만 제품은 `HEIGHT_OVER_LIMIT`로 NG가 될 수 있다.
+
+같은 recipe에서도 `--inspection scratch-detected`처럼 검사 케이스를 골라 PASS/FAIL 데이터셋을 재현할 수 있다.
 
 가상 IO는 실제 PLC 없이 입력 센서와 출력 명령을 분리해서 테스트한다.
 
@@ -186,6 +189,12 @@ fault 주입 케이스:
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
 ```
 
+선택한 검사 케이스 실행:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --inspection scratch-detected --report artifacts\template-inspection-scenario-report.md
+```
+
 template 안의 모든 recipe를 한 번에 실행하고 비교 report 저장:
 
 ```powershell
@@ -214,6 +223,7 @@ dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts/scenario-report.md
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json default-panel --report artifacts/template-run-report.md
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json tall-part
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json default-panel --inspection scratch-detected --report artifacts/template-inspection-scenario-report.md
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
 ```
 

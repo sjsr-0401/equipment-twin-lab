@@ -11,6 +11,7 @@ public sealed class TemplateRunResult
         string templateName,
         ProductRecipe recipe,
         FaultScenario? faultScenario,
+        string? inspectionScenarioName,
         InspectionResult? inspectionResult,
         IReadOnlyDictionary<string, MotionAxis> motionAxes,
         IReadOnlyList<TemplateMotionCommandLog> commandLog)
@@ -18,6 +19,7 @@ public sealed class TemplateRunResult
         TemplateName = templateName;
         Recipe = recipe;
         FaultScenario = faultScenario;
+        InspectionScenarioName = inspectionScenarioName;
         InspectionResult = inspectionResult;
         MotionAxes = motionAxes;
         CommandLog = commandLog;
@@ -28,6 +30,8 @@ public sealed class TemplateRunResult
     public ProductRecipe Recipe { get; }
 
     public FaultScenario? FaultScenario { get; }
+
+    public string? InspectionScenarioName { get; }
 
     public InspectionResult? InspectionResult { get; }
 
