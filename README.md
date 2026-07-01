@@ -10,7 +10,7 @@
 
 ## 현재 단계
 
-현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계, 알람 복구 조건, CLI 리포트 알람/복구 조건 표시, 가상 모션 축 모델, 모션 시나리오 JSON action, CLI 리포트 모션 축 표시, Equipment Template / Product Recipe 최소 모델, Template Runner, Fault Model, Inspection Result Model까지 포함한다.
+현재 MVP는 장비 상태머신, 가상 IO 모델, Clock/Timeout 모델, IO-상태 연결 계층, 공정 시나리오 JSON Runner, Scenario CLI 실행기, batch 리포트 실행기, 알람/복구 시나리오 검증, 알람 코드 체계, 알람 복구 조건, CLI 리포트 알람/복구 조건 표시, 가상 모션 축 모델, 모션 시나리오 JSON action, CLI 리포트 모션 축 표시, Equipment Template / Product Recipe 최소 모델, Template Runner, Fault Model, Inspection Result Model, Template Runner CLI까지 포함한다.
 
 ```text
 Idle → Loading → Aligning → Inspecting → Unloading → Complete
@@ -166,6 +166,33 @@ dotnet run --project src\EquipmentTwin.Cli -- batch scenarios --default-timeouts
 
 예를 들어 문이 열린 알람 시나리오는 `DoorOpened (1001)`과 `Blocked: Door must be closed before clearing DoorOpened alarm.`처럼 표시된다.
 
+## 장비 template 직접 실행
+
+제품 PASS 케이스:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel
+```
+
+제품 FAIL 케이스:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
+```
+
+fault 주입 케이스:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+```
+
+template CLI는 `Execution`과 `Product`를 분리해서 보여준다.
+
+```text
+Execution = 장비 실행 성공/실패
+Product   = 제품 검사 PASS/FAIL
+```
+
 ## 자동 검증
 
 GitHub Actions CI가 push/PR마다 아래 검증을 실행한다.
@@ -177,6 +204,8 @@ dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csp
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/normal-cycle.json
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/loading-timeout.json --default-timeouts
 dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- batch scenarios --default-timeouts --report artifacts/scenario-report.md
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json default-panel
+dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- template run templates/vision-inspection-cell.json tall-part
 ```
 
 ## GitHub

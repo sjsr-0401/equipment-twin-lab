@@ -1138,6 +1138,61 @@ TemplateRunResult
 - 실제 dataset camera를 어떤 인터페이스로 붙일지
 - Unity camera 결과를 어떤 시점에 Core로 넘길지
 
+## 2026-07-01 이해 요약: Template Runner CLI
+
+### 오늘 한 일
+
+- PR #17을 병합했다.
+- Template Runner CLI를 추가했다.
+- `template run templates\vision-inspection-cell.json default-panel`로 제품 PASS 케이스를 실행할 수 있게 했다.
+- `template run templates\vision-inspection-cell.json tall-part`로 제품 FAIL 케이스를 실행할 수 있게 했다.
+- `--fault x-axis-move-timeout`으로 fault 주입 출력도 확인했다.
+
+### 왜 필요한가
+
+Core 안에 있는 기능은 테스트에서는 검증되지만 사용자가 직접 보기 어렵다.
+
+CLI는 Unity UI를 만들기 전 단계의 조작 패널이다.
+
+### 내가 이해해야 할 개념
+
+```text
+Execution = 장비 실행 성공/실패
+Product   = 제품 검사 PASS/FAIL
+```
+
+`tall-part`는 `Execution: PASS`이지만 `Product: FAIL`이다.
+
+이 차이가 제조 장비 SW에서 중요하다.
+
+### 소프트웨어 아키텍처 설명
+
+```text
+CLI argument
+    ↓
+CliOptions.Parse()
+    ↓
+RunTemplate()
+    ↓
+TemplateRunner.RunRecipe()
+    ↓
+PrintTemplateResult()
+```
+
+### 유지보수 포인트
+
+- CLI 파싱: `src/EquipmentTwin.Cli/Program.cs`
+- template 실행: `RunTemplate()`
+- 출력 포맷: `PrintTemplateResult()`
+- Visual Studio 실행 프로필: `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+- CI 검증: `.github/workflows/ci.yml`
+
+### 아직 모르는 것
+
+- template 실행 결과를 Markdown으로 저장할지
+- 여러 template/recipe를 batch로 실행할지
+- fault 케이스를 CI에서 예상 실패로 검증할지
+
 ## 이해 체크 질문
 
 작업이 끝난 뒤 아래 질문에 답할 수 있어야 한다.

@@ -31,6 +31,7 @@
 - ProductRecipe가 검사 PASS/FAIL 결과와 측정값을 데이터로 정의하는가
 - Template Runner가 정상 모션 완료 후 검사 결과를 남기는가
 - 장비 실행 성공과 제품 검사 PASS/FAIL을 분리하는가
+- CLI에서 template/recipe를 직접 실행하고 장비 실행 결과와 제품 검사 결과를 보여주는가
 
 검증하지 않는 것:
 
@@ -81,6 +82,7 @@ EquipmentStateMachine + VirtualIoController + ManualClock
 | Template Runner | 선택한 template/recipe를 가상 모션 실행으로 변환하는가 | `TemplateRunner.cs` | 콘솔 테스트 |
 | Fault Model | 선택한 트러블 조건을 모션 실행 중 주입하는가 | `FaultScenario.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
 | Inspection Result Model | 제품 검사 PASS/FAIL과 측정값을 데이터로 남기는가 | `InspectionResult.cs`, `ProductRecipe.cs`, `TemplateRunner.cs` | 콘솔 테스트 |
+| Template Runner CLI | template/recipe를 명령어로 실행하고 결과를 출력하는가 | `EquipmentTwin.Cli/Program.cs` | 로컬 실행, CI |
 
 ## 4. 현재 시나리오 세트
 
@@ -117,6 +119,8 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 - normal scenario CLI
 - timeout scenario CLI
 - scenario batch CLI
+- template default-panel CLI
+- template tall-part CLI
 
 ## 6. 실무 관점에서 의미 있는 부분
 
@@ -156,7 +160,7 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 | 알람 코드 체계 확장 필요 | 기본 코드는 생겼지만 레벨/조치/복구 조건은 아직 없다 | Alarm Recovery Goal |
 | Timeout 복구 조건이 단순함 | 실제 장비는 작업자 확인, 원인 제거, Reset 조건이 필요하다 | Recovery Report Goal |
 | Fault Model 범위가 모션에 한정됨 | MotionTimeout/ServoAlarm은 지원하지만 IO fault, sensor fault는 아직 없다 | IO Fault Goal |
-| 카메라 검사 없음 | 검사 결과 데이터는 생겼지만 실제 이미지 처리나 Unity 카메라는 아직 없다 | Camera Adapter Goal |
+| 카메라 검사 없음 | 검사 결과 데이터와 CLI 출력은 생겼지만 실제 이미지 처리나 Unity 카메라는 아직 없다 | Camera Adapter Goal |
 | Unity 화면 없음 | 데모 시각화와 포트폴리오 전달력에 필요하다 | Unity Goal |
 | 실제 PLC 통신 없음 | 현장 연동성을 설명하려면 어댑터 계층이 필요하다 | PLC Adapter Goal |
 
@@ -196,10 +200,10 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 ## 10. 다음 권장 작업
 
-다음 구현 후보는 `Template Runner CLI` 또는 `Inspection Scenario Selection`이다.
+다음 구현 후보는 `Inspection Scenario Selection` 또는 `Template Run Markdown Report`이다.
 
 이유:
 
 - Inspection Result Model로 제품 PASS/FAIL은 데이터로 표현할 수 있게 됐다.
-- 다음은 사용자가 CLI에서 template, recipe, fault를 선택해 실행하고 결과를 볼 수 있어야 한다.
-- 또는 같은 recipe에서 PASS/FAIL inspection scenario를 선택하는 구조로 확장해야 한다.
+- Template Runner CLI로 사용자가 template, recipe, fault를 선택해 실행할 수 있게 됐다.
+- 다음은 같은 recipe에서 PASS/FAIL inspection scenario를 선택하거나 template 실행 결과를 Markdown 리포트로 저장하는 단계가 적절하다.

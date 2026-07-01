@@ -47,6 +47,9 @@ Ctrl + Shift + B
 CLI - normal cycle
 CLI - loading timeout
 CLI - batch report
+CLI - template default panel
+CLI - template tall part
+CLI - template fault
 ```
 
 4. `F5`를 누른다.
@@ -55,6 +58,7 @@ CLI - batch report
 
 - `src/EquipmentTwin.Cli/Program.cs`
 - `src/EquipmentTwin.Core/Scenarios/ScenarioRunner.cs`
+- `src/EquipmentTwin.Core/Templates/TemplateRunner.cs`
 - `src/EquipmentTwin.Core/EquipmentCellController.cs`
 - `src/EquipmentTwin.Core/EquipmentStateMachine.cs`
 

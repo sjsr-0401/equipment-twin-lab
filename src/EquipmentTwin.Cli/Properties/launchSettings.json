@@ -15,6 +15,21 @@
       "commandName": "Project",
       "workingDirectory": "..\\..",
       "commandLineArgs": "batch scenarios --default-timeouts --report artifacts\\scenario-report.md"
+    },
+    "CLI - template default panel": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel"
+    },
+    "CLI - template tall part": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "template run templates\\vision-inspection-cell.json tall-part"
+    },
+    "CLI - template fault": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "template run templates\\vision-inspection-cell.json default-panel --fault x-axis-move-timeout"
     }
   }
 }

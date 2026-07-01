@@ -727,3 +727,55 @@ TemplateRunResult.ProductPassed
 - 현재는 실제 이미지 처리 결과가 아니다.
 - 데이터 기반 가상 검사 결과다.
 - 나중에 실제 카메라, 데이터셋 카메라, Unity 가상 카메라가 붙어도 같은 `InspectionResult` 구조로 결과를 넘기게 만드는 것이 목표다.
+
+## 14. Template Runner CLI
+
+파일:
+
+- `src/EquipmentTwin.Cli/Program.cs`
+- `src/EquipmentTwin.Cli/Properties/launchSettings.json`
+- `.github/workflows/ci.yml`
+
+역할:
+
+- `TemplateRunner`를 명령어로 직접 실행한다.
+- 사용자가 template JSON과 recipe 이름을 선택할 수 있다.
+- 선택적으로 fault scenario를 주입할 수 있다.
+- 실행 결과를 콘솔에 사람이 읽을 수 있는 형태로 출력한다.
+- GitHub Actions에서 대표 template 실행을 자동 검증한다.
+
+사용 예:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+```
+
+출력 구조:
+
+```text
+Template
+Recipe
+Execution
+Product
+Fault
+Inspection
+Motion axes
+Command log
+```
+
+중요한 설계 판단:
+
+- `Execution`은 장비 실행 성공/실패다.
+- `Product`는 제품 검사 PASS/FAIL이다.
+- fault가 있으면 `Execution: FAIL`, `Product: NOT_INSPECTED`가 될 수 있다.
+- 제품 검사 Fail은 장비 실행 Fail이 아니다.
+
+유지보수 포인트:
+
+- CLI mode 추가/변경: `CliMode`, `CliOptions.Parse()`
+- template 실행 흐름: `RunTemplate()`
+- 콘솔 출력 형식: `PrintTemplateResult()`
+- Visual Studio 실행 프로필: `launchSettings.json`
+- CI template 검증 명령: `.github/workflows/ci.yml`

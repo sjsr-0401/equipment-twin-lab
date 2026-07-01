@@ -1,6 +1,8 @@
 using System.Text;
 using EquipmentTwin.Core;
+using EquipmentTwin.Core.Motion;
 using EquipmentTwin.Core.Scenarios;
+using EquipmentTwin.Core.Templates;
 
 return Run(args);
 
@@ -20,6 +22,7 @@ static int Run(string[] args)
         {
             CliMode.Run => RunSingleScenario(options),
             CliMode.Batch => RunBatch(options),
+            CliMode.Template => RunTemplate(options),
             _ => throw new InvalidOperationException($"Unsupported CLI mode '{options.Mode}'.")
         };
     }
@@ -63,6 +66,17 @@ static int RunBatch(CliOptions options)
     }
 
     return runs.All(run => run.Success) ? 0 : 1;
+}
+
+static int RunTemplate(CliOptions options)
+{
+    var json = File.ReadAllText(options.TemplatePath!);
+    var template = EquipmentTemplate.FromJson(json);
+    var runner = new TemplateRunner(new ManualClock(options.InitialUtc));
+    var result = runner.RunRecipe(template, options.RecipeName!, options.FaultScenarioName);
+
+    PrintTemplateResult(result);
+    return result.Success ? 0 : 1;
 }
 
 static ScenarioCliRun ExecuteScenario(string scenarioPath, CliOptions options)
@@ -118,14 +132,18 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- run <scenario.json> [--default-timeouts] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/loading-timeout.json --default-timeouts
           dotnet run --project src/EquipmentTwin.Cli -- batch scenarios --default-timeouts --report artifacts/scenario-report.md
+          dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel
+          dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout
 
         Options:
           --default-timeouts       Use the default MVP timeout policy.
+          --fault <name>           Inject a template fault scenario during template run.
           --report <path>          Write a Markdown batch report.
           --initial-utc <value>    Set initial UTC time. Example: 2026-06-25T00:00:00Z
           -h, --help               Show this help.
@@ -161,6 +179,70 @@ static void PrintResult(ScenarioRunResult result, ScenarioRunner runner)
     {
         Console.WriteLine($"  {signal.Name,-30} {signal.Direction,-6} {signal.Value}");
     }
+}
+
+static void PrintTemplateResult(TemplateRunResult result)
+{
+    Console.WriteLine($"Template:  {result.TemplateName}");
+    Console.WriteLine($"Recipe:    {result.Recipe.Name} ({result.Recipe.ProductCode})");
+    Console.WriteLine($"Execution: {(result.Success ? "PASS" : "FAIL")}");
+    Console.WriteLine($"Product:   {DescribeProductResult(result)}");
+    Console.WriteLine($"Fault:     {result.FaultScenario?.Name ?? "None"}");
+    Console.WriteLine();
+
+    if (result.InspectionResult is not null)
+    {
+        Console.WriteLine("Inspection:");
+        Console.WriteLine($"  Mode:     {result.InspectionResult.Mode}");
+        Console.WriteLine($"  Outcome:  {result.InspectionResult.Outcome}");
+        Console.WriteLine($"  Defect:   {DescribeDefect(result.InspectionResult)}");
+        Console.WriteLine($"  Message:  {result.InspectionResult.Message}");
+
+        if (result.InspectionResult.Measurements.Count > 0)
+        {
+            Console.WriteLine("  Measurements:");
+            foreach (var measurement in result.InspectionResult.Measurements.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"    {measurement.Key}: {measurement.Value}");
+            }
+        }
+
+        Console.WriteLine();
+    }
+
+    Console.WriteLine("Motion axes:");
+    foreach (var axis in result.MotionAxes.Values.OrderBy(axis => axis.Name, StringComparer.OrdinalIgnoreCase))
+    {
+        var alarm = axis.LastAlarm is null
+            ? "NoAlarm"
+            : $"{axis.LastAlarm.Code}: {axis.LastAlarm.Message}";
+        Console.WriteLine($"  {axis.Name}: {axis.State} @ {axis.Position} ({alarm})");
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("Command log:");
+    foreach (var log in result.CommandLog)
+    {
+        var status = log.Result.Accepted ? "ACCEPTED" : "REJECTED";
+        Console.WriteLine($"  {log.Step,-18} {log.AxisName,-8} {status,-8} {log.Result.State}: {log.Result.Message}");
+    }
+}
+
+static string DescribeProductResult(TemplateRunResult result)
+{
+    return result.ProductPassed switch
+    {
+        true => "PASS",
+        false => "FAIL",
+        null => "NOT_INSPECTED"
+    };
+}
+
+static string DescribeDefect(InspectionResult inspectionResult)
+{
+    return string.IsNullOrWhiteSpace(inspectionResult.DefectCode)
+        ? "None"
+        : inspectionResult.DefectCode;
 }
 
 static void PrintBatchResult(IReadOnlyList<ScenarioCliRun> runs)
@@ -337,7 +419,8 @@ static string EscapeMarkdownTable(string value)
 internal enum CliMode
 {
     Run,
-    Batch
+    Batch,
+    Template
 }
 
 internal sealed record CliOptions(
@@ -345,7 +428,10 @@ internal sealed record CliOptions(
     string ScenarioPath,
     bool UseDefaultTimeouts,
     DateTimeOffset InitialUtc,
-    string? ReportPath)
+    string? ReportPath,
+    string? TemplatePath,
+    string? RecipeName,
+    string? FaultScenarioName)
 {
     public static CliOptions Parse(string[] args)
     {
@@ -361,18 +447,49 @@ internal sealed record CliOptions(
             mode = CliMode.Batch;
             position++;
         }
+        else if (args[position].Equals("template", StringComparison.OrdinalIgnoreCase))
+        {
+            mode = CliMode.Template;
+            position++;
+
+            if (position < args.Length && args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
+            {
+                position++;
+            }
+        }
 
         if (position >= args.Length)
         {
-            throw new ArgumentException("Scenario path is required.");
+            throw new ArgumentException(mode == CliMode.Template ? "Template path is required." : "Scenario path is required.");
         }
 
-        var scenarioPath = args[position];
-        position++;
+        var scenarioPath = string.Empty;
+        string? templatePath = null;
+        string? recipeName = null;
+
+        if (mode == CliMode.Template)
+        {
+            templatePath = args[position];
+            position++;
+
+            if (position >= args.Length)
+            {
+                throw new ArgumentException("Recipe name is required.");
+            }
+
+            recipeName = args[position];
+            position++;
+        }
+        else
+        {
+            scenarioPath = args[position];
+            position++;
+        }
 
         var useDefaultTimeouts = false;
         var initialUtc = new DateTimeOffset(2026, 6, 25, 0, 0, 0, TimeSpan.Zero);
         string? reportPath = null;
+        string? faultScenarioName = null;
 
         while (position < args.Length)
         {
@@ -381,11 +498,36 @@ internal sealed record CliOptions(
             switch (arg)
             {
                 case "--default-timeouts":
+                    if (mode == CliMode.Template)
+                    {
+                        throw new ArgumentException("--default-timeouts cannot be used with template run.");
+                    }
+
                     useDefaultTimeouts = true;
                     position++;
                     break;
 
+                case "--fault":
+                    if (mode != CliMode.Template)
+                    {
+                        throw new ArgumentException("--fault can only be used with template run.");
+                    }
+
+                    if (position + 1 >= args.Length)
+                    {
+                        throw new ArgumentException("--fault requires a fault scenario name.");
+                    }
+
+                    faultScenarioName = args[position + 1];
+                    position += 2;
+                    break;
+
                 case "--report":
+                    if (mode == CliMode.Template)
+                    {
+                        throw new ArgumentException("--report cannot be used with template run.");
+                    }
+
                     if (position + 1 >= args.Length)
                     {
                         throw new ArgumentException("--report requires a path.");
@@ -414,12 +556,22 @@ internal sealed record CliOptions(
             }
         }
 
+        if (mode == CliMode.Template)
+        {
+            if (!File.Exists(templatePath))
+            {
+                throw new FileNotFoundException($"Template file was not found: {templatePath}");
+            }
+
+            return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName);
+        }
+
         if (mode == CliMode.Run && !File.Exists(scenarioPath))
         {
             throw new FileNotFoundException($"Scenario file was not found: {scenarioPath}");
         }
 
-        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath);
+        return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName);
     }
 }
 
