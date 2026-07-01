@@ -303,3 +303,12 @@ Current validation boundary:
 
 - The script prepares recording material but does not record the screen.
 - Unity screenshot requires a local Unity Editor license; use `-SkipUnity` without Unity.
+
+Completion status:
+
+- Draft PR #33: <https://github.com/sjsr-0401/equipment-twin-lab/pull/33>
+- CI: passed
+- Next priority:
+  - run the rehearsal once before recording;
+  - record the actual 3-minute demo;
+  - adjust docs/visuals based on where the explanation gets stuck.

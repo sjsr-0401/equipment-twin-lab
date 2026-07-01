@@ -629,3 +629,13 @@ Next required action:
 - push branch
 - create draft PR
 - watch CI
+
+Completion update:
+
+- Draft PR #33 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/33>
+- Commit: `a1f2eec feat: add demo rehearsal runner`
+- Local validation passed.
+- PR CI passed:
+  - push run `28516872338`
+  - pull_request run `28516885953`
+- Next recommended goal: `Goal 036: record the actual 3-minute demo and fix explanation or visual gaps`.
