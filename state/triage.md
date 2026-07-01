@@ -129,3 +129,10 @@ Current blocker:
 
 - Unity Editor is not available in the current automation environment.
 - Workaround: CI checks file presence and .NET regression; local Unity Play Mode remains manual.
+
+PR status:
+
+- Goal 028 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/26>
+- CI status: passed
+- Current blocker update: Unity Editor is installed, but batchmode compile is blocked by `No valid Unity Editor license found`.
+- Next work: activate/sign in through Unity Hub, then run Play Mode smoke test.
