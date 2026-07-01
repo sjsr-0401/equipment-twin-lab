@@ -255,3 +255,11 @@ Current validation boundary:
 - Unity screenshot generation works locally with Unity Hub Personal license.
 - GitHub Actions still validates .NET and file-level Unity wiring only; it does not run Unity Editor.
 - The demo must continue to avoid claims about real vendor internals.
+
+Completion status:
+
+- Draft PR #31: <https://github.com/sjsr-0401/equipment-twin-lab/pull/31>
+- CI: passed
+- Next priority:
+  - record the actual 3-minute demo video, or
+  - design the CAD/Blender model swap boundary before importing assets.

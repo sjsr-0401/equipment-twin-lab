@@ -551,3 +551,14 @@ Next required action:
 - push branch
 - create draft PR
 - watch CI
+
+Completion update:
+
+- Draft PR #31 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/31>
+- Commit: `d4b76b4 feat: polish unity demo recording flow`
+- Local validation passed.
+- Unity screenshot validation passed.
+- PR CI passed:
+  - push run `28514554674`
+  - pull_request run `28514568014`
+- Next recommended goal: `Goal 034: record the 3-minute demo video or design CAD/Blender model swap points`.
