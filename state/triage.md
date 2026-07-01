@@ -108,3 +108,9 @@ Current validation boundary:
 
 - CI validates .NET and Unity file presence.
 - Unity Editor compile/play is still manual.
+
+PR status:
+
+- Goal 027 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/25>
+- CI status: passed
+- Next work: add simple Unity chamber/wafer/valve visuals and local Unity Editor validation notes.

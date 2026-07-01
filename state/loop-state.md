@@ -343,3 +343,11 @@ Next required action:
 - push
 - create draft PR #25
 - watch CI
+
+Completion update:
+
+- Draft PR #25 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/25>
+- Commit: `308d167 feat: add unity process player skeleton`
+- Local validation passed.
+- PR CI passed on run `28501761492`.
+- Next recommended goal: `Goal 028: Unity Chamber/Wafer/Valve Visual`.
