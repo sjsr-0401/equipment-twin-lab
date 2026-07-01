@@ -309,3 +309,18 @@ Next required action:
 - push
 - create draft PR #24
 - watch CI
+## 2026-07-01 Update: Goal 026 PR created
+
+- PR #24: `https://github.com/sjsr-0401/equipment-twin-lab/pull/24`
+- Branch: `goal/026-process-timeline-json-export`
+- Commit: `c471b09 feat: add process timeline json export`
+- State: Draft
+- Merge state: Clean
+- push CI: success
+- pull_request CI: success
+
+Next recommended goal:
+
+```text
+Goal 027: Unity Process Player Skeleton
+```
