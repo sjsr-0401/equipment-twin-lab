@@ -809,6 +809,40 @@ Command Log
 - batch Markdown 저장 형식: `BuildTemplateBatchMarkdownReport()`
 - Visual Studio 실행 프로필: `launchSettings.json`
 - CI template 검증 명령: `.github/workflows/ci.yml`
+## Process Timeline JSON Export
+
+Goal 026 adds a stable JSON export between the C# process model and future Unity visualization.
+
+```text
+MolyAldRunResult
+    -> MolyAldTimelineDocument
+    -> artifacts/moly-ald-timeline.json
+    -> Unity process player
+```
+
+Why this exists:
+
+- Markdown reports are for humans.
+- Timeline JSON is for software consumers such as Unity.
+- Unity should not parse console text or Markdown tables.
+
+Timeline schema:
+
+| JSON field | Purpose |
+|---|---|
+| `schemaVersion` | Allows future Unity loaders to reject incompatible files |
+| `source` | States that this is a public/synthetic ALD timeline |
+| `recipeName` | Process recipe identifier |
+| `success` | Overall process execution result |
+| `finalStep` | Final process state |
+| `faultScenarioName` | Fault scenario name when a fault is injected |
+| `steps[]` | Replay frames for the process |
+| `steps[].valves` | Valve state bundle for Unity animation |
+
+Design rule:
+
+`MolyAldTimelineDocument` lives in Core, not only in CLI, because Unity or another adapter should be able to reuse the same schema without depending on console output.
+
 ## Public Molybdenum ALD Process Model
 
 Goal 025 adds a separate process-model layer for public/synthetic molybdenum ALD metallization.

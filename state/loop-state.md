@@ -289,3 +289,23 @@ Next recommended goal:
 ```text
 Goal 026: Process Timeline JSON Export
 ```
+## 2026-07-01 Update: Goal 026 in progress
+
+- PR #23 merged into `main`.
+- Current branch: `goal/026-process-timeline-json-export`.
+- Goal 026 adds process timeline JSON export for Unity replay.
+- Pre-existing/merge-time blocker fixed:
+  - `EquipmentStateMachine.Reject()` parameter typo `prev0ious` -> `previous`.
+- Local validation so far:
+  - Release build success
+  - Core console tests success
+  - normal process report/timeline CLI success
+  - pumpdown fault timeline CLI expected failure success
+
+Next required action:
+
+- run full CI-like validation
+- commit
+- push
+- create draft PR #24
+- watch CI

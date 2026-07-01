@@ -239,6 +239,34 @@ dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore
 공개 저장소:
 
 <https://github.com/sjsr-0401/equipment-twin-lab>
+## Process Timeline JSON Export
+
+The public molybdenum ALD process can export a Unity-ready JSON timeline.
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --report artifacts\moly-ald-process-report.md --timeline artifacts\moly-ald-timeline.json
+```
+
+The JSON schema is intentionally simple:
+
+```text
+recipeName
+success
+finalStep
+steps[]
+  step
+  cycle
+  durationMilliseconds
+  chamberPressureMtorr
+  waferTemperatureC
+  valves.metalPrecursor
+  valves.reactant
+  valves.purge
+  estimatedThicknessAngstrom
+```
+
+Unity should consume this file instead of parsing the Markdown report.
+
 ## Public Molybdenum ALD Process Model
 
 This repository now includes a public/synthetic molybdenum ALD metallization process model.

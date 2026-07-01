@@ -2425,6 +2425,46 @@ exit code
 1. PR #22를 Ready로 전환하고 병합한다.
 2. `main`을 최신화한다.
 3. Inspection Scenario Batch Matrix 또는 Fault Scenario Catalog를 선택한다.
+## 51. 2026-07-01 Goal 026: Process Timeline JSON Export
+
+Goal 026은 Unity 작업을 시작하기 전의 data contract 작업이다.
+
+목표:
+
+```text
+ALD process result를 Unity가 직접 읽을 수 있는 JSON timeline으로 저장한다.
+```
+
+구현 범위:
+
+- `MolyAldTimelineDocument`
+- `MolyAldTimelineStep`
+- `MolyAldTimelineValves`
+- CLI `--timeline`
+- normal/fault timeline export
+- tests/CI/docs
+
+중요한 설계 판단:
+
+- Markdown은 사람용 report다.
+- JSON timeline은 Unity/프로그램용 data contract다.
+- Unity가 Markdown을 파싱하게 만들면 나중에 깨지기 쉽다.
+- 그래서 timeline schema를 Core에 두고 CLI는 파일 저장만 담당한다.
+
+다음 Unity 작업의 입력:
+
+```text
+artifacts/moly-ald-timeline.json
+```
+
+다음 권장 Goal:
+
+```text
+Goal 027: Unity Process Player Skeleton
+```
+
+첫 Unity 목표는 고급 3D 모델이 아니라 JSON을 읽고 현재 step, valve, pressure, temperature, thickness를 표시하는 최소 player다.
+
 ## 50. 2026-07-01 Goal 025: Public Molybdenum ALD Process Model
 
 대표 프로젝트 방향을 `vision inspection cell` 중심에서 `public/synthetic ALD metallization equipment twin` 중심으로 확장한다.
