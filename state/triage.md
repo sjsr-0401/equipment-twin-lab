@@ -93,3 +93,24 @@ Goal 026 changed the next Unity dependency from "concept" to "data contract".
 Current blocker handled:
 
 - `EquipmentStateMachine.cs` typo `prev0ious` was fixed because it broke compilation.
+
+## 2026-07-01 Triage Update: Goal 027
+
+Active focus moved from JSON data contract to the first Unity replay skeleton.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity Process Player Skeleton | First visible Unity integration point | In progress |
+| P1 | Unity Chamber/Wafer/Valve Visual | Needed for portfolio demo video | Next |
+| P2 | Unity Editor compile/play validation guide | Needed because CI does not run Unity Editor yet | Next |
+
+Current validation boundary:
+
+- CI validates .NET and Unity file presence.
+- Unity Editor compile/play is still manual.
+
+PR status:
+
+- Goal 027 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/25>
+- CI status: passed
+- Next work: add simple Unity chamber/wafer/valve visuals and local Unity Editor validation notes.

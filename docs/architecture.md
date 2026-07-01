@@ -809,6 +809,49 @@ Command Log
 - batch Markdown 저장 형식: `BuildTemplateBatchMarkdownReport()`
 - Visual Studio 실행 프로필: `launchSettings.json`
 - CI template 검증 명령: `.github/workflows/ci.yml`
+
+## Unity Process Player Skeleton
+
+Goal 027 adds the first Unity-side adapter for the process timeline.
+
+```text
+Core process model
+    -> CLI timeline JSON
+    -> Unity MolyAldTimelineLoader
+    -> Unity MolyAldProcessPlayer
+    -> Unity MolyAldProcessHud
+```
+
+Architecture rule:
+
+Unity is not the source of process truth. Unity replays the tested C# Core timeline.
+
+The Unity folder is deliberately lightweight:
+
+```text
+unity/EquipmentTwin.Unity
+  Assets/EquipmentTwin/Runtime
+    MolyAldTimelineData.cs
+    MolyAldTimelineLoader.cs
+    MolyAldProcessPlayer.cs
+    MolyAldProcessHud.cs
+  Assets/StreamingAssets
+    moly-ald-timeline.sample.json
+```
+
+Current visualization is `OnGUI` only. That is intentional. It verifies data loading and playback before 3D geometry work begins.
+
+Next Unity layer:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> chamber pressure gauge
+    -> wafer temperature color
+    -> valve indicator objects
+    -> film thickness overlay
+    -> alarm panel
+```
+
 ## Process Timeline JSON Export
 
 Goal 026 adds a stable JSON export between the C# process model and future Unity visualization.
