@@ -2221,6 +2221,8 @@ template run 실행 결과를 Markdown report로 저장할 수 있게 한다.
 - `default-panel --report artifacts\template-run-report.md` 실행 성공
 - `tall-part` template CLI 성공
 - 생성된 Markdown 내용 확인
+- Draft PR #19 생성
+- GitHub Actions push/pull_request 성공
 
 막힌 점:
 
@@ -2248,6 +2250,6 @@ WriteTemplateMarkdownReport()
 
 다음 권장 작업:
 
-1. Goal 021 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #19 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. Inspection Scenario Selection 또는 Template Batch Report를 선택한다.

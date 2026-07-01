@@ -36,7 +36,7 @@
 | P1 | Fault Model | 사용자가 트러블 조건을 선택할 수 있게 해야 한다 | 완료 |
 | P1 | Inspection Result Model | 제품별 검사 결과를 PASS/FAIL로 표현해야 한다 | 완료 |
 | P1 | Template Runner CLI | 사용자가 template/recipe/fault를 명령어로 실행하고 결과를 봐야 한다 | 완료 |
-| P1 | Template Run Markdown Report | template 실행 결과를 포트폴리오용 파일로 저장해야 한다 | 진행 중 |
+| P1 | Template Run Markdown Report | template 실행 결과를 포트폴리오용 파일로 저장해야 한다 | PR 대기 |
 | P1 | Template Batch Report | 여러 recipe 실행 결과를 한 번에 비교해야 한다 | 대기 |
 | P1 | Inspection Scenario Selection | 같은 제품에서 PASS/FAIL 검사 케이스를 선택할 수 있어야 한다 | 대기 |
 | P2 | Core 검증 정리 문서 | 면접/포트폴리오에서 현재 구조를 설명할 수 있어야 한다 | 완료 |
@@ -46,8 +46,8 @@
 
 ## 오늘의 추천 작업
 
-1. Goal 021 변경을 커밋하고 Draft PR을 만든다.
-2. CI 결과를 확인한다.
+1. PR #19 병합 여부를 결정한다.
+2. 병합 후 `main`을 최신화한다.
 3. 다음 후보로 Inspection Scenario Selection 또는 Template Batch Report를 선택한다.
 
 ## 보류 작업
