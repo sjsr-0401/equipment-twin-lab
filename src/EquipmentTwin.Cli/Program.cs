@@ -1,6 +1,7 @@
 using System.Text;
 using EquipmentTwin.Core;
 using EquipmentTwin.Core.Motion;
+using EquipmentTwin.Core.Processes;
 using EquipmentTwin.Core.Scenarios;
 using EquipmentTwin.Core.Templates;
 
@@ -24,6 +25,7 @@ static int Run(string[] args)
             CliMode.Batch => RunBatch(options),
             CliMode.TemplateRun => RunTemplate(options),
             CliMode.TemplateBatch => RunTemplateBatch(options),
+            CliMode.ProcessRun => RunProcess(options),
             _ => throw new InvalidOperationException($"Unsupported CLI mode '{options.Mode}'.")
         };
     }
@@ -117,6 +119,25 @@ static int RunTemplateBatch(CliOptions options)
     return runs.All(run => run.Result.Success) ? 0 : 1;
 }
 
+static int RunProcess(CliOptions options)
+{
+    var json = File.ReadAllText(options.ScenarioPath);
+    var recipe = MolyAldRecipe.FromJson(json);
+    var runner = new MolyAldRunner(new ManualClock(options.InitialUtc));
+    var result = runner.Run(recipe, options.FaultScenarioName);
+
+    PrintProcessResult(result);
+
+    if (!string.IsNullOrWhiteSpace(options.ReportPath))
+    {
+        WriteProcessMarkdownReport(options.ReportPath, result, options);
+        Console.WriteLine();
+        Console.WriteLine($"Report: {options.ReportPath}");
+    }
+
+    return result.Success ? 0 : 1;
+}
+
 static ScenarioCliRun ExecuteScenario(string scenarioPath, CliOptions options)
 {
     try
@@ -172,6 +193,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- batch <scenario-directory-or-json> [--default-timeouts] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--inspection <scenario-name>] [--expect-execution-failure] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template batch <template.json> [--report <report.md>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- process run <process-recipe.json> [--fault <fault-name>] [--report <report.md>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
@@ -183,10 +205,12 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --fault x-axis-move-timeout --expect-execution-failure --report artifacts/template-fault-expected-failure-report.md
           dotnet run --project src/EquipmentTwin.Cli -- template run templates/vision-inspection-cell.json default-panel --inspection scratch-detected
           dotnet run --project src/EquipmentTwin.Cli -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
+          dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md
+          dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --fault pumpdown-timeout
 
         Options:
           --default-timeouts       Use the default MVP timeout policy.
-          --fault <name>           Inject a template fault scenario during template run.
+          --fault <name>           Inject a template or process fault scenario.
           --inspection <name>      Select a named inspection scenario during template run.
           --expect-execution-failure
                                  Treat failed template execution as the expected result.
@@ -349,6 +373,35 @@ static void PrintTemplateBatchResult(EquipmentTemplate template, IReadOnlyList<T
     }
 }
 
+static void PrintProcessResult(MolyAldRunResult result)
+{
+    Console.WriteLine($"Process:   {result.RecipeName}");
+    Console.WriteLine($"Execution: {(result.Success ? "PASS" : "FAIL")}");
+    Console.WriteLine($"Final:     {result.FinalStep}");
+    Console.WriteLine($"Stations:  {result.Recipe.StationCount}");
+    Console.WriteLine($"Cycles:    {result.Recipe.CycleCount}");
+    Console.WriteLine($"Thickness: {result.EstimatedThicknessAngstrom:0.###} A / target {result.Recipe.TargetThicknessAngstrom:0.###} A");
+    Console.WriteLine($"Fault:     {result.FaultScenario?.Name ?? "None"}");
+    Console.WriteLine($"Duration:  {result.TotalDuration}");
+    Console.WriteLine();
+
+    Console.WriteLine("ALD timeline:");
+    foreach (var step in result.Steps)
+    {
+        var status = step.Success ? "PASS" : "FAIL";
+        var cycle = step.Cycle is null ? "-" : step.Cycle.Value.ToString();
+        Console.WriteLine(
+            $"{step.Index:00}. {status} {step.Step,-22} cycle={cycle,-2} pressure={step.ChamberPressureMtorr,8:0.#} mTorr temp={step.WaferTemperatureC,6:0.#} C thickness={step.EstimatedThicknessAngstrom,6:0.###} A");
+        Console.WriteLine(
+            $"    valves: precursor={step.MetalPrecursorValveOpen}, reactant={step.ReactantValveOpen}, purge={step.PurgeValveOpen}");
+
+        if (!string.IsNullOrWhiteSpace(step.Message))
+        {
+            Console.WriteLine($"    {step.Message}");
+        }
+    }
+}
+
 static void WriteTemplateMarkdownReport(string reportPath, TemplateRunResult result, CliOptions options)
 {
     var directory = Path.GetDirectoryName(reportPath);
@@ -427,6 +480,69 @@ static string BuildTemplateMarkdownReport(TemplateRunResult result, CliOptions o
     {
         var status = log.Result.Accepted ? "ACCEPTED" : "REJECTED";
         builder.AppendLine($"| {EscapeMarkdownTable(log.Step)} | {EscapeMarkdownTable(log.AxisName)} | {status} | {log.Result.State} | {EscapeMarkdownTable(log.Result.Message)} |");
+    }
+
+    return builder.ToString();
+}
+
+static void WriteProcessMarkdownReport(string reportPath, MolyAldRunResult result, CliOptions options)
+{
+    var directory = Path.GetDirectoryName(reportPath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    File.WriteAllText(reportPath, BuildProcessMarkdownReport(result, options), Encoding.UTF8);
+}
+
+static string BuildProcessMarkdownReport(MolyAldRunResult result, CliOptions options)
+{
+    var builder = new StringBuilder();
+
+    builder.AppendLine("# Public Molybdenum ALD Process Report");
+    builder.AppendLine();
+    builder.AppendLine($"- Generated UTC: `{DateTimeOffset.UtcNow:O}`");
+    builder.AppendLine($"- Initial run UTC: `{options.InitialUtc:O}`");
+    builder.AppendLine($"- Process file: `{options.ScenarioPath}`");
+    builder.AppendLine($"- Recipe: `{result.RecipeName}`");
+    builder.AppendLine($"- Execution: `{(result.Success ? "PASS" : "FAIL")}`");
+    builder.AppendLine($"- Final step: `{result.FinalStep}`");
+    builder.AppendLine($"- Fault: `{result.FaultScenario?.Name ?? "None"}`");
+    builder.AppendLine($"- Station count: `{result.Recipe.StationCount}`");
+    builder.AppendLine($"- Cycle count: `{result.Recipe.CycleCount}`");
+    builder.AppendLine($"- Estimated thickness: `{result.EstimatedThicknessAngstrom:0.###} A`");
+    builder.AppendLine($"- Target thickness: `{result.Recipe.TargetThicknessAngstrom:0.###} A`");
+    builder.AppendLine($"- Total duration: `{result.TotalDuration}`");
+    builder.AppendLine();
+
+    builder.AppendLine("> This report is a public/synthetic ALD equipment-control simulation. It is not a real vendor recipe, real process condition, or real equipment log.");
+    builder.AppendLine();
+
+    if (result.Recipe.PublicBasis.Count > 0)
+    {
+        builder.AppendLine("## Public Basis");
+        builder.AppendLine();
+        foreach (var basis in result.Recipe.PublicBasis)
+        {
+            builder.AppendLine($"- {basis}");
+        }
+
+        builder.AppendLine();
+    }
+
+    builder.AppendLine("## Unity Replay Signals");
+    builder.AppendLine();
+    builder.AppendLine("Unity can replay this timeline by mapping each row to chamber pressure, wafer temperature, valve states, and wafer film thickness.");
+    builder.AppendLine();
+    builder.AppendLine("| # | Result | Step | Cycle | Duration | Pressure mTorr | Temp C | Precursor Valve | Reactant Valve | Purge Valve | Thickness A | Message |");
+    builder.AppendLine("|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|");
+
+    foreach (var step in result.Steps)
+    {
+        var cycle = step.Cycle?.ToString() ?? "-";
+        builder.AppendLine(
+            $"| {step.Index} | {(step.Success ? "PASS" : "FAIL")} | {step.Step} | {cycle} | {step.Duration} | {step.ChamberPressureMtorr:0.#} | {step.WaferTemperatureC:0.#} | {step.MetalPrecursorValveOpen} | {step.ReactantValveOpen} | {step.PurgeValveOpen} | {step.EstimatedThicknessAngstrom:0.###} | {EscapeMarkdownTable(step.Message)} |");
     }
 
     return builder.ToString();
@@ -717,7 +833,8 @@ internal enum CliMode
     Run,
     Batch,
     TemplateRun,
-    TemplateBatch
+    TemplateBatch,
+    ProcessRun
 }
 
 internal sealed record CliOptions(
@@ -735,6 +852,11 @@ internal sealed record CliOptions(
     private static bool IsTemplateMode(CliMode mode)
     {
         return mode is CliMode.TemplateRun or CliMode.TemplateBatch;
+    }
+
+    private static bool IsProcessMode(CliMode mode)
+    {
+        return mode == CliMode.ProcessRun;
     }
 
     public static CliOptions Parse(string[] args)
@@ -775,10 +897,31 @@ internal sealed record CliOptions(
                 throw new ArgumentException("Template command must be 'run' or 'batch'.");
             }
         }
+        else if (args[position].Equals("process", StringComparison.OrdinalIgnoreCase))
+        {
+            position++;
+
+            if (position >= args.Length)
+            {
+                throw new ArgumentException("Process command is required. Use 'process run'.");
+            }
+
+            if (!args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("Process command must be 'run'.");
+            }
+
+            mode = CliMode.ProcessRun;
+            position++;
+        }
 
         if (position >= args.Length)
         {
-            throw new ArgumentException(IsTemplateMode(mode) ? "Template path is required." : "Scenario path is required.");
+            throw new ArgumentException(IsTemplateMode(mode)
+                ? "Template path is required."
+                : IsProcessMode(mode)
+                    ? "Process recipe path is required."
+                    : "Scenario path is required.");
         }
 
         var scenarioPath = string.Empty;
@@ -821,9 +964,9 @@ internal sealed record CliOptions(
             switch (arg)
             {
                 case "--default-timeouts":
-                    if (IsTemplateMode(mode))
+                    if (IsTemplateMode(mode) || IsProcessMode(mode))
                     {
-                        throw new ArgumentException("--default-timeouts cannot be used with template commands.");
+                        throw new ArgumentException("--default-timeouts cannot be used with template or process commands.");
                     }
 
                     useDefaultTimeouts = true;
@@ -831,9 +974,9 @@ internal sealed record CliOptions(
                     break;
 
                 case "--fault":
-                    if (mode != CliMode.TemplateRun)
+                    if (mode != CliMode.TemplateRun && mode != CliMode.ProcessRun)
                     {
-                        throw new ArgumentException("--fault can only be used with template run.");
+                        throw new ArgumentException("--fault can only be used with template run or process run.");
                     }
 
                     if (position + 1 >= args.Length)
@@ -914,9 +1057,10 @@ internal sealed record CliOptions(
             return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
         }
 
-        if (mode == CliMode.Run && !File.Exists(scenarioPath))
+        if ((mode == CliMode.Run || mode == CliMode.ProcessRun) && !File.Exists(scenarioPath))
         {
-            throw new FileNotFoundException($"Scenario file was not found: {scenarioPath}");
+            var pathKind = IsProcessMode(mode) ? "Process recipe" : "Scenario";
+            throw new FileNotFoundException($"{pathKind} file was not found: {scenarioPath}");
         }
 
         return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);

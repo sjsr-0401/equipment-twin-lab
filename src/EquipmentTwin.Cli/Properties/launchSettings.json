@@ -45,6 +45,16 @@
       "commandName": "Project",
       "workingDirectory": "..\\..",
       "commandLineArgs": "template batch templates\\vision-inspection-cell.json --report artifacts\\template-batch-report.md"
+    },
+    "CLI - public moly ALD process": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "process run processes\\public-moly-ald-metallization.json --report artifacts\\moly-ald-process-report.md"
+    },
+    "CLI - public moly ALD pumpdown fault": {
+      "commandName": "Project",
+      "workingDirectory": "..\\..",
+      "commandLineArgs": "process run processes\\public-moly-ald-metallization.json --fault pumpdown-timeout"
     }
   }
 }

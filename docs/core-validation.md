@@ -217,3 +217,59 @@ GitHub에서는 push/PR마다 CI가 아래를 확인한다.
 
 - Fault Expected-Failure Report로 fault 주입처럼 실행 실패가 기대값인 케이스를 CI에서 안전하게 검증할 수 있게 됐다.
 - 다음은 여러 inspection scenario를 batch matrix로 비교하거나, fault 종류와 기대 알람을 catalog로 정리하는 단계가 적절하다.
+## Public Molybdenum ALD Process Validation
+
+Goal 025 validates a public/synthetic molybdenum ALD process model.
+
+Validated by console tests:
+
+- `Moly ALD recipe JSON loads public demo file`
+- `Moly ALD runner completes public demo process`
+- `Moly ALD runner records valve timeline`
+- `Moly ALD runner injects pumpdown fault`
+- `Moly ALD recipe rejects invalid cycle count`
+- `Moly ALD recipe rejects duplicate fault names`
+
+Validated by CLI:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --report artifacts\moly-ald-process-report.md
+```
+
+Expected normal result:
+
+```text
+Execution: PASS
+Final:     Complete
+Stations:  4
+Cycles:    4
+Thickness: 8 A / target 8 A
+```
+
+Validated fault behavior:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --fault pumpdown-timeout
+```
+
+Expected fault result:
+
+```text
+Execution: FAIL
+Final:     Alarmed
+Fault:     pumpdown-timeout
+Thickness: 0 A / target 8 A
+```
+
+What this proves:
+
+- Recipe JSON can be loaded and validated.
+- The process sequence runs deterministically without real equipment.
+- Dose/purge/valve/tickness timeline data is produced for Unity.
+- A setup fault stops the process before film growth.
+
+What this does not prove:
+
+- It does not prove real ALD process accuracy.
+- It does not prove real equipment safety.
+- It does not use real vendor recipe values.

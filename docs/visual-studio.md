@@ -186,3 +186,35 @@ IO:
 
 - `EquipmentTwin.Cli`
 - `EquipmentTwin.Core.Tests`
+## Public Moly ALD Process Debug Profiles
+
+Goal 025 adds two Visual Studio launch profiles to `EquipmentTwin.Cli`.
+
+- `CLI - public moly ALD process`
+- `CLI - public moly ALD pumpdown fault`
+
+Use the first one to debug the normal synthetic ALD process.
+
+Useful breakpoints:
+
+- `RunProcess()` in `src/EquipmentTwin.Cli/Program.cs`
+- `MolyAldRecipe.FromJson()`
+- `MolyAldRecipe.Validate()`
+- `MolyAldRunner.Run()`
+- `MolyAldRunner.AddStep()`
+
+The normal profile should end with:
+
+```text
+Execution: PASS
+Final:     Complete
+Thickness: 8 A / target 8 A
+```
+
+The pumpdown fault profile is expected to fail because the selected fault intentionally stops the process:
+
+```text
+Execution: FAIL
+Final:     Alarmed
+Fault:     pumpdown-timeout
+```

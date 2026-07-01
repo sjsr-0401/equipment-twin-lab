@@ -2,6 +2,7 @@ using EquipmentTwin.Core;
 using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Io;
 using EquipmentTwin.Core.Motion;
+using EquipmentTwin.Core.Processes;
 using EquipmentTwin.Core.Scenarios;
 using EquipmentTwin.Core.Templates;
 
@@ -68,6 +69,12 @@ var tests = new (string Name, Action Body)[]
     ("Template runner rejects missing fault scenario", TemplateRunnerRejectsMissingFaultScenario),
     ("Template runner rejects missing inspection scenario", TemplateRunnerRejectsMissingInspectionScenario),
     ("Template runner rejects invalid durations", TemplateRunnerRejectsInvalidDurations),
+    ("Moly ALD recipe JSON loads public demo file", MolyAldRecipeJsonLoadsPublicDemoFile),
+    ("Moly ALD runner completes public demo process", MolyAldRunnerCompletesPublicDemoProcess),
+    ("Moly ALD runner records valve timeline", MolyAldRunnerRecordsValveTimeline),
+    ("Moly ALD runner injects pumpdown fault", MolyAldRunnerInjectsPumpdownFault),
+    ("Moly ALD recipe rejects invalid cycle count", MolyAldRecipeRejectsInvalidCycleCount),
+    ("Moly ALD recipe rejects duplicate fault names", MolyAldRecipeRejectsDuplicateFaultNames),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -1082,6 +1089,130 @@ static void TemplateRunnerRejectsInvalidDurations()
         "Template runner must reject invalid move duration.");
 }
 
+static void MolyAldRecipeJsonLoadsPublicDemoFile()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+
+    AssertEqual("public-moly-ald-metallization-demo", recipe.Name, "Moly ALD recipe name mismatch.");
+    AssertEqual(4, recipe.StationCount, "Public ALD demo should expose the public quad-station concept.");
+    AssertEqual(4, recipe.CycleCount, "Cycle count mismatch.");
+    AssertEqual(8.0, recipe.TargetThicknessAngstrom, "Target thickness mismatch.");
+    AssertEqual(4, recipe.FaultScenarios.Count, "Fault scenario count mismatch.");
+}
+
+static void MolyAldRunnerCompletesPublicDemoProcess()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+
+    var result = runner.Run(recipe);
+
+    AssertTrue(result.Success, result.Message);
+    AssertEqual(MolyAldProcessStep.Complete, result.FinalStep, "Moly ALD run must complete.");
+    AssertEqual(recipe.TargetThicknessAngstrom, result.EstimatedThicknessAngstrom, "Estimated thickness mismatch.");
+    AssertEqual(22, result.Steps.Count, "Moly ALD step count mismatch.");
+    AssertEqual(4, result.Steps.Count(step => step.Step == MolyAldProcessStep.DoseMetalPrecursor), "Precursor dose step count mismatch.");
+    AssertEqual(4, result.Steps.Count(step => step.Step == MolyAldProcessStep.DoseReactant), "Reactant dose step count mismatch.");
+}
+
+static void MolyAldRunnerRecordsValveTimeline()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+
+    var result = runner.Run(recipe);
+
+    var precursorDose = result.Steps.First(step => step.Step == MolyAldProcessStep.DoseMetalPrecursor);
+    var precursorPurge = result.Steps.First(step => step.Step == MolyAldProcessStep.PurgeAfterPrecursor);
+    var reactantDose = result.Steps.First(step => step.Step == MolyAldProcessStep.DoseReactant);
+
+    AssertTrue(precursorDose.MetalPrecursorValveOpen, "Precursor valve must be open during precursor dose.");
+    AssertFalse(precursorDose.ReactantValveOpen, "Reactant valve must be closed during precursor dose.");
+    AssertTrue(precursorPurge.PurgeValveOpen, "Purge valve must be open during purge.");
+    AssertFalse(precursorPurge.MetalPrecursorValveOpen, "Precursor valve must be closed during purge.");
+    AssertTrue(reactantDose.ReactantValveOpen, "Reactant valve must be open during reactant dose.");
+    AssertEqual(2.0, reactantDose.EstimatedThicknessAngstrom, "First cycle should add one synthetic growth increment.");
+}
+
+static void MolyAldRunnerInjectsPumpdownFault()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+
+    var result = runner.Run(recipe, "pumpdown-timeout");
+
+    AssertFalse(result.Success, "Pumpdown fault must fail the process run.");
+    AssertEqual(MolyAldProcessStep.Alarmed, result.FinalStep, "Pumpdown fault must move the process to Alarmed.");
+    AssertEqual("pumpdown-timeout", result.FaultScenario?.Name, "Fault scenario name mismatch.");
+    AssertEqual(0.0, result.EstimatedThicknessAngstrom, "Pumpdown fault must stop before film growth.");
+    AssertEqual(1, result.FailedSteps.Count, "Pumpdown fault should record one failed step.");
+    AssertEqual(MolyAldProcessStep.PumpDown, result.FailedSteps[0].Step, "Failed step mismatch.");
+}
+
+static void MolyAldRecipeRejectsInvalidCycleCount()
+{
+    AssertThrows<InvalidOperationException>(
+        () => MolyAldRecipe.FromJson(
+            """
+            {
+              "name": "bad-ald",
+              "stationCount": 4,
+              "cycleCount": 0,
+              "targetThicknessAngstrom": 8,
+              "chamberPressureMtorr": 850,
+              "waferTemperatureC": 250,
+              "pumpDownSeconds": 12,
+              "temperatureStabilizeSeconds": 8,
+              "metalPrecursorDoseMilliseconds": 150,
+              "reactantDoseMilliseconds": 180,
+              "purgeMilliseconds": 500,
+              "carrierGasFlowSccm": 120,
+              "reactantGases": [
+                { "name": "SyntheticReactantA", "flowSccm": 60 }
+              ]
+            }
+            """),
+        "Moly ALD recipe must reject invalid cycle count.");
+}
+
+static void MolyAldRecipeRejectsDuplicateFaultNames()
+{
+    AssertThrows<InvalidOperationException>(
+        () => MolyAldRecipe.FromJson(
+            """
+            {
+              "name": "bad-ald",
+              "stationCount": 4,
+              "cycleCount": 4,
+              "targetThicknessAngstrom": 8,
+              "chamberPressureMtorr": 850,
+              "waferTemperatureC": 250,
+              "pumpDownSeconds": 12,
+              "temperatureStabilizeSeconds": 8,
+              "metalPrecursorDoseMilliseconds": 150,
+              "reactantDoseMilliseconds": 180,
+              "purgeMilliseconds": 500,
+              "carrierGasFlowSccm": 120,
+              "reactantGases": [
+                { "name": "SyntheticReactantA", "flowSccm": 60 }
+              ],
+              "faultScenarios": [
+                {
+                  "name": "same-name",
+                  "kind": "PumpDownTimeout",
+                  "message": "First duplicate."
+                },
+                {
+                  "name": "same-name",
+                  "kind": "TemperatureNotStable",
+                  "message": "Second duplicate."
+                }
+              ]
+            }
+            """),
+        "Moly ALD recipe must reject duplicate fault scenario names.");
+}
+
 static void ScenarioJsonLoadsNormalCycleFile()
 {
     var scenario = LoadScenario("normal-cycle.json");
@@ -1332,6 +1463,14 @@ static EquipmentTemplate LoadTemplate(string fileName)
     var path = Path.Combine(root, "templates", fileName);
     var json = File.ReadAllText(path);
     return EquipmentTemplate.FromJson(json);
+}
+
+static MolyAldRecipe LoadMolyAldRecipe(string fileName)
+{
+    var root = FindRepositoryRoot();
+    var path = Path.Combine(root, "processes", fileName);
+    var json = File.ReadAllText(path);
+    return MolyAldRecipe.FromJson(json);
 }
 
 static string FindRepositoryRoot()
