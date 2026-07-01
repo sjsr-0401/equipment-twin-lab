@@ -22,7 +22,8 @@ public sealed class TemplateRunner
     public TemplateRunResult RunRecipe(
         EquipmentTemplate template,
         string recipeName,
-        string? faultScenarioName = null)
+        string? faultScenarioName = null,
+        string? inspectionScenarioName = null)
     {
         ArgumentNullException.ThrowIfNull(template);
 
@@ -31,6 +32,11 @@ public sealed class TemplateRunner
         var faultScenario = string.IsNullOrWhiteSpace(faultScenarioName)
             ? null
             : template.FindFaultScenario(faultScenarioName);
+        if (!string.IsNullOrWhiteSpace(inspectionScenarioName))
+        {
+            recipe.ResolveInspectionResult(inspectionScenarioName).Validate(recipe.Name);
+        }
+
         var axes = template.CreateMotionAxes(_clock);
         var commandLog = new List<TemplateMotionCommandLog>();
 
@@ -62,15 +68,16 @@ public sealed class TemplateRunner
             Add(commandLog, "PollMove", axis, axis.Poll());
         }
 
-        var inspectionResult = CreateInspectionResult(recipe, axes, commandLog);
+        var inspectionResult = CreateInspectionResult(recipe, axes, commandLog, inspectionScenarioName);
 
-        return new TemplateRunResult(template.Name, recipe, faultScenario, inspectionResult, axes, commandLog);
+        return new TemplateRunResult(template.Name, recipe, faultScenario, inspectionScenarioName, inspectionResult, axes, commandLog);
     }
 
     private static InspectionResult? CreateInspectionResult(
         ProductRecipe recipe,
         IReadOnlyDictionary<string, MotionAxis> axes,
-        IReadOnlyList<TemplateMotionCommandLog> commandLog)
+        IReadOnlyList<TemplateMotionCommandLog> commandLog,
+        string? inspectionScenarioName)
     {
         if (recipe.InspectionMode == InspectionMode.None)
         {
@@ -80,7 +87,7 @@ public sealed class TemplateRunner
         var motionSucceeded = commandLog.All(log => log.Result.Accepted)
             && axes.Values.All(axis => axis.LastAlarm is null);
 
-        return motionSucceeded ? InspectionResult.FromRecipe(recipe) : null;
+        return motionSucceeded ? InspectionResult.FromRecipe(recipe, inspectionScenarioName) : null;
     }
 
     private static bool ShouldInjectFault(FaultScenario? faultScenario, string axisName)

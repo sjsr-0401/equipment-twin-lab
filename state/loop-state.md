@@ -7,7 +7,7 @@
 - 프로젝트 이름: `Equipment Twin Lab`
 - 저장소 폴더: `active/equipment-twin-lab`
 - GitHub: `https://github.com/sjsr-0401/equipment-twin-lab`
-- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원, 알람 복구 조건 구현 완료, CLI 리포트 알람/복구 조건 표시 완료, 가상 모션 축 모델 완료, 모션 Scenario JSON action 구현, Equipment Template / Product Recipe 최소 모델 구현, Template Runner 구현, Fault Model 구현, Inspection Result Model 구현, Template Runner CLI 구현, Template Run Markdown Report 구현, Template Batch Report 구현
+- 단계: 장비 상태머신, 가상 IO 모델, CI, Clock/Timeout 모델, IO-상태 연결 계층, Scenario JSON Runner, Scenario CLI 실행기, CLI batch 리포트, 알람/복구 시나리오, Core 검증 정리 문서, 알람 코드 체계, Visual Studio build/debug 지원, 알람 복구 조건 구현 완료, CLI 리포트 알람/복구 조건 표시 완료, 가상 모션 축 모델 완료, 모션 Scenario JSON action 구현, Equipment Template / Product Recipe 최소 모델 구현, Template Runner 구현, Fault Model 구현, Inspection Result Model 구현, Template Runner CLI 구현, Template Run Markdown Report 구현, Template Batch Report 구현, Inspection Scenario Selection 구현
 - 루프 방식: 수동 실행
 - 자동화 상태: 아직 없음
 - 자동 병합 상태: 금지
@@ -94,6 +94,8 @@
 - PR #19를 main에 squash merge했다.
 - Goal 022에서 Template Batch Report를 추가했다.
 - Goal 022 Draft PR #20을 만들고 GitHub Actions push/pull_request 성공을 확인했다.
+- PR #20을 main에 squash merge했다.
+- Goal 023에서 Inspection Scenario Selection을 추가했다.
 
 ## 아직 확정하지 않은 것
 
@@ -161,6 +163,8 @@
 | 2026-07-01 | Goal 021 PR #19 | Draft PR 생성, GitHub Actions push/pull_request 성공 |
 | 2026-07-01 | PR #19 병합 | Template Run Markdown Report main 반영 |
 | 2026-07-01 | Goal 022: Template Batch Report | 여러 recipe batch 실행과 Markdown 비교 report 추가, Draft PR #20 생성, CI 성공 |
+| 2026-07-01 | PR #20 병합 | Template Batch Report main 반영 |
+| 2026-07-01 | Goal 023: Inspection Scenario Selection | 같은 recipe에서 검사 케이스 선택 기능 추가, 테스트 72개 통과 |
 
 ## 열린 PR
 
@@ -185,7 +189,7 @@
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/17` | `goal/019-inspection-result` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/18` | `goal/020-template-runner-cli` | 병합 완료 |
 | `https://github.com/sjsr-0401/equipment-twin-lab/pull/19` | `goal/021-template-run-report` | 병합 완료 |
-| `https://github.com/sjsr-0401/equipment-twin-lab/pull/20` | `goal/022-template-batch-report` | Draft, CI 성공 |
+| `https://github.com/sjsr-0401/equipment-twin-lab/pull/20` | `goal/022-template-batch-report` | 병합 완료 |
 
 ## 최근 CI 결과
 
@@ -234,9 +238,9 @@
 
 ## 다음 안전한 작업
 
-1. PR #20을 Ready로 전환하고 병합한다.
-2. `main`을 최신화한다.
-3. 이후 Inspection Scenario Selection 또는 Fault Expected-Failure Report로 확장한다.
+1. Goal 023 변경을 커밋하고 Draft PR을 만든다.
+2. CI에서 Release build, console tests 72개, selected inspection CLI를 확인한다.
+3. 이후 Fault Expected-Failure Report 또는 Inspection Scenario Batch Matrix로 확장한다.
 
 ## 금지할 것
 

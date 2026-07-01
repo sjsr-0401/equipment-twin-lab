@@ -671,6 +671,7 @@ TemplateRunResult.Success = false
 파일:
 
 - `src/EquipmentTwin.Core/Templates/InspectionOutcome.cs`
+- `src/EquipmentTwin.Core/Templates/InspectionScenario.cs`
 - `src/EquipmentTwin.Core/Templates/InspectionResultSpec.cs`
 - `src/EquipmentTwin.Core/Templates/InspectionResult.cs`
 - `src/EquipmentTwin.Core/Templates/ProductRecipe.cs`
@@ -682,6 +683,7 @@ TemplateRunResult.Success = false
 
 - 실제 카메라가 없어도 제품 검사 PASS/FAIL을 데이터로 표현한다.
 - `DatasetCamera`, `UnityCamera` 같은 inspection mode를 가진 recipe는 `inspectionResult`를 반드시 정의해야 한다.
+- `inspectionScenarios`를 추가하면 같은 recipe에서도 검사 케이스를 이름으로 선택할 수 있다.
 - 검사 결과에는 outcome, defect code, message, measurement를 담는다.
 - Template Runner는 모션 실행이 정상 완료된 뒤에만 검사 결과를 만든다.
 - 모션 fault가 발생하면 검사 결과를 만들지 않는다.
@@ -693,9 +695,11 @@ ProductRecipe JSON
     ↓
 InspectionResultSpec
     ↓
+InspectionScenario(optional)
+    ↓
 ProductRecipe.Validate()
     ↓
-TemplateRunner.RunRecipe()
+TemplateRunner.RunRecipe(..., inspectionScenarioName)
     ↓
 TemplateRunResult.InspectionResult
 ```
@@ -718,6 +722,7 @@ TemplateRunResult.ProductPassed
 
 - 검사 outcome 종류 추가: `InspectionOutcome`
 - recipe 검사 결과 필드/검증 변경: `InspectionResultSpec`
+- recipe별 검사 케이스 추가/검증 변경: `InspectionScenario`, `ProductRecipe.InspectionScenarios`
 - 실행 결과에 검사 항목 추가: `InspectionResult`
 - 검사 생성 시점 변경: `TemplateRunner.CreateInspectionResult()`
 - 샘플 PASS/FAIL 데이터 변경: `templates/vision-inspection-cell.json`
@@ -742,6 +747,7 @@ TemplateRunResult.ProductPassed
 - 사용자가 template JSON과 recipe 이름을 선택할 수 있다.
 - `template batch`로 template 안의 모든 recipe를 한 번에 실행할 수 있다.
 - 선택적으로 fault scenario를 주입할 수 있다.
+- 선택적으로 inspection scenario를 선택할 수 있다.
 - 실행 결과를 콘솔에 사람이 읽을 수 있는 형태로 출력한다.
 - `--report` 옵션으로 실행 결과를 Markdown 파일에 저장한다.
 - GitHub Actions에서 대표 template 실행을 자동 검증한다.
@@ -752,6 +758,7 @@ TemplateRunResult.ProductPassed
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --report artifacts\template-run-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json tall-part
 dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --fault x-axis-move-timeout
+dotnet run --project src\EquipmentTwin.Cli -- template run templates\vision-inspection-cell.json default-panel --inspection scratch-detected --report artifacts\template-inspection-scenario-report.md
 dotnet run --project src\EquipmentTwin.Cli -- template batch templates\vision-inspection-cell.json --report artifacts\template-batch-report.md
 ```
 
@@ -763,6 +770,7 @@ Recipe
 Execution
 Product
 Fault
+Inspection scenario
 Inspection
 Motion axes
 Command log

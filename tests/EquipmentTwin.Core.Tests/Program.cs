@@ -51,18 +51,22 @@ var tests = new (string Name, Action Body)[]
     ("Equipment template creates motion axes", EquipmentTemplateCreatesMotionAxes),
     ("Equipment template finds product recipe case insensitively", EquipmentTemplateFindsProductRecipeCaseInsensitively),
     ("Equipment template finds fault scenario case insensitively", EquipmentTemplateFindsFaultScenarioCaseInsensitively),
+    ("Equipment template finds inspection scenario case insensitively", EquipmentTemplateFindsInspectionScenarioCaseInsensitively),
     ("Equipment template rejects duplicate motion axes", EquipmentTemplateRejectsDuplicateMotionAxes),
     ("Equipment template rejects unknown recipe axis", EquipmentTemplateRejectsUnknownRecipeAxis),
     ("Equipment template rejects missing inspection result", EquipmentTemplateRejectsMissingInspectionResult),
     ("Equipment template rejects failed inspection without defect code", EquipmentTemplateRejectsFailedInspectionWithoutDefectCode),
+    ("Equipment template rejects duplicate inspection scenarios", EquipmentTemplateRejectsDuplicateInspectionScenarios),
     ("Equipment template rejects unknown fault axis", EquipmentTemplateRejectsUnknownFaultAxis),
     ("Equipment template rejects invalid timeout fault", EquipmentTemplateRejectsInvalidTimeoutFault),
     ("Template runner runs default panel recipe", TemplateRunnerRunsDefaultPanelRecipe),
     ("Template runner runs tall part recipe", TemplateRunnerRunsTallPartRecipe),
+    ("Template runner selects named inspection scenario", TemplateRunnerSelectsNamedInspectionScenario),
     ("Template runner injects motion timeout fault", TemplateRunnerInjectsMotionTimeoutFault),
     ("Template runner injects servo alarm fault", TemplateRunnerInjectsServoAlarmFault),
     ("Template runner rejects missing recipe", TemplateRunnerRejectsMissingRecipe),
     ("Template runner rejects missing fault scenario", TemplateRunnerRejectsMissingFaultScenario),
+    ("Template runner rejects missing inspection scenario", TemplateRunnerRejectsMissingInspectionScenario),
     ("Template runner rejects invalid durations", TemplateRunnerRejectsInvalidDurations),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
@@ -686,8 +690,11 @@ static void EquipmentTemplateJsonLoadsVisionInspectionCellFile()
     AssertEqual(InspectionMode.DatasetCamera, template.ProductRecipes[0].InspectionMode, "Inspection mode mismatch.");
     AssertEqual(InspectionOutcome.Pass, template.ProductRecipes[0].InspectionResult?.Outcome, "Default panel inspection outcome mismatch.");
     AssertTrue(template.ProductRecipes[0].InspectionResult!.Measurements.ContainsKey("edgeOffsetMm"), "Default panel inspection must include edge offset measurement.");
+    AssertEqual(1, template.ProductRecipes[0].InspectionScenarios.Count, "Default panel inspection scenario count mismatch.");
+    AssertEqual("scratch-detected", template.ProductRecipes[0].InspectionScenarios[0].Name, "Default panel inspection scenario name mismatch.");
     AssertEqual(InspectionOutcome.Fail, template.ProductRecipes[1].InspectionResult?.Outcome, "Tall part inspection outcome mismatch.");
     AssertEqual("HEIGHT_OVER_LIMIT", template.ProductRecipes[1].InspectionResult?.DefectCode, "Tall part defect code mismatch.");
+    AssertEqual(1, template.ProductRecipes[1].InspectionScenarios.Count, "Tall part inspection scenario count mismatch.");
     AssertTrue(template.ProductRecipes[0].TryGetAxisTarget("x", out var xTarget), "Recipe must find X target case insensitively.");
     AssertEqual(25.0, xTarget, "Default panel X target mismatch.");
 }
@@ -724,6 +731,17 @@ static void EquipmentTemplateFindsFaultScenarioCaseInsensitively()
     AssertEqual(FaultKind.MotionTimeout, fault.Kind, "Fault kind mismatch.");
     AssertEqual("X", fault.Axis, "Fault axis mismatch.");
     AssertEqual(500, fault.TimeoutMilliseconds, "Fault timeout mismatch.");
+}
+
+static void EquipmentTemplateFindsInspectionScenarioCaseInsensitively()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+
+    var scenario = template.ProductRecipes[0].FindInspectionScenario("SCRATCH-DETECTED");
+
+    AssertEqual("scratch-detected", scenario.Name, "Inspection scenario name mismatch.");
+    AssertEqual(InspectionOutcome.Fail, scenario.Result?.Outcome, "Inspection scenario outcome mismatch.");
+    AssertEqual("SURFACE_SCRATCH", scenario.Result?.DefectCode, "Inspection scenario defect mismatch.");
 }
 
 static void EquipmentTemplateRejectsDuplicateMotionAxes()
@@ -818,6 +836,48 @@ static void EquipmentTemplateRejectsFailedInspectionWithoutDefectCode()
             }
             """),
         "Failed inspection result must define a defect code.");
+}
+
+static void EquipmentTemplateRejectsDuplicateInspectionScenarios()
+{
+    AssertThrows<InvalidOperationException>(
+        () => EquipmentTemplate.FromJson(
+            """
+            {
+              "name": "bad-template",
+              "motionAxes": [
+                { "name": "X" }
+              ],
+              "productRecipes": [
+                {
+                  "name": "default",
+                  "productCode": "P1",
+                  "inspectionMode": "DatasetCamera",
+                  "inspectionResult": {
+                    "outcome": "Pass"
+                  },
+                  "inspectionScenarios": [
+                    {
+                      "name": "scratch",
+                      "result": {
+                        "outcome": "Fail",
+                        "defectCode": "SCRATCH"
+                      }
+                    },
+                    {
+                      "name": "SCRATCH",
+                      "result": {
+                        "outcome": "Fail",
+                        "defectCode": "SCRATCH"
+                      }
+                    }
+                  ],
+                  "axisTargets": { "X": 1 }
+                }
+              ]
+            }
+            """),
+        "Duplicate inspection scenarios must be rejected case insensitively.");
 }
 
 static void EquipmentTemplateRejectsUnknownFaultAxis()
@@ -917,6 +977,22 @@ static void TemplateRunnerRunsTallPartRecipe()
     AssertEqual("HEIGHT_OVER_LIMIT", result.InspectionResult?.DefectCode, "Tall part defect code mismatch.");
 }
 
+static void TemplateRunnerSelectsNamedInspectionScenario()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    var result = runner.RunRecipe(template, "default-panel", inspectionScenarioName: "scratch-detected");
+
+    AssertTrue(result.Success, "Named inspection scenario must not break motion execution.");
+    AssertEqual("scratch-detected", result.InspectionScenarioName, "Selected inspection scenario name mismatch.");
+    AssertTrue(result.ProductPassed == false, "Scratch scenario must fail product inspection.");
+    AssertEqual(InspectionOutcome.Fail, result.InspectionResult?.Outcome, "Scratch scenario inspection outcome mismatch.");
+    AssertEqual("SURFACE_SCRATCH", result.InspectionResult?.DefectCode, "Scratch scenario defect mismatch.");
+    AssertTrue(result.InspectionResult!.TryGetMeasurement("scratchCount", out var scratchCount), "Scratch scenario must expose scratch count.");
+    AssertEqual(2.0, scratchCount, "Scratch count mismatch.");
+}
+
 static void TemplateRunnerInjectsMotionTimeoutFault()
 {
     var template = LoadTemplate("vision-inspection-cell.json");
@@ -967,6 +1043,20 @@ static void TemplateRunnerRejectsMissingFaultScenario()
     AssertThrows<InvalidOperationException>(
         () => runner.RunRecipe(template, "default-panel", "missing-fault"),
         "Template runner must reject unknown fault scenario names.");
+}
+
+static void TemplateRunnerRejectsMissingInspectionScenario()
+{
+    var template = LoadTemplate("vision-inspection-cell.json");
+    var runner = new TemplateRunner(CreateMotionClock());
+
+    AssertThrows<InvalidOperationException>(
+        () => runner.RunRecipe(template, "default-panel", inspectionScenarioName: "missing-inspection"),
+        "Template runner must reject unknown inspection scenario names.");
+
+    AssertThrows<InvalidOperationException>(
+        () => runner.RunRecipe(template, "default-panel", "x-axis-move-timeout", "missing-inspection"),
+        "Template runner must reject unknown inspection scenario names before a fault can mask them.");
 }
 
 static void TemplateRunnerRejectsInvalidDurations()

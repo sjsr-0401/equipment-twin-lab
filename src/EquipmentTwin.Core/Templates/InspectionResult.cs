@@ -11,7 +11,8 @@ public sealed class InspectionResult
         InspectionOutcome outcome,
         string defectCode,
         string message,
-        IReadOnlyDictionary<string, double> measurements)
+        IReadOnlyDictionary<string, double> measurements,
+        string scenarioName = "")
     {
         ProductCode = productCode;
         Mode = mode;
@@ -19,6 +20,7 @@ public sealed class InspectionResult
         DefectCode = defectCode;
         Message = message;
         Measurements = new Dictionary<string, double>(measurements, StringComparer.OrdinalIgnoreCase);
+        ScenarioName = scenarioName;
     }
 
     public string ProductCode { get; }
@@ -35,7 +37,9 @@ public sealed class InspectionResult
 
     public bool Passed => Outcome == InspectionOutcome.Pass;
 
-    public static InspectionResult FromRecipe(ProductRecipe recipe)
+    public string ScenarioName { get; }
+
+    public static InspectionResult FromRecipe(ProductRecipe recipe, string? inspectionScenarioName = null)
     {
         ArgumentNullException.ThrowIfNull(recipe);
 
@@ -44,8 +48,7 @@ public sealed class InspectionResult
             throw new InvalidOperationException($"Product recipe '{recipe.Name}' does not require inspection.");
         }
 
-        var spec = recipe.InspectionResult
-            ?? throw new InvalidOperationException($"Product recipe '{recipe.Name}' requires an inspection result.");
+        var spec = recipe.ResolveInspectionResult(inspectionScenarioName);
         spec.Validate(recipe.Name);
 
         var message = string.IsNullOrWhiteSpace(spec.Message)
@@ -58,7 +61,8 @@ public sealed class InspectionResult
             spec.Outcome,
             spec.DefectCode,
             message,
-            spec.Measurements);
+            spec.Measurements,
+            inspectionScenarioName ?? string.Empty);
     }
 
     public bool TryGetMeasurement(string name, out double value)

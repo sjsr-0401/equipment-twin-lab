@@ -26,6 +26,21 @@
           "surfaceScore": 98.5
         }
       },
+      "inspectionScenarios": [
+        {
+          "name": "scratch-detected",
+          "result": {
+            "outcome": "Fail",
+            "defectCode": "SURFACE_SCRATCH",
+            "message": "Panel surface scratch detected by dataset camera.",
+            "measurements": {
+              "edgeOffsetMm": 0.11,
+              "surfaceScore": 72.4,
+              "scratchCount": 2
+            }
+          }
+        }
+      ],
       "axisTargets": {
         "X": 25,
         "Z": 5
@@ -44,6 +59,19 @@
           "heightLimitMm": 12
         }
       },
+      "inspectionScenarios": [
+        {
+          "name": "nominal-height",
+          "result": {
+            "outcome": "Pass",
+            "message": "Tall part height is within inspection limit.",
+            "measurements": {
+              "heightMm": 11.6,
+              "heightLimitMm": 12
+            }
+          }
+        }
+      ],
       "axisTargets": {
         "X": 40,
         "Z": 12

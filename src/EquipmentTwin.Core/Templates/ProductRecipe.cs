@@ -13,6 +13,8 @@ public sealed class ProductRecipe
 
     public InspectionResultSpec? InspectionResult { get; init; }
 
+    public List<InspectionScenario> InspectionScenarios { get; init; } = new();
+
     public Dictionary<string, double> AxisTargets { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
     public void Validate(int index, IReadOnlySet<string> knownAxisNames)
@@ -34,16 +36,22 @@ public sealed class ProductRecipe
                 {
                     throw new InvalidOperationException($"Product recipe '{Name}' must not contain inspectionResult when inspectionMode is None.");
                 }
+
+                if (InspectionScenarios.Count > 0)
+                {
+                    throw new InvalidOperationException($"Product recipe '{Name}' must not contain inspectionScenarios when inspectionMode is None.");
+                }
                 break;
 
             case InspectionMode.DatasetCamera:
             case InspectionMode.UnityCamera:
-                if (InspectionResult is null)
+                if (InspectionResult is null && InspectionScenarios.Count == 0)
                 {
-                    throw new InvalidOperationException($"Product recipe '{Name}' requires inspectionResult when inspectionMode is {InspectionMode}.");
+                    throw new InvalidOperationException($"Product recipe '{Name}' requires inspectionResult or inspectionScenarios when inspectionMode is {InspectionMode}.");
                 }
 
-                InspectionResult.Validate(Name);
+                InspectionResult?.Validate(Name);
+                ValidateInspectionScenarios();
                 break;
 
             default:
@@ -82,5 +90,60 @@ public sealed class ProductRecipe
 
         targetPosition = default;
         return false;
+    }
+
+    public InspectionResultSpec ResolveInspectionResult(string? inspectionScenarioName)
+    {
+        if (InspectionMode == InspectionMode.None)
+        {
+            throw new InvalidOperationException($"Product recipe '{Name}' does not require inspection.");
+        }
+
+        if (string.IsNullOrWhiteSpace(inspectionScenarioName))
+        {
+            if (InspectionResult is not null)
+            {
+                return InspectionResult;
+            }
+
+            if (InspectionScenarios.Count == 1)
+            {
+                return InspectionScenarios[0].Result
+                    ?? throw new InvalidOperationException($"Inspection scenario '{InspectionScenarios[0].Name}' for recipe '{Name}' requires a result.");
+            }
+
+            throw new InvalidOperationException($"Product recipe '{Name}' requires an inspection scenario name.");
+        }
+
+        return FindInspectionScenario(inspectionScenarioName).Result
+            ?? throw new InvalidOperationException($"Inspection scenario '{inspectionScenarioName}' for recipe '{Name}' requires a result.");
+    }
+
+    public InspectionScenario FindInspectionScenario(string inspectionScenarioName)
+    {
+        if (string.IsNullOrWhiteSpace(inspectionScenarioName))
+        {
+            throw new ArgumentException("Inspection scenario name is required.", nameof(inspectionScenarioName));
+        }
+
+        return InspectionScenarios.FirstOrDefault(scenario =>
+            string.Equals(scenario.Name, inspectionScenarioName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Inspection scenario '{inspectionScenarioName}' was not found in recipe '{Name}'.");
+    }
+
+    private void ValidateInspectionScenarios()
+    {
+        var scenarioNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        for (var index = 0; index < InspectionScenarios.Count; index++)
+        {
+            var scenario = InspectionScenarios[index];
+            scenario.Validate(Name, index);
+
+            if (!scenarioNames.Add(scenario.Name))
+            {
+                throw new InvalidOperationException($"Product recipe '{Name}' contains duplicate inspection scenario '{scenario.Name}'.");
+            }
+        }
     }
 }
