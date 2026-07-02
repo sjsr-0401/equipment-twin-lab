@@ -1069,3 +1069,32 @@ Reason:
 
 - The operator can now select and replay a fault.
 - The next portfolio improvement is to show what an operator should check after the alarm: alarm cause, affected subsystem, reset condition, and recovery steps.
+
+## 2026-07-03 Loop Update: Goal 050 complete
+
+Current completed goal:
+
+- `Goal 050: WPF Operator Console Shell`
+
+Direction change:
+
+- WPF is now the main HMI/debug surface.
+- Unity is retained as an optional 3D/replay viewer.
+- Core remains the process truth.
+- CLI remains automation/report tooling.
+
+What changed:
+
+- Added `src/EquipmentTwin.Hmi.Wpf`.
+- Added a WPF operator console with process schematic, commands, fault selector, instruments, alarm card, operator log, and timeline debug table.
+- WPF calls `MolyAldRunner` directly and renders `MolyAldTimelineDocument`.
+- Added `scripts/Invoke-WpfHmi.ps1` and `docs/wpf-main-hmi.md`.
+
+Current next recommendation:
+
+- `Goal 051: WPF Alarm Recovery Procedure Panel`
+
+Reason:
+
+- WPF can now run and replay faults.
+- The next HMI value is a recovery guide that explains what an operator should check after each fault.

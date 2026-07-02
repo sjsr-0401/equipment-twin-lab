@@ -12,7 +12,10 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
@@ -76,9 +79,11 @@ jobs:
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           test -f scripts/Invoke-UnitySmokeTest.ps1
+          test -f scripts/Invoke-WpfHmi.ps1
           test -f scripts/Invoke-PortfolioDemoRehearsal.ps1
           test -f scripts/New-PortfolioDemoCueCards.ps1
           test -f docs/unity-smoke-test.md
+          test -f docs/wpf-main-hmi.md
           test -f docs/unity-demo-screenshot.md
           test -f docs/portfolio-demo-package.md
           test -f docs/unity-demo-recording-checklist.md
@@ -112,6 +117,10 @@ jobs:
           test -f goals/047-reset-recovery-fault-scenario-selector.md
           test -f goals/048-fault-timeline-replay-binding.md
           test -f goals/049-fault-scenario-selector-ui.md
+          test -f goals/050-wpf-operator-console-shell.md
+          test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
+          test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -195,3 +204,7 @@ jobs:
           grep -q "SelectFaultScenarioForOperator" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "FAULT SCENARIO SELECTOR" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "SELECT BLOCKED" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "UseWPF" src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
+          grep -q "MOLY ALD WPF HMI" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "FaultReplay" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "Open optional Unity viewer folder" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml

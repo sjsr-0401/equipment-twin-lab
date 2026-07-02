@@ -3368,3 +3368,44 @@ Goal 049: Fault Scenario Selector UI
 ```text
 Goal 050: Fault Recovery Procedure Panel
 ```
+
+## 2026-07-03 Direction Change: WPF Main HMI
+
+결정:
+
+```text
+WPF = 메인 장비 HMI / Visual Studio 디버깅 표면
+Unity = 필요할 때만 여는 선택적 3D viewer
+Core = 공정/알람/timeline truth
+CLI = 자동화/리포트/검증
+```
+
+이유:
+
+- Unity는 3D 시각화에는 유리하지만, 매일 직접 빌드/디버깅하기에는 Scene/GameObject/Editor 개념 부담이 크다.
+- WPF는 Visual Studio에서 `F5`로 바로 실행 가능하고, 버튼 클릭 중 breakpoint 디버깅이 쉽다.
+- 장비 SW 포트폴리오에서는 WPF HMI + Core 분리 구조가 더 실무적으로 설명된다.
+
+## 2026-07-03 Goal 050: WPF Operator Console Shell 완료
+
+구현:
+
+- `src/EquipmentTwin.Hmi.Wpf` 추가
+- `EquipmentTwinLab.sln`에 WPF 프로젝트 등록
+- WPF HMI shell 추가
+  - Start / Stop / Step / Fault Replay / Reset
+  - Fault scenario selector
+  - Process schematic
+  - Pressure / Temp / Film instruments
+  - Alarm card
+  - Operator action log
+  - Timeline debug table
+- `EquipmentTwin.Core.Processes.MolyAldRunner`와 직접 연결
+- `scripts/Invoke-WpfHmi.ps1` 추가
+- `docs/wpf-main-hmi.md` 추가
+
+다음 권장 Goal:
+
+```text
+Goal 051: WPF Alarm Recovery Procedure Panel
+```

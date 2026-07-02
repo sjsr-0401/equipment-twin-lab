@@ -367,3 +367,40 @@ Execution: FAIL
 Final:     Alarmed
 Fault:     pumpdown-timeout
 ```
+
+## WPF Main HMI Debugging
+
+Goal 050 adds the main WPF operator console:
+
+```text
+src/EquipmentTwin.Hmi.Wpf
+```
+
+Recommended flow:
+
+1. Open `EquipmentTwinLab.sln`.
+2. Right-click `EquipmentTwin.Hmi.Wpf`.
+3. Select `Set as Startup Project`.
+4. Press `F5`.
+
+This is now the easiest way to debug the HMI while seeing the UI.
+
+Useful breakpoints:
+
+- `OperatorConsoleViewModel.Start()`
+- `OperatorConsoleViewModel.FaultReplay()`
+- `OperatorConsoleViewModel.Reset()`
+- `MolyAldRunner.Run()`
+- `MolyAldTimelineDocument.FromRunResult()`
+
+Debug flow:
+
+```text
+WPF button click
+    -> OperatorConsoleViewModel
+    -> MolyAldRunner
+    -> MolyAldTimelineDocument
+    -> WPF binding updates the screen
+```
+
+Unity is still available, but it is no longer the primary debugging surface. Use Unity when a 3D/replay viewer is needed.
