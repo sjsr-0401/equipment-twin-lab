@@ -118,3 +118,17 @@ Use this rule when adding more HMI indicators:
 - display-only calculated value: `Mode=OneWay`
 - operator input/selection: `Mode=TwoWay` only when the ViewModel property has a setter
 - operator action: `Command`
+
+## UI readability rule
+
+Do not rely on default WPF control colors inside the dark HMI theme.
+
+Controls such as `DataGrid`, `ComboBox`, and future `TabControl` panels need explicit styles for:
+
+- header background;
+- cell foreground;
+- selected row color;
+- border and grid-line color;
+- row height and spacing.
+
+If a new control appears with a white default background, treat it as a UI bug and add a local style before adding more features.

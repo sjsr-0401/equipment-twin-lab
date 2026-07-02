@@ -119,6 +119,7 @@ jobs:
           test -f goals/049-fault-scenario-selector-ui.md
           test -f goals/050-wpf-operator-console-shell.md
           test -f goals/051-fix-wpf-progress-bindings.md
+          test -f goals/052-wpf-ui-readability-fix.md
           test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
@@ -213,3 +214,7 @@ jobs:
           grep -q "PressureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "TemperatureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "FilmProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "DataGridColumnHeader" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "DataGridCell" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "BorderSoft" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "LOAD PORT" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml

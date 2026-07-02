@@ -625,3 +625,18 @@ Completed:
 - Fixed the WPF `ProgressBar.Value` binding exception caused by read-only calculated ViewModel properties.
 - Added a goal record and work log explaining the MVVM binding rule.
 - Added CI markers so the same progress binding regression is easier to catch.
+
+## 2026-07-03 Triage Update after Goal 052
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P0 | WPF unreadable DataGrid header | Done | Keep explicit DataGrid styles |
+| P0 | WPF clipped load-port label | Done | Keep schematic labels inside visible bounds |
+| P1 | WPF HMI visual system R&D | Next | Define professional HMI typography, spacing, and color rules |
+| P1 | WPF alarm recovery procedure | Waiting | Add after visual system direction is agreed |
+
+Completed:
+
+- Fixed the immediate WPF UI readability defects found from the screenshot.
+- Added a work log explaining why default WPF control styles leaked into the dark HMI.
+- Reprioritized the next work from recovery-panel implementation to visual-system R&D.

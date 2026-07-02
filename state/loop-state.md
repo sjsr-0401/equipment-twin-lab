@@ -1131,3 +1131,33 @@ Reason:
 
 - The WPF HMI is now startable/debuggable again.
 - The next value-add is showing operator-facing recovery steps after selected public faults.
+
+## 2026-07-03 Loop Update: Goal 052 complete
+
+Current completed goal:
+
+- `Goal 052: WPF UI Readability Fix`
+
+What triggered it:
+
+- Manual WPF debugging exposed visible UI defects:
+  - clipped `LOAD PORT` label;
+  - timeline label and progress percentage too cramped;
+  - default white DataGrid header/background conflict inside the dark theme.
+
+What changed:
+
+- Added explicit dark-theme styles for `DataGridColumnHeader`, `DataGridRow`, `DataGridCell`, `ComboBox`, and `ComboBoxItem`.
+- Enlarged the load-port block so the label is readable.
+- Replaced the timeline header layout with a two-column grid.
+- Increased the bottom debug-table area.
+- Added WPF UI readability rules to `docs/wpf-main-hmi.md`.
+
+Current next recommendation:
+
+- `Goal 053: WPF HMI Visual System R&D`
+
+Reason:
+
+- The immediate readability bugs are fixed.
+- Before adding more WPF panels, the project needs a stronger visual system for typography, spacing, color semantics, and industrial-HMI layout.
