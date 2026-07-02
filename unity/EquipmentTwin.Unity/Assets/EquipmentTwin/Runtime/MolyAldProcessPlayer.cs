@@ -18,9 +18,12 @@ namespace EquipmentTwin.Unity.Processes
         private int currentStepIndex;
         private float elapsedInCurrentStepSeconds;
         private bool isPlaying;
+        private bool operatorFaultActive;
         private string loadError = string.Empty;
 
         public MolyAldTimelineDocumentDto Timeline => timeline;
+
+        public int CurrentStepIndex => currentStepIndex;
 
         public MolyAldTimelineStepDto CurrentStep
         {
@@ -36,6 +39,8 @@ namespace EquipmentTwin.Unity.Processes
         }
 
         public bool IsPlaying => isPlaying;
+
+        public bool OperatorFaultActive => operatorFaultActive;
 
         public string LoadError => loadError;
 
@@ -90,11 +95,13 @@ namespace EquipmentTwin.Unity.Processes
 
                 currentStepIndex = 0;
                 elapsedInCurrentStepSeconds = 0f;
+                operatorFaultActive = false;
             }
             catch (System.Exception ex)
             {
                 timeline = null;
                 isPlaying = false;
+                operatorFaultActive = false;
                 loadError = ex.Message;
                 Debug.LogError($"Failed to load ALD timeline: {ex.Message}", this);
             }
@@ -102,7 +109,7 @@ namespace EquipmentTwin.Unity.Processes
 
         public void Play()
         {
-            if (timeline == null || timeline.steps == null || timeline.steps.Length == 0)
+            if (operatorFaultActive || timeline == null || timeline.steps == null || timeline.steps.Length == 0)
             {
                 return;
             }
@@ -119,7 +126,31 @@ namespace EquipmentTwin.Unity.Processes
         {
             currentStepIndex = 0;
             elapsedInCurrentStepSeconds = 0f;
+            operatorFaultActive = false;
             Play();
+        }
+
+        public void ResetToStart()
+        {
+            currentStepIndex = 0;
+            elapsedInCurrentStepSeconds = 0f;
+            operatorFaultActive = false;
+            Pause();
+        }
+
+        public void ToggleOperatorFault()
+        {
+            operatorFaultActive = !operatorFaultActive;
+
+            if (operatorFaultActive)
+            {
+                Pause();
+            }
+        }
+
+        public void ClearOperatorFault()
+        {
+            operatorFaultActive = false;
         }
 
         public void AdvanceStep()

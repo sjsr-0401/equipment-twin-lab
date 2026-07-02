@@ -203,16 +203,33 @@ Goal 044: Gas Flow Animation and Fault Highlight
 - [x] Fault state can blink chamber/exhaust/gate/pump highlight.
 - [x] Screenshot shows `FLOW: Reactant pulse -> chamber`.
 
-## Goal 045 Candidate
+## Goal 045 Acceptance Criteria
 
 ```text
 Goal 045: Canvas Button Interaction and Fault Selector
 ```
 
+- [x] START button restarts and plays the timeline.
+- [x] STOP button pauses the timeline.
+- [x] RESET button returns to the first step.
+- [x] FAULT control toggles a synthetic operator fault scenario.
+- [x] Unity smoke test validates button creation, EventSystem creation, and player state transitions.
+
+Implementation boundary:
+
+- FAULT is currently an operator override, not a real process fault selected from a JSON fault matrix.
+- START does not clear a fault. RESET or FAULT toggle must clear the held state first.
+- This keeps the HMI behavior closer to equipment safety expectations.
+
+## Goal 046 Candidate
+
+```text
+Goal 046: Fault Mode Screenshot and Operator Action Log
+```
+
 Next acceptance criteria:
 
-- [ ] START button restarts and plays the timeline.
-- [ ] STOP button pauses the timeline.
-- [ ] RESET button returns to the first step.
-- [ ] FAULT control selects at least one synthetic fault scenario.
-- [ ] fault mode screenshot shows alarm card and equipment highlight.
+- [ ] Capture a fault-mode screenshot that shows red alarm card and schematic fault highlight.
+- [ ] Add an operator action log for START/STOP/FAULT/RESET.
+- [ ] Show `normal run -> fault hold -> reset recovery` in one demo artifact.
+- [ ] Document how the synthetic override differs from process-runner fault scenarios.

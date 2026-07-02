@@ -213,3 +213,22 @@ What changed:
 - flow label shows the active route, for example `FLOW: Reactant pulse -> chamber`.
 
 This is simple Canvas animation. It is not fluid simulation.
+
+## 2026-07-02 Canvas button interaction update
+
+Goal 045 connects the Canvas command buttons to Unity runtime state.
+
+What changed:
+
+- `START` calls `MolyAldProcessPlayer.Play()`;
+- `STOP` calls `MolyAldProcessPlayer.Pause()`;
+- `FAULT` toggles `OperatorFaultActive`;
+- `RESET` clears fault, stops playback, and returns to the first timeline step;
+- Canvas now creates an `EventSystem` when needed so button clicks work in Play mode;
+- Unity smoke test validates the command buttons and player state transitions.
+
+Important boundary:
+
+- The current fault selector is a synthetic operator override.
+- It is not yet selecting one of the process-runner JSON fault scenarios.
+- START does not clear a fault; the operator must clear the held state with RESET or the FAULT toggle first.

@@ -521,3 +521,16 @@ Current validation boundary:
 Next priority:
 
 - Add button click handling and fault scenario selection.
+## 2026-07-02 Triage Update after Goal 045
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Fault mode screenshot | Missing portfolio artifact | Capture red alarm/schematic fault state |
+| P1 | Operator action log | Missing on-screen action history | Add START/STOP/FAULT/RESET event list |
+| P2 | Process fault scenario selector | Current FAULT is synthetic override | Later connect to process fault matrix |
+| P2 | Manual Unity click checklist | Not fully documented | Add short Visual Studio/Unity Play Mode checklist |
+
+Completed:
+
+- Button interaction is no longer the next blocker.
+- Unity smoke test now covers Button, EventSystem, and player state transitions.

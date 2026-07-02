@@ -2165,3 +2165,34 @@ Core/CLI timeline JSON
 
 - START/STOP/RESET button click handler 연결
 - FAULT selector를 실제 configured fault scenario와 연결
+## 2026-07-02 — Goal 045 Button Interaction 이해 포인트
+
+Unity HMI button은 이제 mock이 아니라 runtime state를 바꾼다.
+
+흐름:
+
+```text
+START/STOP/FAULT/RESET button
+    -> MolyAldOperatorCanvas handler
+    -> MolyAldProcessPlayer state change
+    -> MolyAldVisualStateMapper.FromTimeline(...)
+    -> Canvas HMI refresh
+```
+
+각 button 역할:
+
+- `START`: `Play()` 호출. 단, `OperatorFaultActive`가 true면 재생하지 않는다.
+- `STOP`: `Pause()` 호출.
+- `FAULT`: `ToggleOperatorFault()` 호출. fault가 켜지면 player를 hold한다.
+- `RESET`: `ResetToStart()` 호출. 첫 step으로 돌아가고 fault를 해제한 뒤 정지한다.
+
+중요한 설계 판단:
+
+- START가 fault를 자동 해제하지 않는다.
+- fault/alarm 상태는 operator가 명시적으로 reset해야 한다.
+- 현재 FAULT는 실제 process fault scenario가 아니라 HMI demo용 synthetic operator override다.
+
+테스트 위치:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `ValidateOperatorControls()`가 Button, EventSystem, Play/Pause/Fault/Reset 전이를 확인한다.
