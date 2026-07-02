@@ -246,3 +246,41 @@ MolyAldEditorSmokeTest
 - [ ] HMI 하단 또는 우측에 최근 operator action 3~5개가 표시된다.
 - [ ] demo 설명에서 synthetic override와 process-runner fault를 구분한다.
 
+## 2026-07-02 Review 007: Fault Mode Screenshot and Operator Action Log
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+docs/demo/moly-ald-demo-fault.png
+```
+
+### Verdict
+
+- 상태: Demo evidence improved
+- 한 줄 판단: 정상 화면과 fault hold 화면이 분리되어, HMI가 상태 변화에 반응한다는 증거가 생겼다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Fault visibility | `HELD | OPERATOR ACTION REQUIRED`, `ALARM ACTIVE`, red schematic highlight가 동시에 보인다 |
+| Operator trace | `OPERATOR ACTION LOG`가 START와 FAULT 이력을 보여준다 |
+| Demo artifact | 정상 screenshot과 fault screenshot을 따로 생성할 수 있다 |
+| Testability | `Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot`로 fault artifact를 재현할 수 있다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | reset recovery 화면은 아직 없다 | `RESET -> READY -> START` screenshot/storyboard 추가 |
+| P1 | FAULT는 아직 named process fault scenario가 아니다 | fault matrix selector와 연결 |
+| P2 | action log는 memory-only Canvas log다 | 필요하면 run report/file log와 연결 |
+| P2 | action log row가 작다 | 화면이 더 넓어질 때 dedicated event panel로 확장 |
+
+### Next Acceptance Criteria
+
+- [ ] reset recovery screenshot 또는 storyboard가 있다.
+- [ ] FAULT button이 named process fault scenario와 연결된다.
+- [ ] demo에서 `normal -> fault -> reset recovery` 흐름을 한 번에 설명할 수 있다.
+

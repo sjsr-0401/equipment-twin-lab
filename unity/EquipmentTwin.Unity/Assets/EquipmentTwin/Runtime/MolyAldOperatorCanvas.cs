@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,6 +8,8 @@ namespace EquipmentTwin.Unity.Processes
     [DisallowMultipleComponent]
     public sealed class MolyAldOperatorCanvas : MonoBehaviour
     {
+        private const int OperatorActionLogCapacity = 3;
+
         [Header("Source")]
         [SerializeField] private MolyAldProcessPlayer player;
 
@@ -31,6 +34,10 @@ namespace EquipmentTwin.Unity.Processes
         private Text alarmCodeText;
         private Text eventText;
         private Text hmiStateText;
+        private Image operatorActionLogCardImage;
+        private Text[] operatorActionLogTexts = new Text[0];
+        private readonly string[] operatorActionLogEntries = new string[OperatorActionLogCapacity];
+        private int operatorActionLogEntryCount;
         private Text schematicStepText;
         private Text schematicMetaText;
         private Text schematicFlowText;
@@ -185,6 +192,35 @@ namespace EquipmentTwin.Unity.Processes
             ApplyVisualState(visualState);
         }
 
+        public int OperatorActionLogEntryCount => operatorActionLogEntryCount;
+
+        public void ClearOperatorActionLog()
+        {
+            for (var index = 0; index < operatorActionLogEntries.Length; index++)
+            {
+                operatorActionLogEntries[index] = string.Empty;
+            }
+
+            operatorActionLogEntryCount = 0;
+            RefreshOperatorActionLog();
+        }
+
+        public void RecordOperatorAction(string action, string detail)
+        {
+            var safeAction = string.IsNullOrWhiteSpace(action) ? "EVENT" : action.Trim();
+            var safeDetail = string.IsNullOrWhiteSpace(detail) ? "-" : detail.Trim();
+            var entry = $"{DateTime.Now:HH:mm:ss}  {safeAction}  |  {safeDetail}";
+
+            for (var index = operatorActionLogEntries.Length - 1; index > 0; index--)
+            {
+                operatorActionLogEntries[index] = operatorActionLogEntries[index - 1];
+            }
+
+            operatorActionLogEntries[0] = entry;
+            operatorActionLogEntryCount = Mathf.Min(operatorActionLogEntries.Length, operatorActionLogEntryCount + 1);
+            RefreshOperatorActionLog();
+        }
+
         private void BuildProcessSchematic(Transform parent)
         {
             var panel = CreatePanel(
@@ -296,20 +332,31 @@ namespace EquipmentTwin.Unity.Processes
             currentStepText = CreateText(recipeCard, "Current Step", new Vector2(0.05f, 0.12f), new Vector2(0.52f, 0.60f), 22, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
             recipeText = CreateText(recipeCard, "Recipe", new Vector2(0.50f, 0.12f), new Vector2(0.95f, 0.60f), 13, TextMuted, TextAnchor.MiddleRight);
 
-            var telemetryCard = CreatePanel(panel, "Instrumentation Card", new Vector2(0.06f, 0.315f), new Vector2(0.94f, 0.595f), Surface);
+            var telemetryCard = CreatePanel(panel, "Instrumentation Card", new Vector2(0.06f, 0.335f), new Vector2(0.94f, 0.595f), Surface);
             CreateText(telemetryCard, "PROCESS INSTRUMENTS", new Vector2(0.05f, 0.84f), new Vector2(0.95f, 0.98f), 13, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
             pressureInstrument = CreateInstrumentRow(telemetryCard, "Pressure", "mTorr", "normal 800-900", new Vector2(0.04f, 0.58f), new Vector2(0.96f, 0.82f), Primary);
             temperatureInstrument = CreateInstrumentRow(telemetryCard, "Temp", "C", "normal 245-255", new Vector2(0.04f, 0.32f), new Vector2(0.96f, 0.56f), Warning);
             filmInstrument = CreateInstrumentRow(telemetryCard, "Film", "A", "target progress", new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.30f), Success);
 
-            var alarmCard = CreatePanel(panel, "Alarm Card", new Vector2(0.06f, 0.12f), new Vector2(0.94f, 0.295f), Surface);
+            var alarmCard = CreatePanel(panel, "Alarm Card", new Vector2(0.06f, 0.175f), new Vector2(0.94f, 0.315f), Surface);
             alarmCardImage = alarmCard.GetComponent<Image>();
             CreateText(alarmCard, "ALARM PRIORITY", new Vector2(0.05f, 0.72f), new Vector2(0.95f, 0.95f), 12, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
-            alarmText = CreateText(alarmCard, "NO ALARM", new Vector2(0.05f, 0.42f), new Vector2(0.95f, 0.76f), 25, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
-            alarmDetailText = CreateText(alarmCard, "Interlocks nominal", new Vector2(0.05f, 0.18f), new Vector2(0.62f, 0.45f), 15, TextPrimary, TextAnchor.MiddleLeft);
-            alarmCodeText = CreateText(alarmCard, "PRI 0 | CODE ----", new Vector2(0.60f, 0.18f), new Vector2(0.95f, 0.45f), 13, TextMuted, TextAnchor.MiddleRight, FontStyle.Bold);
+            alarmText = CreateText(alarmCard, "NO ALARM", new Vector2(0.05f, 0.39f), new Vector2(0.95f, 0.72f), 20, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
+            alarmText.verticalOverflow = VerticalWrapMode.Overflow;
+            alarmText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            alarmDetailText = CreateText(alarmCard, "Interlocks nominal", new Vector2(0.05f, 0.13f), new Vector2(0.62f, 0.42f), 12, TextPrimary, TextAnchor.MiddleLeft);
+            alarmCodeText = CreateText(alarmCard, "PRI 0 | CODE ----", new Vector2(0.60f, 0.13f), new Vector2(0.95f, 0.42f), 11, TextMuted, TextAnchor.MiddleRight, FontStyle.Bold);
 
-            eventText = CreateText(panel, "Event", new Vector2(0.07f, 0.03f), new Vector2(0.94f, 0.10f), 14, TextMuted, TextAnchor.MiddleLeft);
+            var operatorLogCard = CreatePanel(panel, "Operator Action Log Card", new Vector2(0.06f, 0.02f), new Vector2(0.94f, 0.16f), Surface);
+            operatorActionLogCardImage = operatorLogCard.GetComponent<Image>();
+            CreateText(operatorLogCard, "OPERATOR ACTION LOG", new Vector2(0.05f, 0.76f), new Vector2(0.95f, 0.98f), 11, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
+            eventText = CreateText(operatorLogCard, "LIVE EVENT: -", new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.76f), 10, TextMuted, TextAnchor.MiddleLeft);
+
+            operatorActionLogTexts = new Text[OperatorActionLogCapacity];
+            operatorActionLogTexts[0] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.37f), new Vector2(0.95f, 0.55f), 9, TextPrimary, TextAnchor.MiddleLeft);
+            operatorActionLogTexts[1] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.19f), new Vector2(0.95f, 0.37f), 9, TextMuted, TextAnchor.MiddleLeft);
+            operatorActionLogTexts[2] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.01f), new Vector2(0.95f, 0.19f), 9, TextMuted, TextAnchor.MiddleLeft);
+            RecordOperatorAction("SYSTEM", "HMI ready");
         }
 
         private void BuildTimeline(Transform parent)
@@ -396,10 +443,17 @@ namespace EquipmentTwin.Unity.Processes
                     : Color.Lerp(Surface, Success, 0.12f);
             }
 
+            if (operatorActionLogCardImage != null)
+            {
+                operatorActionLogCardImage.color = visualState.HasFault
+                    ? Color.Lerp(Surface, Alarm, 0.28f)
+                    : Surface;
+            }
+
             if (eventText != null)
             {
                 var playback = player != null && player.IsPlaying ? "RUN" : "HOLD";
-                eventText.text = $"EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve | {playback}";
+                eventText.text = $"LIVE EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve | {playback}";
             }
 
             UpdateTimeline(visualState);
@@ -897,7 +951,11 @@ namespace EquipmentTwin.Unity.Processes
                 return;
             }
 
+            var wasFaultHeld = player.OperatorFaultActive;
             player.Play();
+            RecordOperatorAction(
+                player.IsPlaying ? "START" : "START BLOCKED",
+                wasFaultHeld ? "fault held - reset required" : "timeline running");
             RefreshCanvas();
         }
 
@@ -909,6 +967,7 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             player.Pause();
+            RecordOperatorAction("STOP", "timeline held by operator");
             RefreshCanvas();
         }
 
@@ -920,6 +979,9 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             player.ToggleOperatorFault();
+            RecordOperatorAction(
+                player.OperatorFaultActive ? "FAULT" : "FAULT CLEAR",
+                player.OperatorFaultActive ? "synthetic hold active" : "override cleared");
             RefreshCanvas();
         }
 
@@ -931,6 +993,7 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             player.ResetToStart();
+            RecordOperatorAction("RESET", "fault cleared, returned to first step");
             RefreshCanvas();
         }
 
@@ -978,6 +1041,23 @@ namespace EquipmentTwin.Unity.Processes
             {
                 text.text = label;
                 text.color = textColor;
+            }
+        }
+
+        private void RefreshOperatorActionLog()
+        {
+            for (var index = 0; index < operatorActionLogTexts.Length; index++)
+            {
+                var text = operatorActionLogTexts[index];
+                if (text == null)
+                {
+                    continue;
+                }
+
+                var hasEntry = index < operatorActionLogEntryCount && !string.IsNullOrWhiteSpace(operatorActionLogEntries[index]);
+                text.text = hasEntry ? operatorActionLogEntries[index] : "-";
+                text.color = hasEntry && index == 0 ? TextPrimary : TextMuted;
+                text.fontStyle = hasEntry && index == 0 ? FontStyle.Bold : FontStyle.Normal;
             }
         }
 

@@ -2,6 +2,7 @@ param(
     [string] $UnityPath,
     [switch] $OpenProjectOnly,
     [switch] $CaptureScreenshot,
+    [switch] $CaptureFaultScreenshot,
     [string] $ScreenshotPath
 )
 
@@ -14,8 +15,10 @@ $ProjectVersionPath = Join-Path $ProjectPath "ProjectSettings\ProjectVersion.txt
 $LogDir = Join-Path $ProjectPath "Logs"
 $LogPath = Join-Path $LogDir "codex-unity-smoke-test.log"
 $DefaultScreenshotPath = Join-Path $RepoRoot "artifacts\unity-demo\moly-ald-demo.png"
+$DefaultFaultScreenshotPath = Join-Path $RepoRoot "artifacts\unity-demo\moly-ald-demo-fault.png"
 $SuccessMarker = "EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS"
 $ScreenshotMarker = "EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED"
+$FaultScreenshotMarker = "EQUIPMENT_TWIN_UNITY_FAULT_SCREENSHOT_SAVED"
 
 function Resolve-UnityEditor {
     param([string] $RequestedUnityPath)
@@ -69,7 +72,7 @@ Write-Host "Project:      $ProjectPath"
 Write-Host "Log:          $LogPath"
 
 if ([string]::IsNullOrWhiteSpace($ScreenshotPath)) {
-    $ScreenshotPath = $DefaultScreenshotPath
+    $ScreenshotPath = if ($CaptureFaultScreenshot) { $DefaultFaultScreenshotPath } else { $DefaultScreenshotPath }
 }
 elseif (-not [System.IO.Path]::IsPathRooted($ScreenshotPath)) {
     $ScreenshotPath = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $ScreenshotPath))
@@ -91,7 +94,7 @@ $unityArgs = @(
     $LogPath
 )
 
-if (-not $CaptureScreenshot) {
+if (-not ($CaptureScreenshot -or $CaptureFaultScreenshot)) {
     $unityArgs = @(
         "-batchmode",
         "-quit",
@@ -103,7 +106,16 @@ if (-not $CaptureScreenshot) {
     )
 }
 
-if ($CaptureScreenshot) {
+$ExpectedScreenshotMarker = $ScreenshotMarker
+
+if ($CaptureFaultScreenshot) {
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ScreenshotPath) | Out-Null
+    $executeMethod = "EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchFaultScreenshotCapture"
+    $unityArgs += @("-equipmentTwinFaultScreenshot", $ScreenshotPath)
+    $ExpectedScreenshotMarker = $FaultScreenshotMarker
+    Write-Host "Fault screenshot: $ScreenshotPath"
+}
+elseif ($CaptureScreenshot) {
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ScreenshotPath) | Out-Null
     $executeMethod = "EquipmentTwin.Unity.EditorTools.MolyAldEditorSmokeTest.RunBatchScreenshotCapture"
     $unityArgs += @("-equipmentTwinScreenshot", $ScreenshotPath)
@@ -129,9 +141,9 @@ if (-not (Select-String -LiteralPath $LogPath -Pattern $SuccessMarker -Quiet)) {
     exit 1
 }
 
-if ($CaptureScreenshot) {
-    if (-not (Select-String -LiteralPath $LogPath -Pattern $ScreenshotMarker -Quiet)) {
-        Write-Host "ERROR: Unity exited successfully, but the screenshot marker was not found: $ScreenshotMarker" -ForegroundColor Red
+if ($CaptureScreenshot -or $CaptureFaultScreenshot) {
+    if (-not (Select-String -LiteralPath $LogPath -Pattern $ExpectedScreenshotMarker -Quiet)) {
+        Write-Host "ERROR: Unity exited successfully, but the screenshot marker was not found: $ExpectedScreenshotMarker" -ForegroundColor Red
         exit 1
     }
 
