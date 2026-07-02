@@ -6,9 +6,9 @@
 
 ## Unity Demo
 
-현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD 장비 형태, 오른쪽에는 Canvas 기반 operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
+현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD 장비 형태, 오른쪽에는 Canvas 기반 HMI operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
 
-대표 screenshot에는 load port, process chamber, gas/valve panel, vacuum pump, recipe card, live telemetry, alarm card, process timeline이 같이 표시된다. 3D 장비와 2D Canvas UI를 분리해서, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 장비 SW 화면으로 보여준다.
+대표 screenshot에는 load port, process chamber, gas/valve panel, vacuum pump, recipe card, pressure/temp/film instrument card, alarm priority card, process timeline이 같이 표시된다. Pressure/Temp/Film은 값+단위 readout, 상태, 정상범위 band, 현재값 fill로 나눠 보여준다. 3D 장비와 2D Canvas UI를 분리해서, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 장비 SW 화면으로 보여준다.
 
 검증된 실행 경로:
 

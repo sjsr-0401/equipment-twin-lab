@@ -454,4 +454,26 @@ Current validation boundary:
 
 Next priority:
 
+- Improve HMI typography/instrument readability before adding button behavior.
+
+## 2026-07-02 Triage Update: Goal 042
+
+Active focus moved from basic Canvas UI to HMI readability.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | HMI typography hierarchy | Current screen needs professional operator-console readability | Done |
+| P1 | Process instrument rows | Numeric process values need range/context, not just text | Done |
+| P1 | Alarm priority fields | Alarm card should show priority/code structure | Done |
+| P2 | Button interaction | Visual buttons exist but are not wired yet | Next |
+| P2 | Fault selector | Needed to show alarm mode interactively | Next |
+
+Current validation boundary:
+
+- Instrument ranges are synthetic demo ranges.
+- Unity still replays timeline data; it does not simulate physical process dynamics.
+- Buttons are visual controls only.
+
+Next priority:
+
 - Add button click handling and fault scenario selection.

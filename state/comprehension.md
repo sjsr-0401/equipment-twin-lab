@@ -2094,3 +2094,28 @@ Core/CLI timeline JSON
 - START/STOP/RESET button click handler 연결
 - FAULT selector를 실제 configured fault scenario와 연결
 - fault screenshot에서 alarm card와 장비 highlight를 같이 보여주기
+
+## 2026-07-02 이해 요약: HMI Typography and Instrument Panel
+
+이번 Goal의 핵심은 telemetry text를 HMI instrument로 바꾼 것이다.
+
+한 문장 설명:
+
+> `MolyAldOperatorCanvas`는 Pressure/Temp/Film을 단순 문자열로 찍지 않고, `InstrumentView` row에 값+단위 readout, 상태, 정상 범위 band, 현재값 fill로 나눠 표시한다.
+
+왜 이렇게 했나:
+
+- `850 mTorr`라는 숫자만 있으면 정상인지 이상인지 바로 알 수 없다.
+- 정상 범위 band와 현재값 fill이 있으면 조작자가 상태를 더 빨리 판단할 수 있다.
+- 값+단위 readout을 status/range와 분리하면 판독성이 좋아진다.
+
+주의할 점:
+
+- `InstrumentView`는 UI reference 묶음이다. 공정 계산을 넣으면 안 된다.
+- 정상 범위는 현재 demo 기준의 synthetic range다. 실제 장비 recipe range가 아니다.
+- Unity `Text`는 RectTransform이 너무 작으면 숫자가 잘릴 수 있다. screenshot에서 숫자가 보이는지 항상 확인해야 한다.
+
+다음 구현:
+
+- START/STOP/RESET button click handler 연결
+- FAULT selector를 실제 configured fault scenario와 연결
