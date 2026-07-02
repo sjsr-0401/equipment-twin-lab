@@ -32,6 +32,7 @@ namespace EquipmentTwin.Unity.Processes
         private Text hmiStateText;
         private Text schematicStepText;
         private Text schematicMetaText;
+        private Text schematicFlowText;
         private Text precursorValveText;
         private Text reactantValveText;
         private Text purgeValveText;
@@ -45,6 +46,11 @@ namespace EquipmentTwin.Unity.Processes
         private Image reactantLineImage;
         private Image purgeLineImage;
         private Image exhaustLineImage;
+        private Image gateValveImage;
+        private Image pumpImage;
+        private Image[] gasDistributionDots = new Image[0];
+        private Image[] gasFlowPulses = new Image[0];
+        private Image[] exhaustFlowPulses = new Image[0];
         private InstrumentView pressureInstrument;
         private InstrumentView temperatureInstrument;
         private InstrumentView filmInstrument;
@@ -206,10 +212,17 @@ namespace EquipmentTwin.Unity.Processes
             showerheadImage = CreatePanel(chamberImage.transform, "Showerhead Gas Distributor", new Vector2(0.18f, 0.67f), new Vector2(0.84f, 0.75f), SchematicMetal).GetComponent<Image>();
             CreateText(showerheadImage.transform, "showerhead", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextPrimary, TextAnchor.MiddleCenter);
 
+            gasDistributionDots = new Image[9];
             for (var index = 0; index < 9; index++)
             {
                 var x = 0.22f + index * 0.065f;
-                CreatePanel(chamberImage.transform, $"Gas Distribution Dot {index + 1}", new Vector2(x, 0.57f), new Vector2(x + 0.012f, 0.59f), Reactant);
+                gasDistributionDots[index] = CreatePanel(chamberImage.transform, $"Gas Distribution Dot {index + 1}", new Vector2(x, 0.57f), new Vector2(x + 0.012f, 0.59f), Reactant).GetComponent<Image>();
+            }
+
+            gasFlowPulses = new Image[5];
+            for (var index = 0; index < gasFlowPulses.Length; index++)
+            {
+                gasFlowPulses[index] = CreatePanel(schematicArea, $"Animated Gas Flow Pulse {index + 1}", new Vector2(0.49f, 0.66f), new Vector2(0.51f, 0.70f), Reactant).GetComponent<Image>();
             }
 
             CreateText(chamberImage.transform, "wafer + film", new Vector2(0.35f, 0.34f), new Vector2(0.65f, 0.44f), 9, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
@@ -229,11 +242,20 @@ namespace EquipmentTwin.Unity.Processes
 
             exhaustLineImage = CreatePanel(schematicArea, "Exhaust Line", new Vector2(0.76f, 0.38f), new Vector2(0.86f, 0.392f), SchematicMetal).GetComponent<Image>();
             var gate = CreatePanel(schematicArea, "Gate Valve", new Vector2(0.84f, 0.34f), new Vector2(0.89f, 0.43f), SurfaceRaised);
+            gateValveImage = gate.GetComponent<Image>();
             CreateText(gate, "GATE", new Vector2(0f, 0f), new Vector2(1f, 1f), 7, TextMuted, TextAnchor.MiddleCenter);
             var pump = CreatePanel(schematicArea, "Vacuum Pump", new Vector2(0.88f, 0.27f), new Vector2(0.96f, 0.39f), SurfaceRaised);
+            pumpImage = pump.GetComponent<Image>();
             CreateText(pump, "PUMP", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
 
+            exhaustFlowPulses = new Image[4];
+            for (var index = 0; index < exhaustFlowPulses.Length; index++)
+            {
+                exhaustFlowPulses[index] = CreatePanel(schematicArea, $"Animated Exhaust Flow Pulse {index + 1}", new Vector2(0.77f, 0.374f), new Vector2(0.79f, 0.398f), Primary).GetComponent<Image>();
+            }
+
             schematicStepText = CreateText(schematicArea, "STEP: Dose Reactant", new Vector2(0.20f, 0.07f), new Vector2(0.77f, 0.14f), 13, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
+            schematicFlowText = CreateText(schematicArea, "FLOW: Reactant pulse -> chamber", new Vector2(0.72f, 0.08f), new Vector2(0.96f, 0.14f), 10, Reactant, TextAnchor.MiddleCenter, FontStyle.Bold);
         }
 
         private void BuildOperatorPanel(Transform parent)
@@ -407,10 +429,14 @@ namespace EquipmentTwin.Unity.Processes
                 Purge,
                 "PRG");
 
+            UpdateGasFlowPulses(visualState);
+            UpdateExhaustFlowPulses(visualState);
+
             if (chamberImage != null)
             {
+                var faultPulse = FaultPulse();
                 chamberImage.color = visualState.HasFault
-                    ? Color.Lerp(SchematicGlass, Alarm, 0.35f)
+                    ? Color.Lerp(SchematicGlass, Alarm, 0.35f + faultPulse * 0.35f)
                     : SchematicGlass;
             }
 
@@ -427,7 +453,128 @@ namespace EquipmentTwin.Unity.Processes
 
             if (exhaustLineImage != null)
             {
-                exhaustLineImage.color = visualState.HasFault ? Alarm : SchematicMetal;
+                exhaustLineImage.color = visualState.HasFault ? Color.Lerp(SchematicMetal, Alarm, 0.80f) : SchematicMetal;
+            }
+
+            if (gateValveImage != null)
+            {
+                gateValveImage.color = visualState.HasFault ? Color.Lerp(SurfaceRaised, Alarm, 0.70f) : SurfaceRaised;
+            }
+
+            if (pumpImage != null)
+            {
+                pumpImage.color = visualState.HasFault ? Color.Lerp(SurfaceRaised, Alarm, 0.70f) : SurfaceRaised;
+            }
+        }
+
+        private void UpdateGasFlowPulses(MolyAldVisualState visualState)
+        {
+            var activeGas = visualState.MetalPrecursorOpen || visualState.ReactantOpen || visualState.PurgeOpen;
+            var activeColor = ActiveValveColor(visualState);
+            var activeX = ActiveValveX(visualState);
+            var phase = Mathf.Repeat(Time.unscaledTime * 0.80f, 1f);
+
+            for (var index = 0; index < gasFlowPulses.Length; index++)
+            {
+                var pulse = gasFlowPulses[index];
+                if (pulse == null)
+                {
+                    continue;
+                }
+
+                pulse.enabled = activeGas || visualState.HasFault;
+                if (!pulse.enabled)
+                {
+                    continue;
+                }
+
+                var local = Mathf.Repeat(phase + index / (float)gasFlowPulses.Length, 1f);
+                var color = visualState.HasFault ? Alarm : activeColor;
+                pulse.color = Color.Lerp(color, TextPrimary, index == 0 ? 0.25f : 0f);
+
+                if (local < 0.48f)
+                {
+                    var y = Mathf.Lerp(0.68f, 0.61f, local / 0.48f);
+                    SetRectAnchor(pulse.rectTransform, activeX, y, 0.010f, 0.022f);
+                }
+                else
+                {
+                    var x = Mathf.Lerp(0.34f, 0.65f, (local - 0.48f) / 0.52f);
+                    SetRectAnchor(pulse.rectTransform, x, 0.535f, 0.014f, 0.014f);
+                }
+            }
+
+            for (var index = 0; index < gasDistributionDots.Length; index++)
+            {
+                var dot = gasDistributionDots[index];
+                if (dot == null)
+                {
+                    continue;
+                }
+
+                if (!activeGas && !visualState.HasFault)
+                {
+                    dot.color = Color.Lerp(SchematicMetal, SchematicGlass, 0.35f);
+                    continue;
+                }
+
+                var pulse = 0.35f + 0.65f * Mathf.PingPong(Time.unscaledTime * 1.6f + index * 0.17f, 1f);
+                dot.color = visualState.HasFault
+                    ? Color.Lerp(SchematicMetal, Alarm, pulse)
+                    : Color.Lerp(SchematicMetal, activeColor, pulse);
+            }
+
+            if (schematicFlowText != null)
+            {
+                schematicFlowText.text = visualState.HasFault
+                    ? "FLOW: held by alarm"
+                    : activeGas
+                        ? $"FLOW: {ActiveValveText(visualState)} pulse -> chamber"
+                        : "FLOW: idle / closed";
+                schematicFlowText.color = visualState.HasFault ? Alarm : activeGas ? activeColor : TextMuted;
+            }
+        }
+
+        private void UpdateExhaustFlowPulses(MolyAldVisualState visualState)
+        {
+            var pumpActive = IsPumpFlowActive(visualState);
+            var phase = Mathf.Repeat(Time.unscaledTime * 0.65f, 1f);
+
+            for (var index = 0; index < exhaustFlowPulses.Length; index++)
+            {
+                var pulse = exhaustFlowPulses[index];
+                if (pulse == null)
+                {
+                    continue;
+                }
+
+                pulse.enabled = pumpActive || visualState.HasFault;
+                if (!pulse.enabled)
+                {
+                    continue;
+                }
+
+                var local = Mathf.Repeat(phase + index / (float)exhaustFlowPulses.Length, 1f);
+                var x = Mathf.Lerp(0.765f, 0.945f, local);
+                SetRectAnchor(pulse.rectTransform, x, 0.386f, 0.024f, 0.016f);
+                pulse.color = visualState.HasFault
+                    ? Color.Lerp(Alarm, TextPrimary, 0.20f)
+                    : Color.Lerp(Primary, TextPrimary, index == 0 ? 0.25f : 0f);
+            }
+
+            if (exhaustLineImage != null && pumpActive && !visualState.HasFault)
+            {
+                exhaustLineImage.color = Color.Lerp(SchematicMetal, Primary, 0.55f);
+            }
+
+            if (gateValveImage != null && pumpActive && !visualState.HasFault)
+            {
+                gateValveImage.color = Color.Lerp(SurfaceRaised, Primary, 0.35f);
+            }
+
+            if (pumpImage != null && pumpActive && !visualState.HasFault)
+            {
+                pumpImage.color = Color.Lerp(SurfaceRaised, Primary, 0.25f);
             }
         }
 
@@ -492,6 +639,52 @@ namespace EquipmentTwin.Unity.Processes
             {
                 lineImage.color = isOpen ? activeColor : SchematicMetal;
             }
+        }
+
+        private static void SetRectAnchor(RectTransform rectTransform, float centerX, float centerY, float width, float height)
+        {
+            rectTransform.anchorMin = new Vector2(centerX - width * 0.5f, centerY - height * 0.5f);
+            rectTransform.anchorMax = new Vector2(centerX + width * 0.5f, centerY + height * 0.5f);
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+        }
+
+        private static float ActiveValveX(MolyAldVisualState visualState)
+        {
+            if (visualState.MetalPrecursorOpen)
+            {
+                return 0.299f;
+            }
+
+            if (visualState.ReactantOpen)
+            {
+                return 0.499f;
+            }
+
+            if (visualState.PurgeOpen)
+            {
+                return 0.689f;
+            }
+
+            return 0.499f;
+        }
+
+        private static bool IsPumpFlowActive(MolyAldVisualState visualState)
+        {
+            if (visualState.HasFault)
+            {
+                return true;
+            }
+
+            var stepName = visualState.StepName ?? string.Empty;
+            return
+                stepName.IndexOf("Pump", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                stepName.IndexOf("Purge", System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static float FaultPulse()
+        {
+            return 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 7.0f);
         }
 
         private void UpdateTimeline(MolyAldVisualState visualState)

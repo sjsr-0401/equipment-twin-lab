@@ -104,6 +104,7 @@ jobs:
           test -f goals/041-canvas-operator-panel.md
           test -f goals/042-hmi-typography-instrument-panel.md
           test -f goals/043-process-schematic-main-view.md
+          test -f goals/044-gas-flow-animation-fault-highlight.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -122,6 +123,11 @@ jobs:
           grep -q "VACUUM CHAMBER" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "Susceptor Heater" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "UpdateProcessSchematic" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Animated Gas Flow Pulse" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Animated Exhaust Flow Pulse" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "UpdateGasFlowPulses" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "UpdateExhaustFlowPulses" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "FLOW: Reactant pulse -> chamber" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "PROCESS INSTRUMENTS" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "InstrumentView" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "Normal Range Band" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs

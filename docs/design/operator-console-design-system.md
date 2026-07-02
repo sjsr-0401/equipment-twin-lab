@@ -190,10 +190,23 @@ Next acceptance criteria:
 - [x] film thickness ratio가 wafer film fill에 반영된다.
 - [x] 실제 vendor CAD/UI/process를 복제하지 않는 reference boundary 문서가 있다.
 
-## Goal 044 Candidate
+## Goal 044 Acceptance Criteria
 
 ```text
-Goal 044: Canvas Button Interaction and Fault Selector
+Goal 044: Gas Flow Animation and Fault Highlight
+```
+
+- [x] Reactant/Precursor/Purge active valve state drives gas pulse color.
+- [x] Active gas pulses move from valve path toward chamber/showerhead.
+- [x] Showerhead gas dots pulse while a gas valve is open.
+- [x] Pump/exhaust pulse path is available for pump/purge/fault states.
+- [x] Fault state can blink chamber/exhaust/gate/pump highlight.
+- [x] Screenshot shows `FLOW: Reactant pulse -> chamber`.
+
+## Goal 045 Candidate
+
+```text
+Goal 045: Canvas Button Interaction and Fault Selector
 ```
 
 Next acceptance criteria:

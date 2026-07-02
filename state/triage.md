@@ -499,3 +499,25 @@ Current validation boundary:
 Next priority:
 
 - Validate screenshot and then wire button/fault interaction.
+
+## 2026-07-02 Triage Update: Goal 044
+
+Active focus moved from static process schematic to live flow indication.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Gas flow pulse | Makes active process route visible | Done |
+| P1 | Showerhead dot pulse | Shows gas entering chamber | Done |
+| P1 | Fault highlight path | Prepares alarm/fault visual state | Done |
+| P2 | Button interaction | Needed for operator-controlled demo | Next |
+| P2 | Fault selector | Needed for fault screenshot/demo | Next |
+
+Current validation boundary:
+
+- Pulse animation is HMI indication only.
+- It is not fluid simulation.
+- Buttons are still not wired.
+
+Next priority:
+
+- Add button click handling and fault scenario selection.

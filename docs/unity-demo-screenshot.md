@@ -198,3 +198,18 @@ What changed:
 - the existing 3D blockout is no longer the main visual claim.
 
 This makes the screenshot closer to a manufacturing HMI/debug screen while avoiding a false claim that the project contains real vendor CAD.
+
+## 2026-07-02 Gas flow animation update
+
+Goal 044 makes the process schematic respond to the current process state instead of remaining fully static.
+
+What changed:
+
+- active gas valve drives gas pulse color;
+- gas pulse markers move from the valve path toward the chamber/showerhead;
+- showerhead gas distribution dots pulse while a gas valve is open;
+- exhaust/pump pulse path is available for pump/purge/fault states;
+- fault state can blink chamber, exhaust, gate, and pump highlight;
+- flow label shows the active route, for example `FLOW: Reactant pulse -> chamber`.
+
+This is simple Canvas animation. It is not fluid simulation.

@@ -3116,5 +3116,39 @@ Goal 043은 3D primitive 장비 view를 메인 화면에서 내리고, 공개 AL
 다음 권장 Goal:
 
 ```text
-Goal 044: Canvas Button Interaction and Fault Selector
+Goal 044: Gas Flow Animation and Fault Highlight
+```
+
+## 66. 2026-07-02 Goal 044: Gas Flow Animation and Fault Highlight
+
+Goal 044는 Process Schematic을 정적인 도식에서 현재 step에 반응하는 HMI 화면으로 바꾼 작업이다.
+
+핵심 판단:
+
+- 2D schematic은 연결 구조를 보여주는 데 좋지만, 움직임이 없으면 still diagram처럼 보인다.
+- Reactant/Precursor/Purge/Pump step에서 무엇이 흐르는지 보여줘야 장비 SW 화면처럼 보인다.
+- 실제 유동 해석이 아니라 operator가 현재 route를 읽기 위한 Canvas pulse animation이면 충분하다.
+
+구현한 것:
+
+- `Animated Gas Flow Pulse` UI element 추가
+- `Animated Exhaust Flow Pulse` UI element 추가
+- `UpdateGasFlowPulses()` 추가
+- `UpdateExhaustFlowPulses()` 추가
+- active valve에 따라 pulse 색상 변경
+- showerhead gas distribution dot pulse 추가
+- fault 상태에서 chamber/exhaust/gate/pump blink highlight 준비
+- `FLOW: Reactant pulse -> chamber` flow label 추가
+
+막혔던 점:
+
+- 첫 pulse는 valve text와 showerhead를 덮었다.
+  - 해결: pulse 위치를 valve 아래/showerhead 아래로 낮추고 크기를 줄였다.
+- Unity smoke test 첫 실행은 marker는 성공했지만 exit code가 1이었다.
+  - 해결: 로그와 screenshot을 확인한 뒤 재실행했고, 재실행은 exit code 0으로 통과했다.
+
+다음 권장 Goal:
+
+```text
+Goal 045: Canvas Button Interaction and Fault Selector
 ```
