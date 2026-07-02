@@ -710,3 +710,18 @@ Next required action:
 
 - update final state/log if needed;
 - commit, push, open draft PR, watch CI.
+
+Completion update:
+
+- Draft PR #35 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
+- Commit: `8ce7365 feat: improve unity demo screenshot clarity`
+- Local validation passed:
+  - `git diff --check`
+  - Release build
+  - Core console tests: 80 passed
+  - Unity screenshot capture
+  - full demo rehearsal
+- PR CI passed:
+  - push run `28563274336`
+  - pull_request run `28563282879`
+- Next recommended goal: `Goal 038: record the actual 3-minute demo and fix explanation or visual gaps`.

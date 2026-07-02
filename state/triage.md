@@ -362,3 +362,9 @@ Next priority:
 Validation status:
 
 - Full rehearsal passed and updated `artifacts/demo-rehearsal/moly-ald-demo.png`.
+
+Completion status:
+
+- Draft PR #35: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
+- CI: passed
+- Next: user records the 3-minute demo using the improved screenshot.
