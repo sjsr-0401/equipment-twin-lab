@@ -338,3 +338,30 @@ Boundary:
 - This is still public/synthetic process data.
 - It is not a vendor recipe or a real tool log.
 - The useful claim is architecture: Core produces process truth; Unity replays it.
+
+## 2026-07-03 Fault selector package update
+
+Goal 049 makes the fault replay demo more operator-facing.
+
+Updated explanation:
+
+```text
+The operator can choose a public fault scenario from the HMI, then press FAULT REPLAY.
+Unity sends that choice to the process player, loads the matching Core/CLI-generated
+timeline JSON, and renders the failed step as an alarm state.
+```
+
+Demo-visible scenarios:
+
+| HMI chip | Replay scenario |
+|---|---|
+| `PUMP TIMEOUT` | `pumpdown-timeout` |
+| `TEMP UNSTABLE` | `temperature-not-stable` |
+| `PRECURSOR TIMEOUT` | `precursor-dose-timeout` |
+| `PURGE TIMEOUT` | `purge-timeout` |
+
+Boundary:
+
+- Scenario chips are HMI controls.
+- Process truth remains the generated timeline JSON.
+- Scenario changes are intentionally blocked while an alarm replay is active.

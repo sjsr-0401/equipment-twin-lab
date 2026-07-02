@@ -32,7 +32,11 @@ namespace EquipmentTwin.Unity.Processes
         private Text alarmText;
         private Text alarmDetailText;
         private Text alarmCodeText;
+        private Image faultSelectorCardImage;
         private Text faultScenarioText;
+        private Text faultSelectorStatusText;
+        private Image[] faultScenarioChipImages = new Image[0];
+        private Text[] faultScenarioChipTexts = new Text[0];
         private Text eventText;
         private Text hmiStateText;
         private Image operatorActionLogCardImage;
@@ -322,27 +326,34 @@ namespace EquipmentTwin.Unity.Processes
             var stateStrip = CreatePanel(panel, "Run State Strip", new Vector2(0.06f, 0.82f), new Vector2(0.94f, 0.875f), SurfaceRaised);
             hmiStateText = CreateText(stateStrip, "RUNNING  |  INTERLOCK OK", new Vector2(0.05f, 0f), new Vector2(0.95f, 1f), 15, Success, TextAnchor.MiddleCenter, FontStyle.Bold);
 
-            CreateCommandButton(panel, "START", new Vector2(0.06f, 0.745f), new Vector2(0.28f, 0.805f), Success, Background, OnStartClicked, out startButtonImage, out startButtonText);
-            CreateCommandButton(panel, "STOP", new Vector2(0.305f, 0.745f), new Vector2(0.525f, 0.805f), Stop, TextPrimary, OnPauseClicked, out stopButtonImage, out stopButtonText);
-            CreateCommandButton(panel, "FAULT", new Vector2(0.55f, 0.745f), new Vector2(0.77f, 0.805f), Warning, Background, OnFaultClicked, out faultButtonImage, out faultButtonText);
-            CreateCommandButton(panel, "RESET", new Vector2(0.795f, 0.745f), new Vector2(0.94f, 0.805f), NeutralButton, TextPrimary, OnResetClicked, out resetButtonImage, out resetButtonText);
-            faultScenarioText = CreateText(panel, "FAULT SCENARIO: precursor-dose-timeout", new Vector2(0.06f, 0.724f), new Vector2(0.94f, 0.744f), 9, Warning, TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateCommandButton(panel, "START", new Vector2(0.06f, 0.765f), new Vector2(0.28f, 0.815f), Success, Background, OnStartClicked, out startButtonImage, out startButtonText);
+            CreateCommandButton(panel, "STOP", new Vector2(0.305f, 0.765f), new Vector2(0.525f, 0.815f), Stop, TextPrimary, OnPauseClicked, out stopButtonImage, out stopButtonText);
+            CreateCommandButton(panel, "FAULT", new Vector2(0.55f, 0.765f), new Vector2(0.77f, 0.815f), Warning, Background, OnFaultClicked, out faultButtonImage, out faultButtonText);
+            CreateCommandButton(panel, "RESET", new Vector2(0.795f, 0.765f), new Vector2(0.94f, 0.815f), NeutralButton, TextPrimary, OnResetClicked, out resetButtonImage, out resetButtonText);
+
+            var selectorCard = CreatePanel(panel, "Fault Scenario Selector Card", new Vector2(0.06f, 0.605f), new Vector2(0.94f, 0.755f), Surface);
+            faultSelectorCardImage = selectorCard.GetComponent<Image>();
+            CreateText(selectorCard, "FAULT SCENARIO SELECTOR", new Vector2(0.05f, 0.72f), new Vector2(0.95f, 0.96f), 11, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
+            faultScenarioText = CreateText(selectorCard, "SELECTED: precursor-dose-timeout", new Vector2(0.05f, 0.52f), new Vector2(0.95f, 0.74f), 9, Warning, TextAnchor.MiddleLeft, FontStyle.Bold);
             faultScenarioText.verticalOverflow = VerticalWrapMode.Overflow;
             faultScenarioText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            faultSelectorStatusText = CreateText(selectorCard, "choose scenario, then press FAULT REPLAY", new Vector2(0.05f, 0.02f), new Vector2(0.95f, 0.21f), 8, TextMuted, TextAnchor.MiddleLeft);
+            faultSelectorStatusText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            BuildFaultScenarioSelectorChips(selectorCard);
 
-            var recipeCard = CreatePanel(panel, "Recipe Card", new Vector2(0.06f, 0.615f), new Vector2(0.94f, 0.725f), SurfaceRaised);
+            var recipeCard = CreatePanel(panel, "Recipe Card", new Vector2(0.06f, 0.485f), new Vector2(0.94f, 0.595f), SurfaceRaised);
             CreateText(recipeCard, "CURRENT STEP", new Vector2(0.05f, 0.58f), new Vector2(0.48f, 0.92f), 12, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
             CreateText(recipeCard, "RECIPE / CYCLE", new Vector2(0.52f, 0.58f), new Vector2(0.95f, 0.92f), 12, TextMuted, TextAnchor.MiddleRight, FontStyle.Bold);
             currentStepText = CreateText(recipeCard, "Current Step", new Vector2(0.05f, 0.12f), new Vector2(0.52f, 0.60f), 22, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
             recipeText = CreateText(recipeCard, "Recipe", new Vector2(0.50f, 0.12f), new Vector2(0.95f, 0.60f), 13, TextMuted, TextAnchor.MiddleRight);
 
-            var telemetryCard = CreatePanel(panel, "Instrumentation Card", new Vector2(0.06f, 0.335f), new Vector2(0.94f, 0.595f), Surface);
+            var telemetryCard = CreatePanel(panel, "Instrumentation Card", new Vector2(0.06f, 0.255f), new Vector2(0.94f, 0.475f), Surface);
             CreateText(telemetryCard, "PROCESS INSTRUMENTS", new Vector2(0.05f, 0.84f), new Vector2(0.95f, 0.98f), 13, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
             pressureInstrument = CreateInstrumentRow(telemetryCard, "Pressure", "mTorr", "normal 800-900", new Vector2(0.04f, 0.58f), new Vector2(0.96f, 0.82f), Primary);
             temperatureInstrument = CreateInstrumentRow(telemetryCard, "Temp", "C", "normal 245-255", new Vector2(0.04f, 0.32f), new Vector2(0.96f, 0.56f), Warning);
             filmInstrument = CreateInstrumentRow(telemetryCard, "Film", "A", "target progress", new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.30f), Success);
 
-            var alarmCard = CreatePanel(panel, "Alarm Card", new Vector2(0.06f, 0.175f), new Vector2(0.94f, 0.315f), Surface);
+            var alarmCard = CreatePanel(panel, "Alarm Card", new Vector2(0.06f, 0.125f), new Vector2(0.94f, 0.245f), Surface);
             alarmCardImage = alarmCard.GetComponent<Image>();
             CreateText(alarmCard, "ALARM PRIORITY", new Vector2(0.05f, 0.72f), new Vector2(0.95f, 0.95f), 12, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
             alarmText = CreateText(alarmCard, "NO ALARM", new Vector2(0.05f, 0.39f), new Vector2(0.95f, 0.72f), 20, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
@@ -351,16 +362,65 @@ namespace EquipmentTwin.Unity.Processes
             alarmDetailText = CreateText(alarmCard, "Interlocks nominal", new Vector2(0.05f, 0.13f), new Vector2(0.62f, 0.42f), 12, TextPrimary, TextAnchor.MiddleLeft);
             alarmCodeText = CreateText(alarmCard, "PRI 0 | CODE ----", new Vector2(0.60f, 0.13f), new Vector2(0.95f, 0.42f), 11, TextMuted, TextAnchor.MiddleRight, FontStyle.Bold);
 
-            var operatorLogCard = CreatePanel(panel, "Operator Action Log Card", new Vector2(0.06f, 0.02f), new Vector2(0.94f, 0.16f), Surface);
+            var operatorLogCard = CreatePanel(panel, "Operator Action Log Card", new Vector2(0.06f, 0.02f), new Vector2(0.94f, 0.115f), Surface);
             operatorActionLogCardImage = operatorLogCard.GetComponent<Image>();
-            CreateText(operatorLogCard, "OPERATOR ACTION LOG", new Vector2(0.05f, 0.76f), new Vector2(0.95f, 0.98f), 11, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
-            eventText = CreateText(operatorLogCard, "LIVE EVENT: -", new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.76f), 10, TextMuted, TextAnchor.MiddleLeft);
+            CreateText(operatorLogCard, "OPERATOR ACTION LOG", new Vector2(0.05f, 0.76f), new Vector2(0.95f, 0.98f), 10, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
+            eventText = CreateText(operatorLogCard, "LIVE EVENT: -", new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.76f), 8, TextMuted, TextAnchor.MiddleLeft);
 
             operatorActionLogTexts = new Text[OperatorActionLogCapacity];
-            operatorActionLogTexts[0] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.37f), new Vector2(0.95f, 0.55f), 9, TextPrimary, TextAnchor.MiddleLeft);
-            operatorActionLogTexts[1] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.19f), new Vector2(0.95f, 0.37f), 9, TextMuted, TextAnchor.MiddleLeft);
-            operatorActionLogTexts[2] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.01f), new Vector2(0.95f, 0.19f), 9, TextMuted, TextAnchor.MiddleLeft);
+            operatorActionLogTexts[0] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.37f), new Vector2(0.95f, 0.55f), 8, TextPrimary, TextAnchor.MiddleLeft);
+            operatorActionLogTexts[1] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.19f), new Vector2(0.95f, 0.37f), 8, TextMuted, TextAnchor.MiddleLeft);
+            operatorActionLogTexts[2] = CreateText(operatorLogCard, "-", new Vector2(0.05f, 0.01f), new Vector2(0.95f, 0.19f), 8, TextMuted, TextAnchor.MiddleLeft);
             RecordOperatorAction("SYSTEM", "HMI ready");
+        }
+
+        private void BuildFaultScenarioSelectorChips(Transform parent)
+        {
+            var count = MolyAldProcessPlayer.PublicFaultScenarioCount;
+            faultScenarioChipImages = new Image[count];
+            faultScenarioChipTexts = new Text[count];
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            var chipWidth = 0.90f / count;
+            for (var index = 0; index < count; index++)
+            {
+                var minX = 0.05f + chipWidth * index + 0.006f;
+                var maxX = 0.05f + chipWidth * (index + 1) - 0.006f;
+                CreateFaultScenarioChip(parent, index, new Vector2(minX, 0.23f), new Vector2(maxX, 0.50f));
+            }
+        }
+
+        private Button CreateFaultScenarioChip(Transform parent, int scenarioIndex, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            var scenarioName = MolyAldProcessPlayer.GetPublicFaultScenarioName(scenarioIndex);
+            var chipRect = CreatePanel(parent, $"Fault Scenario Chip {scenarioName}", anchorMin, anchorMax, SurfaceRaised);
+            var chipImage = chipRect.GetComponent<Image>();
+            var chipText = CreateText(
+                chipRect,
+                FaultScenarioChipLabel(scenarioName),
+                new Vector2(0.03f, 0.04f),
+                new Vector2(0.97f, 0.96f),
+                8,
+                TextMuted,
+                TextAnchor.MiddleCenter,
+                FontStyle.Bold);
+            chipText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            chipText.verticalOverflow = VerticalWrapMode.Overflow;
+
+            faultScenarioChipImages[scenarioIndex] = chipImage;
+            faultScenarioChipTexts[scenarioIndex] = chipText;
+
+            var button = chipRect.gameObject.AddComponent<Button>();
+            button.targetGraphic = chipImage;
+            button.transition = Selectable.Transition.None;
+
+            var capturedIndex = scenarioIndex;
+            button.onClick.AddListener(() => SelectFaultScenarioForOperator(capturedIndex));
+            return button;
         }
 
         private void BuildTimeline(Transform parent)
@@ -419,6 +479,7 @@ namespace EquipmentTwin.Unity.Processes
             UpdateInstruments(visualState);
             UpdateProcessSchematic(visualState);
             UpdateCommandButtons(visualState);
+            UpdateFaultScenarioSelector(visualState);
 
             if (alarmText != null)
             {
@@ -937,7 +998,9 @@ namespace EquipmentTwin.Unity.Processes
         {
             var buttonRect = CreatePanel(parent, $"{label} Button", anchorMin, anchorMax, color);
             buttonImage = buttonRect.GetComponent<Image>();
-            buttonText = CreateText(buttonRect, label, new Vector2(0f, 0f), new Vector2(1f, 1f), 14, textColor, TextAnchor.MiddleCenter, FontStyle.Bold);
+            buttonText = CreateText(buttonRect, label, new Vector2(0f, 0f), new Vector2(1f, 1f), 12, textColor, TextAnchor.MiddleCenter, FontStyle.Bold);
+            buttonText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            buttonText.verticalOverflow = VerticalWrapMode.Overflow;
 
             var button = buttonRect.gameObject.AddComponent<Button>();
             button.targetGraphic = buttonImage;
@@ -975,6 +1038,26 @@ namespace EquipmentTwin.Unity.Processes
 
             player.Pause();
             RecordOperatorAction("STOP", "timeline held by operator");
+            RefreshCanvas();
+        }
+
+        public void SelectFaultScenarioForOperator(int scenarioIndex)
+        {
+            if (!TryResolvePlayer())
+            {
+                return;
+            }
+
+            var scenarioName = MolyAldProcessPlayer.GetPublicFaultScenarioName(scenarioIndex);
+            if (player.OperatorFaultActive)
+            {
+                RecordOperatorAction("SELECT BLOCKED", $"{scenarioName} locked during active fault");
+                RefreshCanvas();
+                return;
+            }
+
+            player.SelectFaultScenarioByIndex(scenarioIndex);
+            RecordOperatorAction("SELECT FAULT", $"{player.SelectedFaultScenarioName} ready");
             RefreshCanvas();
         }
 
@@ -1033,12 +1116,25 @@ namespace EquipmentTwin.Unity.Processes
             var replay = player != null && player.FaultTimelineReplayActive;
             var faultLabel = fault
                 ? (replay ? "FAULT\nREPLAY" : "FAULT\nACTIVE")
-                : "FAULT";
+                : "FAULT\nREPLAY";
 
             SetCommandButton(startButtonImage, startButtonText, playing ? "RUNNING" : "START", playing ? Color.Lerp(Success, TextPrimary, 0.20f) : Success, Background);
             SetCommandButton(stopButtonImage, stopButtonText, playing ? "STOP" : "PAUSED", playing ? Stop : Color.Lerp(NeutralButton, Warning, 0.30f), TextPrimary);
             SetCommandButton(faultButtonImage, faultButtonText, faultLabel, fault ? Alarm : Warning, fault ? TextPrimary : Background);
             SetCommandButton(resetButtonImage, resetButtonText, "RESET", NeutralButton, TextPrimary);
+        }
+
+        private void UpdateFaultScenarioSelector(MolyAldVisualState visualState)
+        {
+            UpdateFaultScenarioText(visualState);
+            UpdateFaultScenarioChipStates(visualState);
+
+            if (faultSelectorCardImage != null)
+            {
+                faultSelectorCardImage.color = visualState != null && visualState.HasFault
+                    ? Color.Lerp(Surface, Alarm, 0.18f)
+                    : Surface;
+            }
         }
 
         private void UpdateFaultScenarioText(MolyAldVisualState visualState)
@@ -1052,9 +1148,61 @@ namespace EquipmentTwin.Unity.Processes
             var isFault = visualState != null && visualState.HasFault;
             var isReplay = player != null && player.FaultTimelineReplayActive;
             faultScenarioText.text = isFault
-                ? $"{(isReplay ? "REPLAYED" : "ACTIVE")} FAULT SCENARIO: {ActiveFaultScenarioName()}"
-                : $"SELECTED FAULT SCENARIO: {scenarioName}";
+                ? $"{(isReplay ? "REPLAYED" : "ACTIVE")}: {ActiveFaultScenarioName()}"
+                : $"SELECTED: {scenarioName}";
             faultScenarioText.color = isFault ? Alarm : Warning;
+
+            if (faultSelectorStatusText != null)
+            {
+                faultSelectorStatusText.text = isFault
+                    ? "locked during alarm | press RESET before changing scenario"
+                    : "choose scenario, then press FAULT REPLAY";
+                faultSelectorStatusText.color = isFault ? TextPrimary : TextMuted;
+            }
+        }
+
+        private void UpdateFaultScenarioChipStates(MolyAldVisualState visualState)
+        {
+            var selectedIndex = player != null ? player.SelectedFaultScenarioIndex : 0;
+            var isFault = visualState != null && visualState.HasFault;
+            var activeScenarioName = ActiveFaultScenarioName();
+
+            for (var index = 0; index < faultScenarioChipImages.Length; index++)
+            {
+                var scenarioName = MolyAldProcessPlayer.GetPublicFaultScenarioName(index);
+                var selected = index == selectedIndex;
+                var activeFaultChip = isFault && string.Equals(activeScenarioName, scenarioName, StringComparison.OrdinalIgnoreCase);
+
+                var background = SurfaceRaised;
+                var textColor = TextMuted;
+
+                if (activeFaultChip)
+                {
+                    background = Alarm;
+                    textColor = TextPrimary;
+                }
+                else if (selected)
+                {
+                    background = Warning;
+                    textColor = Background;
+                }
+                else if (isFault)
+                {
+                    background = Color.Lerp(SurfaceRaised, Background, 0.35f);
+                    textColor = Color.Lerp(TextMuted, Background, 0.20f);
+                }
+
+                if (faultScenarioChipImages[index] != null)
+                {
+                    faultScenarioChipImages[index].color = background;
+                }
+
+                if (faultScenarioChipTexts[index] != null)
+                {
+                    faultScenarioChipTexts[index].text = FaultScenarioChipLabel(scenarioName);
+                    faultScenarioChipTexts[index].color = textColor;
+                }
+            }
         }
 
         private static void SetCommandButton(Image image, Text text, string label, Color backgroundColor, Color textColor)
@@ -1113,6 +1261,31 @@ namespace EquipmentTwin.Unity.Processes
         private string SelectedFaultScenarioName()
         {
             return player != null ? player.SelectedFaultScenarioName : "precursor-dose-timeout";
+        }
+
+        private static string FaultScenarioChipLabel(string scenarioName)
+        {
+            if (string.Equals(scenarioName, "pumpdown-timeout", StringComparison.OrdinalIgnoreCase))
+            {
+                return "PUMP\nTIMEOUT";
+            }
+
+            if (string.Equals(scenarioName, "temperature-not-stable", StringComparison.OrdinalIgnoreCase))
+            {
+                return "TEMP\nUNSTABLE";
+            }
+
+            if (string.Equals(scenarioName, "precursor-dose-timeout", StringComparison.OrdinalIgnoreCase))
+            {
+                return "PRECURSOR\nTIMEOUT";
+            }
+
+            if (string.Equals(scenarioName, "purge-timeout", StringComparison.OrdinalIgnoreCase))
+            {
+                return "PURGE\nTIMEOUT";
+            }
+
+            return scenarioName.Replace("-", "\n");
         }
 
         private string ActiveFaultScenarioName()

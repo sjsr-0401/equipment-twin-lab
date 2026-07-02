@@ -297,3 +297,25 @@ Implementation boundary:
 - Unity is still a replay/view layer.
 - Core/CLI generated timeline JSON is the process truth.
 - User-facing scenario selection remains a next step.
+
+## Goal 049 Acceptance Criteria
+
+```text
+Goal 049: Fault Scenario Selector UI
+```
+
+Accepted behavior:
+
+- [x] HMI exposes a visible `FAULT SCENARIO SELECTOR`.
+- [x] Four public fault scenarios are available as selectable chips.
+- [x] Selected chip changes `MolyAldProcessPlayer.SelectedFaultScenarioName`.
+- [x] FAULT command replays the selected fault timeline.
+- [x] Scenario changes are blocked while a replay alarm is active.
+- [x] Operator action log records scenario selection and blocked selection attempts.
+- [x] Unity smoke test validates selector behavior.
+
+Design rule:
+
+- The selector is an operator control, not a process calculator.
+- The selected scenario must always resolve to Core/CLI-generated timeline JSON.
+- Active alarm state owns the current replay scenario; selector changes require reset first.

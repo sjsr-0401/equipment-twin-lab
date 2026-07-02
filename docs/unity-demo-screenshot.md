@@ -339,3 +339,29 @@ Important boundary:
 - Unity still does not calculate the process.
 - Core/CLI generated the fault timeline JSON.
 - Unity replays the timeline and renders the HMI state.
+
+## 2026-07-03 Fault scenario selector update
+
+Goal 049 adds a visible selector to the operator HMI.
+
+Updated screenshots:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot -ScreenshotPath artifacts\unity-demo\moly-ald-demo-goal049.png
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot -ScreenshotPath artifacts\unity-demo\moly-ald-demo-fault-goal049.png
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureRecoveryScreenshot -ScreenshotPath artifacts\unity-demo\moly-ald-demo-recovery-goal049.png
+```
+
+What the selector should show:
+
+- `FAULT SCENARIO SELECTOR` card between command buttons and current-step card;
+- four chips: Pump timeout, Temp unstable, Precursor timeout, Purge timeout;
+- selected chip highlighted before replay;
+- active replay chip highlighted red during alarm;
+- selector lock message while alarm is active.
+
+Important boundary:
+
+- The selector chooses among public/synthetic fault timelines.
+- It does not create a fault result by itself.
+- The replay result still comes from Core/CLI-generated JSON in `StreamingAssets/faults`.
