@@ -1838,3 +1838,52 @@ Unity 없이 빠르게 볼 때:
 - 이제 `recording-rehearsal.md`는 한국어로 생성된다.
 - 먼저 볼 부분은 `결론`과 `단계별 확인 결과`다.
 - `데모 테스트 결과: 통과`가 보이면 녹화 재료 준비는 성공이다.
+
+## 2026-07-01 이해 요약: Demo Narration Cue Cards
+
+이번 Goal의 핵심은 “프로그램이 돌아간다”에서 끝내지 않고, 사용자가 면접/포트폴리오에서 직접 설명할 말을 고정하는 것이다.
+
+한 문장 설명:
+
+> `New-PortfolioDemoCueCards.ps1`은 리허설 결과를 읽고 3분 데모 녹화용 한글 큐카드를 `artifacts/demo-rehearsal/recording-cue-cards.md`로 만든다.
+
+코드 흐름:
+
+```text
+Invoke-PortfolioDemoRehearsal.ps1
+    -> Write-RehearsalReport()
+    -> New-PortfolioDemoCueCards.ps1
+    -> recording-cue-cards.md
+```
+
+파일별 역할:
+
+```text
+recording-rehearsal.md
+    데모 재료가 준비됐는지 확인하는 결과표
+
+recording-cue-cards.md
+    실제 녹화 때 그대로 읽을 수 있는 시간대별 대본
+
+docs/portfolio-demo-narration.md
+    면접 질문 대응과 피해야 할 표현을 정리한 기준 문서
+```
+
+중요한 유지보수 원칙:
+
+- 데모 대본은 기능 구현 코드와 분리한다.
+- 대본에는 실제 장비 복제처럼 들리는 표현을 넣지 않는다.
+- fault demo의 exit code `1`은 실패가 아니라 expected failure라는 설명을 유지한다.
+- 사용자가 이해하기 어려운 영어 로그를 직접 읽게 하지 말고, 한글 report/cue card를 먼저 보게 한다.
+
+사용자가 직접 실행할 명령:
+
+```powershell
+.\scripts\Invoke-PortfolioDemoRehearsal.ps1
+```
+
+생성된 큐카드:
+
+```text
+artifacts/demo-rehearsal/recording-cue-cards.md
+```
