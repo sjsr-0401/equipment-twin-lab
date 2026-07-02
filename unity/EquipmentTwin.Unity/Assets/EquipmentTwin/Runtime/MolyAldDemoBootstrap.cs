@@ -8,6 +8,7 @@ namespace EquipmentTwin.Unity.Processes
         [SerializeField] private bool ensurePlayer = true;
         [SerializeField] private bool ensureHud = true;
         [SerializeField] private bool ensurePrimitiveVisualizer = true;
+        [SerializeField] private bool ensureOperatorCanvas = true;
         [SerializeField] private bool ensureCameraAndLight = true;
 
         private void Awake()
@@ -25,6 +26,11 @@ namespace EquipmentTwin.Unity.Processes
             if (ensurePrimitiveVisualizer)
             {
                 EnsureComponent<MolyAldPrimitiveVisualizer>();
+            }
+
+            if (ensureOperatorCanvas)
+            {
+                EnsureComponent<MolyAldOperatorCanvas>();
             }
 
             if (ensureCameraAndLight)

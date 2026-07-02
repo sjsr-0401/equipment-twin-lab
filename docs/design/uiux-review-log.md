@@ -53,3 +53,43 @@ docs/demo/moly-ald-demo.png
 - [ ] 정상/알람 상태가 색상만이 아니라 text hierarchy로도 구분되는가?
 - [ ] “실제 vendor UI 복제”가 아니라 “synthetic operator console”임이 제목/설명에서 보이는가?
 
+## 2026-07-02 Review 002: Canvas Operator Panel
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
+### Verdict
+
+- 상태: Pass for MVP
+- 한 줄 판단: 오른쪽 operator panel과 하단 timeline이 Canvas UI로 분리되면서 글씨 선명도, 정보 위계, HMI 느낌이 크게 개선됐다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Typography | Current step이 큰 Canvas text로 분리되어 첫눈에 보인다 |
+| Layout | 장비 3D와 operator UI가 분리되어 서로 덜 방해한다 |
+| Telemetry | Pressure, Temp, Film 값이 읽기 쉬운 카드로 정리됐다 |
+| Alarm | `NO ALARM` 상태가 독립 card로 표시된다 |
+| Timeline | step chip과 progress fill이 2D UI로 정리됐다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | 버튼이 아직 실제 interaction과 연결되지 않았다 | Start/Stop/Fault/Reset click handler 추가 |
+| P1 | Fault selector가 실제 scenario 선택 UI가 아니다 | configured fault dropdown 또는 button group 추가 |
+| P2 | Alarm 상태 screenshot이 아직 없다 | fault timeline sample 또는 fault mode screenshot capture 추가 |
+| P2 | 장비 3D blockout은 아직 primitive 수준이다 | lighting/material/bevel 또는 imported model boundary 활용 |
+
+### Next Acceptance Criteria
+
+- [ ] START button calls `MolyAldProcessPlayer.Play()` or restart/run command.
+- [ ] STOP button calls `MolyAldProcessPlayer.Pause()`.
+- [ ] RESET button restarts the timeline.
+- [ ] FAULT control can select at least one synthetic fault scenario.
+- [ ] Alarm screenshot shows red alarm card and matching equipment highlight.
+

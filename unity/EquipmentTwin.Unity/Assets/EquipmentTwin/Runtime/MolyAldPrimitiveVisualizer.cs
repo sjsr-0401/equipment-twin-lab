@@ -533,52 +533,8 @@ namespace EquipmentTwin.Unity.Processes
                 pumpLabel = CreateLabel("Vacuum pump", new Vector3(-0.72f, 0.74f, -1.16f), 0.023f);
             }
 
-            if (operatorTitleLabel == null)
-            {
-                operatorTitleLabel = CreateLabel(
-                    "Operator Interface",
-                    new Vector3(2.35f, 2.93f, -1.12f),
-                    0.041f);
-            }
-
-            if (recipeLabel == null)
-            {
-                recipeLabel = CreateLabel("Recipe card", new Vector3(2.35f, 2.02f, -1.17f), 0.027f);
-            }
-
-            if (telemetryLabel == null)
-            {
-                telemetryLabel = CreateLabel("Telemetry card", new Vector3(2.35f, 1.29f, -1.17f), 0.026f);
-            }
-
-            if (alarmLabel == null)
-            {
-                alarmLabel = CreateLabel("Alarm card", new Vector3(2.35f, 0.53f, -1.17f), 0.026f);
-            }
-
-            if (buttonLabel == null)
-            {
-                buttonLabel = CreateLabel("Buttons", new Vector3(2.35f, 2.43f, -1.18f), 0.020f);
-            }
-
-            if (processFlowLabel == null)
-            {
-                processFlowLabel = CreateLabel("Process flow", new Vector3(-2.60f, 0.50f, -1.67f), 0.024f);
-            }
-
-            if (eventLogLabel == null)
-            {
-                eventLogLabel = CreateLabel("Event log", new Vector3(2.35f, 0.23f, -1.17f), 0.020f);
-            }
-
-            if (architectureLabel == null)
-            {
-                architectureLabel = CreateLabel(
-                    "Core/CLI -> timeline JSON -> Unity operator console",
-                    new Vector3(0.05f, -0.09f, -1.68f),
-                    0.022f,
-                    MutedTextColor);
-            }
+            // Operator panel, telemetry, alarm, event log, and timeline text are rendered by
+            // MolyAldOperatorCanvas. Keep TextMesh only for equipment labels inside the 3D view.
         }
 
         private void EnsureProcessFlowBlocks()

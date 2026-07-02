@@ -141,3 +141,25 @@ Added operator UI parts:
 
 The design intentionally uses public-reference equipment styling only.
 It does not copy a real vendor CAD model, real user interface, real chamber layout, or real process sequence.
+
+## 2026-07-02 Canvas operator panel update
+
+Goal 041 moved the operator panel and process timeline out of 3D `TextMesh` and into Unity Canvas UI.
+
+What changed:
+
+- right-side operator panel is now Canvas UI;
+- current step is rendered as a large Canvas text value;
+- live telemetry is rendered as structured Canvas text;
+- alarm state has its own Canvas card;
+- bottom process timeline uses Canvas chips and progress fill;
+- `MolyAldPrimitiveVisualizer` keeps the 3D equipment body and equipment labels.
+
+This keeps the architecture cleaner:
+
+```text
+3D scene = equipment body
+Canvas UI = operator controls, telemetry, alarm, timeline
+```
+
+The buttons are still visual controls. Runtime click interaction is a later goal.

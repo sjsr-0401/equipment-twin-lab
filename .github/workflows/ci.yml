@@ -68,6 +68,7 @@ jobs:
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineLoader.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessHud.cs
+          test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualState.cs
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs
@@ -99,15 +100,20 @@ jobs:
           test -f goals/038-ald-fault-matrix-report.md
           test -f goals/039-unity-operator-console-layout.md
           test -f goals/040-uiux-agent-review-system.md
+          test -f goals/041-canvas-operator-panel.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Telemetry Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
-          grep -q "Process flow" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Canvas Process Timeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Timeline Progress Fill" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "Timeline Progress Track" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Operator Interface" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Synthetic Moly ALD Module" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Gas / valve panel" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "MolyAldOperatorCanvas" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "ScreenSpaceCamera" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "com.unity.ugui" unity/EquipmentTwin.Unity/Packages/manifest.json
           grep -q "MolyAldVisualStateMapper.FromTimeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldImportedModelVisualBinding" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs
           grep -q "ValidateVisualStateMapper" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs

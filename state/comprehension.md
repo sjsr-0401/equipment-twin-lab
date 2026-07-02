@@ -2053,3 +2053,44 @@ Codex / 구현자
 - current step, telemetry, alarm, timeline은 Canvas UI로 표시한다.
 - 3D TextMesh는 장비 label 정도로만 남긴다.
 - screenshot 50% 축소에서도 current step과 alarm state가 읽혀야 한다.
+
+## 2026-07-02 이해 요약: Canvas Operator Panel
+
+이번 Goal의 핵심은 operator UI를 3D object가 아니라 Unity Canvas로 분리한 것이다.
+
+한 문장 설명:
+
+> `MolyAldOperatorCanvas`는 `MolyAldProcessPlayer`의 현재 step을 읽고, `MolyAldVisualStateMapper`로 표시 상태를 만든 뒤, 오른쪽 operator panel과 하단 timeline을 Canvas UI로 갱신한다.
+
+구조:
+
+```text
+Core/CLI timeline JSON
+    -> MolyAldProcessPlayer
+    -> MolyAldVisualStateMapper
+    -> MolyAldOperatorCanvas
+       -> Recipe card
+       -> Current step
+       -> Telemetry
+       -> Alarm card
+       -> Timeline chips
+```
+
+중요한 변경:
+
+- Unity UI package `com.unity.ugui`가 필요하다.
+- `TextMesh`는 장비 label용으로만 남기고, 실제 operator UI는 Canvas가 담당한다.
+- Unity 6에서는 `Arial.ttf`를 built-in font로 쓰면 안 된다. `LegacyRuntime.ttf`를 사용한다.
+
+유지보수할 때 볼 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `unity/EquipmentTwin.Unity/Packages/manifest.json`
+
+다음 구현:
+
+- START/STOP/RESET button click handler 연결
+- FAULT selector를 실제 configured fault scenario와 연결
+- fault screenshot에서 alarm card와 장비 highlight를 같이 보여주기

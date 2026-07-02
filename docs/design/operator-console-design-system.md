@@ -150,9 +150,23 @@ Unity Canvas
 
 ## Goal 041 Acceptance Criteria
 
-- [ ] 오른쪽 operator panel은 Canvas 기반이다.
-- [ ] TextMesh 기반 UI text는 장비 label 수준으로만 남긴다.
-- [ ] current step, telemetry, alarm, timeline은 Canvas text로 표시된다.
-- [ ] 버튼은 Canvas button 또는 button-like UI element로 구성된다.
-- [ ] 색상은 이 문서의 token 이름으로 설명 가능하다.
-- [ ] screenshot 50% 축소 상태에서도 current step과 alarm state가 읽힌다.
+- [x] 오른쪽 operator panel은 Canvas 기반이다.
+- [x] TextMesh 기반 UI text는 장비 label 수준으로만 남긴다.
+- [x] current step, telemetry, alarm, timeline은 Canvas text로 표시된다.
+- [x] 버튼은 Canvas button-like UI element로 구성된다.
+- [x] 색상은 이 문서의 token 이름으로 설명 가능하다.
+- [x] screenshot 50% 축소 상태에서도 current step과 alarm state가 읽힌다.
+
+## Goal 042 Candidate
+
+```text
+Goal 042: Canvas Button Interaction and Fault Selector
+```
+
+Next acceptance criteria:
+
+- [ ] START button restarts and plays the timeline.
+- [ ] STOP button pauses the timeline.
+- [ ] RESET button returns to the first step.
+- [ ] FAULT control selects at least one synthetic fault scenario.
+- [ ] fault mode screenshot shows alarm card and equipment highlight.
