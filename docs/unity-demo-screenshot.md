@@ -183,3 +183,18 @@ What changed:
 - valve state remains in the event line so the instrument card stays focused on numeric process variables.
 
 This is still not a real vendor HMI. The purpose is to show HMI principles: readable state, alarm priority, and process variable context.
+
+## 2026-07-02 Process schematic main-view update
+
+Goal 043 moved the left-side main view away from primitive 3D equipment blockout and toward a process schematic.
+
+What changed:
+
+- left panel now shows a connected ALD schematic;
+- gas delivery, precursor/reactant/purge valves, chamber, showerhead, wafer/film, susceptor heater, exhaust line, gate valve, and pump are connected as a system;
+- active valve state changes line/valve/showerhead color;
+- film thickness changes the wafer film fill;
+- alarm state can highlight the chamber/exhaust path;
+- the existing 3D blockout is no longer the main visual claim.
+
+This makes the screenshot closer to a manufacturing HMI/debug screen while avoiding a false claim that the project contains real vendor CAD.

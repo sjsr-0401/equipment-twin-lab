@@ -179,7 +179,21 @@ Goal 042: HMI Typography and Instrument Panel
 ## Goal 043 Candidate
 
 ```text
-Goal 043: Canvas Button Interaction and Fault Selector
+Goal 043: Process Schematic Main View
+```
+
+Next acceptance criteria:
+
+- [x] 왼쪽 메인 view는 primitive 3D가 아니라 process schematic이다.
+- [x] schematic은 chamber, showerhead, wafer/film, heater, gas valves, exhaust, pump를 연결된 시스템으로 보여준다.
+- [x] active valve state가 valve/line color에 반영된다.
+- [x] film thickness ratio가 wafer film fill에 반영된다.
+- [x] 실제 vendor CAD/UI/process를 복제하지 않는 reference boundary 문서가 있다.
+
+## Goal 044 Candidate
+
+```text
+Goal 044: Canvas Button Interaction and Fault Selector
 ```
 
 Next acceptance criteria:

@@ -89,6 +89,7 @@ jobs:
           test -f docs/design/uiux-review-template.md
           test -f docs/design/uiux-review-log.md
           test -f docs/design/operator-console-design-system.md
+          test -f docs/design/public-ald-schematic-reference.md
           test -f docs/demo/moly-ald-demo.png
           test -f goals/031-portfolio-demo-package.md
           test -f goals/032-unity-screenshot-readme-image.md
@@ -102,6 +103,7 @@ jobs:
           test -f goals/040-uiux-agent-review-system.md
           test -f goals/041-canvas-operator-panel.md
           test -f goals/042-hmi-typography-instrument-panel.md
+          test -f goals/043-process-schematic-main-view.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -115,6 +117,11 @@ jobs:
           grep -q "MolyAldOperatorCanvas" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "ScreenSpaceCamera" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "MOLY ALD HMI" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Process Schematic Main View" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Synthetic Moly ALD — Process Schematic" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "VACUUM CHAMBER" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Susceptor Heater" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "UpdateProcessSchematic" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "PROCESS INSTRUMENTS" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "InstrumentView" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "Normal Range Band" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
