@@ -32,6 +32,7 @@ namespace EquipmentTwin.Unity.Processes
         private Text alarmText;
         private Text alarmDetailText;
         private Text alarmCodeText;
+        private Text faultScenarioText;
         private Text eventText;
         private Text hmiStateText;
         private Image operatorActionLogCardImage;
@@ -325,6 +326,9 @@ namespace EquipmentTwin.Unity.Processes
             CreateCommandButton(panel, "STOP", new Vector2(0.305f, 0.745f), new Vector2(0.525f, 0.805f), Stop, TextPrimary, OnPauseClicked, out stopButtonImage, out stopButtonText);
             CreateCommandButton(panel, "FAULT", new Vector2(0.55f, 0.745f), new Vector2(0.77f, 0.805f), Warning, Background, OnFaultClicked, out faultButtonImage, out faultButtonText);
             CreateCommandButton(panel, "RESET", new Vector2(0.795f, 0.745f), new Vector2(0.94f, 0.805f), NeutralButton, TextPrimary, OnResetClicked, out resetButtonImage, out resetButtonText);
+            faultScenarioText = CreateText(panel, "FAULT SCENARIO: precursor-dose-timeout", new Vector2(0.06f, 0.724f), new Vector2(0.94f, 0.744f), 9, Warning, TextAnchor.MiddleLeft, FontStyle.Bold);
+            faultScenarioText.verticalOverflow = VerticalWrapMode.Overflow;
+            faultScenarioText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             var recipeCard = CreatePanel(panel, "Recipe Card", new Vector2(0.06f, 0.615f), new Vector2(0.94f, 0.725f), SurfaceRaised);
             CreateText(recipeCard, "CURRENT STEP", new Vector2(0.05f, 0.58f), new Vector2(0.48f, 0.92f), 12, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
@@ -424,7 +428,7 @@ namespace EquipmentTwin.Unity.Processes
             if (alarmDetailText != null)
             {
                 alarmDetailText.text = visualState.HasFault
-                    ? $"{FaultArea(visualState.StepName)} fault | hold sequence"
+                    ? $"{SelectedFaultScenarioName()} | {FaultArea(visualState.StepName)} hold"
                     : "Interlocks nominal";
             }
 
@@ -456,6 +460,7 @@ namespace EquipmentTwin.Unity.Processes
                 eventText.text = $"LIVE EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve | {playback}";
             }
 
+            UpdateFaultScenarioText(visualState);
             UpdateTimeline(visualState);
         }
 
@@ -981,7 +986,7 @@ namespace EquipmentTwin.Unity.Processes
             player.ToggleOperatorFault();
             RecordOperatorAction(
                 player.OperatorFaultActive ? "FAULT" : "FAULT CLEAR",
-                player.OperatorFaultActive ? "synthetic hold active" : "override cleared");
+                player.OperatorFaultActive ? $"{SelectedFaultScenarioName()} selected" : "override cleared");
             RefreshCanvas();
         }
 
@@ -1028,6 +1033,21 @@ namespace EquipmentTwin.Unity.Processes
             SetCommandButton(stopButtonImage, stopButtonText, playing ? "STOP" : "PAUSED", playing ? Stop : Color.Lerp(NeutralButton, Warning, 0.30f), TextPrimary);
             SetCommandButton(faultButtonImage, faultButtonText, fault ? "FAULT\nACTIVE" : "FAULT", fault ? Alarm : Warning, fault ? TextPrimary : Background);
             SetCommandButton(resetButtonImage, resetButtonText, "RESET", NeutralButton, TextPrimary);
+        }
+
+        private void UpdateFaultScenarioText(MolyAldVisualState visualState)
+        {
+            if (faultScenarioText == null)
+            {
+                return;
+            }
+
+            var scenarioName = SelectedFaultScenarioName();
+            var isFault = visualState != null && visualState.HasFault;
+            faultScenarioText.text = isFault
+                ? $"ACTIVE FAULT SCENARIO: {scenarioName}"
+                : $"SELECTED FAULT SCENARIO: {scenarioName}";
+            faultScenarioText.color = isFault ? Alarm : Warning;
         }
 
         private static void SetCommandButton(Image image, Text text, string label, Color backgroundColor, Color textColor)
@@ -1081,6 +1101,11 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             return player != null && !player.IsPlaying ? Warning : Success;
+        }
+
+        private string SelectedFaultScenarioName()
+        {
+            return player != null ? player.SelectedFaultScenarioName : "precursor-dose-timeout";
         }
 
         private Camera ResolveCamera()

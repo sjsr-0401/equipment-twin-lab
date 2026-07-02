@@ -284,3 +284,41 @@ docs/demo/moly-ald-demo-fault.png
 - [ ] FAULT button이 named process fault scenario와 연결된다.
 - [ ] demo에서 `normal -> fault -> reset recovery` 흐름을 한 번에 설명할 수 있다.
 
+## 2026-07-02 Review 008: Reset Recovery and Named Fault Scenario
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+docs/demo/moly-ald-demo-fault.png
+docs/demo/moly-ald-demo-recovery.png
+```
+
+### Verdict
+
+- 상태: 현재 MVP 수준의 operator story는 완성.
+- 한 줄 판단: `normal -> held fault -> reset recovery` 흐름이 생겨서, 이제 화면이 단순 정적 UI가 아니라 조작 결과를 설명할 수 있다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Recovery state | `PAUSED | READY`, `NO ALARM`, `Load Wafer`로 RESET이 held state를 지웠다는 점이 보인다 |
+| Fault naming | FAULT가 완전한 generic label 대신 public scenario인 `precursor-dose-timeout`을 사용한다 |
+| Operator trace | action log에서 START, FAULT, RESET 흐름을 한 화면에서 추적할 수 있다 |
+| Testability | `Invoke-UnitySmokeTest.ps1 -CaptureRecoveryScreenshot`로 recovery artifact를 재생성할 수 있다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | Unity는 아직 selected fault JSON timeline을 replay하지 않고 synthetic hold를 건다 | selected scenario를 process-runner fault replay와 연결 |
+| P2 | fault scenario를 사용자가 cycle하는 UI control은 아직 없다 | layout 여유가 생기면 scenario selector/cycle control 추가 |
+| P2 | action log는 in-memory Canvas log다 | 필요하면 run report/file log로 확장 |
+
+### Next Acceptance Criteria
+
+- [ ] `precursor-dose-timeout`을 선택하고 Unity에서 실제 fault timeline step을 replay한다.
+- [ ] HMI hold state는 safety overlay로 유지하고, process truth는 timeline replay에서 가져온다.
+- [ ] fault timeline step이 schematic, action log, alarm detail에 일관되게 표시된다.
+

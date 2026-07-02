@@ -1001,3 +1001,25 @@ Reason:
 - Normal and fault hold screens exist now.
 - The next missing demo segment is reset/recovery.
 - The next technical gap is replacing synthetic FAULT override with a named process fault scenario selector.
+
+## 2026-07-02 Loop Update: Goal 047 complete
+
+Current completed goal:
+
+- `Goal 047: Reset Recovery Screenshot and Fault Scenario Selector`
+
+What changed:
+
+- FAULT now uses the selected public scenario name `precursor-dose-timeout`.
+- Fault alarm detail and action log expose the selected scenario name.
+- Recovery screenshot generation is available through `Invoke-UnitySmokeTest.ps1 -CaptureRecoveryScreenshot`.
+- Normal, fault, and recovery screenshots are available under `docs/demo`.
+
+Current next recommendation:
+
+- `Goal 048: Fault Timeline Replay Binding`
+
+Reason:
+
+- The HMI can now tell the operator story: normal run, named fault hold, reset recovery.
+- The next technical gap is process truth: Unity should replay the actual selected fault timeline instead of only applying a synthetic hold overlay.

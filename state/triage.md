@@ -549,3 +549,18 @@ Completed:
 - Fault mode screenshot exists.
 - Operator action log exists in Canvas.
 - Normal and fault screenshots are available in `docs/demo`.
+
+## 2026-07-02 Triage Update after Goal 047
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Fault timeline replay binding | Still missing | Drive Unity process state from selected process-runner fault timeline |
+| P1 | Scenario truth boundary | Improved but not complete | Keep synthetic HMI hold separate from replayed fault timeline |
+| P2 | User-facing fault scenario selector | Not exposed yet | Add cycle/select control if useful after replay binding |
+| P2 | Action log persistence | In-memory only | Later connect to report/file log if it helps demo explanation |
+
+Completed:
+
+- Reset recovery screenshot exists.
+- FAULT now carries the selected public scenario name `precursor-dose-timeout`.
+- Normal, fault, and recovery screenshots are available in `docs/demo`.

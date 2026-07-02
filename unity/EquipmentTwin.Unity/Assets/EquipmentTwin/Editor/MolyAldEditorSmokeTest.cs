@@ -15,6 +15,7 @@ namespace EquipmentTwin.Unity.EditorTools
         public const string SuccessMarker = "EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS";
         public const string ScreenshotMarker = "EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED";
         public const string FaultScreenshotMarker = "EQUIPMENT_TWIN_UNITY_FAULT_SCREENSHOT_SAVED";
+        public const string RecoveryScreenshotMarker = "EQUIPMENT_TWIN_UNITY_RECOVERY_SCREENSHOT_SAVED";
         public const string TimelineFileName = "moly-ald-timeline.sample.json";
 
         [MenuItem("Equipment Twin/Create Moly ALD Demo Scene")]
@@ -66,6 +67,18 @@ namespace EquipmentTwin.Unity.EditorTools
             CaptureFaultScreenshot();
         }
 
+        [MenuItem("Equipment Twin/Capture Moly ALD Recovery Screenshot")]
+        public static void CaptureRecoveryScreenshotFromMenu()
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                Debug.Log("Moly ALD recovery screenshot capture was cancelled.");
+                return;
+            }
+
+            CaptureRecoveryScreenshot();
+        }
+
         public static void RunBatchSmokeTest()
         {
             try
@@ -101,6 +114,21 @@ namespace EquipmentTwin.Unity.EditorTools
             {
                 RunSmokeTest();
                 CaptureFaultScreenshot();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                EditorApplication.Exit(1);
+            }
+        }
+
+        public static void RunBatchRecoveryScreenshotCapture()
+        {
+            try
+            {
+                RunSmokeTest();
+                CaptureRecoveryScreenshot();
                 EditorApplication.Exit(0);
             }
             catch (Exception ex)
@@ -237,6 +265,41 @@ namespace EquipmentTwin.Unity.EditorTools
             return outputPath;
         }
 
+        public static string CaptureRecoveryScreenshot()
+        {
+            var root = FindDemoRoot();
+            if (root == null)
+            {
+                root = CreateDemoScene();
+            }
+
+            var visualizer = root.GetComponent<MolyAldPrimitiveVisualizer>();
+            if (visualizer == null)
+            {
+                throw new InvalidOperationException("MolyAldPrimitiveVisualizer was not found for recovery screenshot capture.");
+            }
+
+            PrepareRecoveryDemoStateForCapture(root);
+
+            var camera = Camera.main != null ? Camera.main : UnityEngine.Object.FindObjectOfType<Camera>();
+            if (camera == null)
+            {
+                CreateCamera();
+                camera = Camera.main != null ? Camera.main : UnityEngine.Object.FindObjectOfType<Camera>();
+            }
+
+            if (camera == null)
+            {
+                throw new InvalidOperationException("No camera is available for recovery screenshot capture.");
+            }
+
+            var outputPath = ResolveRecoveryScreenshotPath();
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+            RenderCameraToPng(camera, outputPath, 1280, 720);
+            Debug.Log($"{RecoveryScreenshotMarker}: {outputPath}");
+            return outputPath;
+        }
+
         public static GameObject CreateDemoScene()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -299,6 +362,7 @@ namespace EquipmentTwin.Unity.EditorTools
 
             if (!player.OperatorFaultActive)
             {
+                player.SelectFaultScenario("precursor-dose-timeout");
                 player.ToggleOperatorFault();
             }
 
@@ -309,7 +373,30 @@ namespace EquipmentTwin.Unity.EditorTools
             }
 
             operatorCanvas.EnsureCanvas();
-            operatorCanvas.RecordOperatorAction("FAULT", "synthetic hold active");
+            operatorCanvas.RecordOperatorAction("FAULT", $"{player.SelectedFaultScenarioName} selected");
+            operatorCanvas.RefreshCanvas();
+        }
+
+        private static void PrepareRecoveryDemoStateForCapture(GameObject root)
+        {
+            PrepareFaultDemoStateForCapture(root);
+
+            var player = root.GetComponent<MolyAldProcessPlayer>();
+            if (player == null)
+            {
+                throw new InvalidOperationException("MolyAldProcessPlayer was not found for recovery screenshot capture.");
+            }
+
+            player.ResetToStart();
+
+            var operatorCanvas = root.GetComponent<MolyAldOperatorCanvas>();
+            if (operatorCanvas == null)
+            {
+                throw new InvalidOperationException("MolyAldOperatorCanvas was not found for recovery screenshot capture.");
+            }
+
+            operatorCanvas.EnsureCanvas();
+            operatorCanvas.RecordOperatorAction("RESET", "fault cleared, ready at first step");
             operatorCanvas.RefreshCanvas();
         }
 
@@ -394,6 +481,11 @@ namespace EquipmentTwin.Unity.EditorTools
             if (!player.OperatorFaultActive)
             {
                 throw new InvalidOperationException("Fault selector did not enable the operator fault override.");
+            }
+
+            if (string.IsNullOrWhiteSpace(player.SelectedFaultScenarioName))
+            {
+                throw new InvalidOperationException("Fault selector did not keep a selected public fault scenario name.");
             }
 
             var faultState = MolyAldVisualStateMapper.FromTimeline(
@@ -532,6 +624,27 @@ namespace EquipmentTwin.Unity.EditorTools
                 "artifacts",
                 "unity-demo",
                 "moly-ald-demo-fault.png"));
+        }
+
+        private static string ResolveRecoveryScreenshotPath()
+        {
+            var args = Environment.GetCommandLineArgs();
+            for (var index = 0; index < args.Length - 1; index++)
+            {
+                if (string.Equals(args[index], "-equipmentTwinRecoveryScreenshot", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Path.GetFullPath(args[index + 1]);
+                }
+            }
+
+            return Path.GetFullPath(Path.Combine(
+                Application.dataPath,
+                "..",
+                "..",
+                "..",
+                "artifacts",
+                "unity-demo",
+                "moly-ald-demo-recovery.png"));
         }
 
         private static void RenderCameraToPng(Camera camera, string outputPath, int width, int height)
