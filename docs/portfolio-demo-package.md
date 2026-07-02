@@ -279,3 +279,35 @@ Boundary:
 
 - The fault screenshot is still synthetic.
 - It is not a real vendor alarm, not a real chamber fault, and not yet a named JSON fault scenario selected from the process fault matrix.
+
+## 2026-07-02 Reset recovery demo artifact
+
+Goal 047 turns the demo package from a two-screen comparison into a simple operator story.
+
+Artifacts:
+
+| Artifact | Purpose |
+|---|---|
+| `docs/demo/moly-ald-demo.png` | normal running HMI |
+| `docs/demo/moly-ald-demo-fault.png` | named fault hold HMI using `precursor-dose-timeout` |
+| `docs/demo/moly-ald-demo-recovery.png` | reset recovery HMI after clearing the held state |
+
+Demo explanation:
+
+```text
+START begins the normal process view.
+FAULT applies the selected public fault scenario label and holds the HMI.
+RESET clears the synthetic hold, returns to Load Wafer, and records the recovery action.
+```
+
+Why this matters:
+
+- the screenshot set now has beginning, fault, and recovery states;
+- the action log proves the UI state changed because of operator commands;
+- the selected fault name is visible enough to discuss public process fault modeling honestly.
+
+Boundary:
+
+- `precursor-dose-timeout` is currently used as the selected scenario name.
+- The Unity view does not yet execute that scenario's complete JSON timeline.
+- Next useful work is binding the selected scenario to actual fault timeline replay.

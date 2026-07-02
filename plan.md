@@ -3241,3 +3241,51 @@ Goal 046: Fault Mode Screenshot and Operator Action Log
 ```text
 Goal 047: Reset Recovery Screenshot and Fault Scenario Selector
 ```
+
+## 2026-07-02 Goal 047: Reset Recovery Screenshot and Fault Scenario Selector 완료
+
+목표:
+
+- 정상 실행, fault hold, reset recovery를 하나의 operator flow로 설명할 수 있게 만든다.
+- FAULT를 완전한 generic override가 아니라 public process fault scenario 이름과 연결한다.
+
+구현:
+
+- `MolyAldProcessPlayer`
+  - public fault scenario list 추가
+  - selected fault scenario 기본값을 `precursor-dose-timeout`으로 설정
+  - `SelectFaultScenario()`, `SelectNextFaultScenario()`, `ActivateSelectedFaultScenario()` 추가
+  - `ToggleOperatorFault()`가 selected scenario를 활성화한 뒤 synthetic hold를 적용하도록 변경
+- `MolyAldOperatorCanvas`
+  - selected/active fault scenario text 추가
+  - fault alarm detail과 action log에 `precursor-dose-timeout` 표시
+- `MolyAldEditorSmokeTest`
+  - recovery screenshot capture path 추가
+  - `RunBatchRecoveryScreenshotCapture()` 추가
+  - `START -> FAULT -> RESET` action log를 만든 뒤 screenshot 저장
+- `Invoke-UnitySmokeTest.ps1`
+  - `-CaptureRecoveryScreenshot` option 추가
+
+데모 artifact:
+
+- `docs/demo/moly-ald-demo.png`
+- `docs/demo/moly-ald-demo-fault.png`
+- `docs/demo/moly-ald-demo-recovery.png`
+
+설계 판단:
+
+- Unity HMI의 fault hold는 아직 synthetic safety overlay로 유지한다.
+- process-runner의 실제 fault timeline replay는 다음 goal로 분리한다.
+- 이렇게 나누면 "UI가 fault를 보여준다"와 "core process simulation이 fault를 실행한다"를 정직하게 구분할 수 있다.
+
+남은 한계:
+
+- Unity가 아직 `precursor-dose-timeout` JSON fault timeline을 직접 replay하지 않는다.
+- fault scenario cycle UI는 아직 operator panel에 없다.
+- action log는 아직 in-memory Canvas log다.
+
+다음 권장 Goal:
+
+```text
+Goal 048: Fault Timeline Replay Binding
+```

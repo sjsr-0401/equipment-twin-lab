@@ -244,15 +244,28 @@ Implementation boundary:
 - The fault screenshot uses synthetic `OperatorFaultActive`.
 - It does not yet select a named JSON fault scenario from the process fault matrix.
 
-## Goal 047 Candidate
+## Goal 047 Acceptance Criteria
 
 ```text
 Goal 047: Reset Recovery Screenshot and Fault Scenario Selector
 ```
 
-Next acceptance criteria:
+Accepted behavior:
 
-- [ ] Add reset/recovery screenshot or storyboard artifact.
-- [ ] Connect FAULT button to at least one named process fault scenario.
-- [ ] Show `START -> FAULT -> RESET -> START` as a documented operator flow.
-- [ ] Keep synthetic override and process fault injection clearly separated in docs.
+- [x] Add reset/recovery screenshot artifact.
+- [x] Connect FAULT behavior to one named public process fault scenario: `precursor-dose-timeout`.
+- [x] Show `START -> FAULT -> RESET` as a documented operator flow through the action log.
+- [x] Keep synthetic HMI hold behavior and process-runner fault replay clearly separated in docs.
+- [x] Add smoke-test support for `-CaptureRecoveryScreenshot`.
+
+Implemented artifacts:
+
+- `docs/demo/moly-ald-demo.png`
+- `docs/demo/moly-ald-demo-fault.png`
+- `docs/demo/moly-ald-demo-recovery.png`
+
+Implementation boundary:
+
+- The Unity FAULT button still applies a synthetic HMI hold state.
+- The selected scenario name is now visible/logged, but Unity is not yet replaying the full JSON fault timeline.
+- Full process-runner fault timeline replay is the next architecture step.

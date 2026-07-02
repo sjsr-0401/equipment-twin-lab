@@ -4,6 +4,14 @@ namespace EquipmentTwin.Unity.Processes
 {
     public sealed class MolyAldProcessPlayer : MonoBehaviour
     {
+        private static readonly string[] PublicFaultScenarioNames =
+        {
+            "pumpdown-timeout",
+            "temperature-not-stable",
+            "precursor-dose-timeout",
+            "purge-timeout"
+        };
+
         [Header("Timeline source")]
         [SerializeField] private TextAsset timelineAsset;
         [SerializeField] private string streamingAssetsRelativePath = "moly-ald-timeline.sample.json";
@@ -13,6 +21,9 @@ namespace EquipmentTwin.Unity.Processes
         [SerializeField] private bool loop;
         [SerializeField] private float playbackSpeed = 1.0f;
         [SerializeField] private float minimumStepSeconds = 0.25f;
+
+        [Header("Fault scenario")]
+        [SerializeField] private string selectedFaultScenarioName = "precursor-dose-timeout";
 
         private MolyAldTimelineDocumentDto timeline;
         private int currentStepIndex;
@@ -41,6 +52,10 @@ namespace EquipmentTwin.Unity.Processes
         public bool IsPlaying => isPlaying;
 
         public bool OperatorFaultActive => operatorFaultActive;
+
+        public string SelectedFaultScenarioName => NormalizeFaultScenarioName(selectedFaultScenarioName);
+
+        public string ActiveFaultScenarioName => operatorFaultActive ? SelectedFaultScenarioName : string.Empty;
 
         public string LoadError => loadError;
 
@@ -96,6 +111,7 @@ namespace EquipmentTwin.Unity.Processes
                 currentStepIndex = 0;
                 elapsedInCurrentStepSeconds = 0f;
                 operatorFaultActive = false;
+                selectedFaultScenarioName = SelectedFaultScenarioName;
             }
             catch (System.Exception ex)
             {
@@ -140,17 +156,47 @@ namespace EquipmentTwin.Unity.Processes
 
         public void ToggleOperatorFault()
         {
-            operatorFaultActive = !operatorFaultActive;
-
             if (operatorFaultActive)
             {
-                Pause();
+                ClearOperatorFault();
+                return;
             }
+
+            ActivateSelectedFaultScenario();
+        }
+
+        public void ActivateSelectedFaultScenario()
+        {
+            selectedFaultScenarioName = SelectedFaultScenarioName;
+            operatorFaultActive = true;
+            Pause();
         }
 
         public void ClearOperatorFault()
         {
             operatorFaultActive = false;
+        }
+
+        public void SelectFaultScenario(string scenarioName)
+        {
+            selectedFaultScenarioName = NormalizeFaultScenarioName(scenarioName);
+        }
+
+        public void SelectNextFaultScenario()
+        {
+            var current = SelectedFaultScenarioName;
+            var nextIndex = 0;
+
+            for (var index = 0; index < PublicFaultScenarioNames.Length; index++)
+            {
+                if (string.Equals(PublicFaultScenarioNames[index], current, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    nextIndex = (index + 1) % PublicFaultScenarioNames.Length;
+                    break;
+                }
+            }
+
+            selectedFaultScenarioName = PublicFaultScenarioNames[nextIndex];
         }
 
         public void AdvanceStep()
@@ -181,6 +227,24 @@ namespace EquipmentTwin.Unity.Processes
         private float GetStepDurationSeconds(MolyAldTimelineStepDto step)
         {
             return Mathf.Max(minimumStepSeconds, step.durationMilliseconds / 1000f);
+        }
+
+        private static string NormalizeFaultScenarioName(string scenarioName)
+        {
+            if (string.IsNullOrWhiteSpace(scenarioName))
+            {
+                return PublicFaultScenarioNames[0];
+            }
+
+            for (var index = 0; index < PublicFaultScenarioNames.Length; index++)
+            {
+                if (string.Equals(PublicFaultScenarioNames[index], scenarioName.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return PublicFaultScenarioNames[index];
+                }
+            }
+
+            return PublicFaultScenarioNames[0];
         }
     }
 }

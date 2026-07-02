@@ -2235,3 +2235,42 @@ Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot
 - `OperatorFaultActive`는 synthetic operator override다.
 - 아직 process fault matrix JSON scenario selector가 아니다.
 - screenshot은 HMI 반응을 보여주는 artifact다.
+
+## 2026-07-02 — Goal 047 Reset Recovery / Fault Scenario 이해 사인오프
+
+이번 변경의 핵심은 "fault가 났다"를 보여주는 것에서 끝내지 않고, operator가 reset으로 복구하는 흐름까지 화면과 로그에 남기는 것이다.
+
+흐름:
+
+```text
+START
+    -> normal running HMI
+FAULT
+    -> selected scenario: precursor-dose-timeout
+    -> synthetic HMI hold
+RESET
+    -> clear hold
+    -> return to Load Wafer
+    -> PAUSED | READY
+```
+
+관련 코드:
+
+- `MolyAldProcessPlayer`
+  - selected fault scenario를 보관한다.
+  - `SelectFaultScenario()`로 scenario name을 고른다.
+  - `ActivateSelectedFaultScenario()`가 active scenario를 잡고 hold state를 만든다.
+- `MolyAldOperatorCanvas`
+  - player의 selected/active scenario name을 읽어서 alarm detail과 action log에 표시한다.
+  - UI가 process truth를 직접 만들지 않는다.
+- `MolyAldEditorSmokeTest`
+  - screenshot용 demo state를 자동으로 만든다.
+  - recovery screenshot은 `START -> FAULT -> RESET` 순서를 만든 뒤 저장한다.
+- `Invoke-UnitySmokeTest.ps1`
+  - `-CaptureRecoveryScreenshot`로 recovery artifact를 만든다.
+
+중요한 boundary:
+
+- 지금 Unity FAULT는 아직 실제 JSON fault timeline replay가 아니다.
+- `precursor-dose-timeout`이라는 이름은 붙었지만, 현재는 HMI hold를 설명하는 selected scenario label이다.
+- 다음 goal에서 process-runner의 실제 fault step/timeline을 Unity player에 연결해야 한다.

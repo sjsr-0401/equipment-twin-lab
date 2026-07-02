@@ -270,3 +270,38 @@ Important boundary:
 
 - This screenshot uses synthetic `OperatorFaultActive`.
 - It demonstrates HMI behavior, not a real vendor fault or a real chamber process fault.
+
+## 2026-07-02 Reset recovery screenshot update
+
+Goal 047 adds the recovery screen that closes the visible operator flow:
+
+```text
+START -> FAULT -> RESET
+```
+
+Recovery screenshot:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureRecoveryScreenshot
+```
+
+Generated artifacts:
+
+```text
+artifacts/unity-demo/moly-ald-demo-recovery.png
+docs/demo/moly-ald-demo-recovery.png
+```
+
+What the recovery screenshot should show:
+
+- top state: `PAUSED | READY`;
+- current step returned to `Load Wafer`;
+- alarm card returned to `NO ALARM`;
+- `OPERATOR ACTION LOG` includes `START`, `FAULT`, and `RESET`;
+- fault detail uses the named public scenario `precursor-dose-timeout`.
+
+Important boundary:
+
+- The FAULT control now carries a named scenario label.
+- Unity still uses a synthetic hold for the operator-console demonstration.
+- It does not yet replay the full process-runner fault timeline JSON.
