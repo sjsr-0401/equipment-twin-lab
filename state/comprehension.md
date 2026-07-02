@@ -1928,3 +1928,50 @@ MolyAldProcessPlayer.CurrentStep
 - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
 - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualState.cs`
 - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs`
+
+## 2026-07-02 이해 요약: ALD Fault Matrix Report
+
+이번 Goal의 핵심은 “화면 녹화”가 아니라 “공정 fault 검증을 자동화”한 것이다.
+
+한 문장 설명:
+
+> `process batch`는 ALD recipe를 읽고 정상 공정 1개와 모든 fault scenario를 실행해서, 정상은 통과하고 fault는 안전하게 `Alarmed`로 멈추는지 자동 비교하는 CLI 명령이다.
+
+왜 필요한가:
+
+- 장비 SW는 정상 공정만 검증하면 부족하다.
+- timeout, pressure fault, temperature fault 같은 비정상 상황에서 다음 step으로 넘어가지 않아야 한다.
+- fault가 실패 step으로 기록되고, 최종 상태가 `Alarmed`가 되는지 자동으로 확인해야 한다.
+
+구조:
+
+```text
+processes/public-moly-ald-metallization.json
+    -> MolyAldRecipe.FromJson()
+    -> MolyAldRunner.Run(recipe)
+    -> MolyAldRunner.Run(recipe, fault.Name)
+    -> ProcessBatchRun.ExpectationMet
+    -> Markdown fault matrix report
+```
+
+중요한 설계 판단:
+
+- `process batch`는 공정 로직을 복사하지 않는다.
+- `MolyAldRunner`를 여러 번 호출한다.
+- 그래서 `process run`과 `process batch`가 같은 공정 실행 기준을 공유한다.
+
+유지보수할 때 보는 파일:
+
+- `processes/public-moly-ald-metallization.json`
+- `src/EquipmentTwin.Core/Processes/MolyAldRunner.cs`
+- `src/EquipmentTwin.Cli/Program.cs`
+- `tests/EquipmentTwin.Core.Tests/Program.cs`
+- `docs/ald-fault-matrix-report.md`
+
+새 fault를 추가하는 순서:
+
+1. JSON recipe의 `faultScenarios`에 fault를 추가한다.
+2. 필요한 fault kind가 없으면 Core model을 확장한다.
+3. `MolyAldRunner`에서 해당 fault가 어느 step에서 멈출지 구현한다.
+4. Core test를 추가한다.
+5. `process batch`를 돌려 정상/fault matrix가 맞는지 확인한다.

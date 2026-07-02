@@ -26,6 +26,7 @@ static int Run(string[] args)
             CliMode.TemplateRun => RunTemplate(options),
             CliMode.TemplateBatch => RunTemplateBatch(options),
             CliMode.ProcessRun => RunProcess(options),
+            CliMode.ProcessBatch => RunProcessBatch(options),
             _ => throw new InvalidOperationException($"Unsupported CLI mode '{options.Mode}'.")
         };
     }
@@ -145,6 +146,41 @@ static int RunProcess(CliOptions options)
     return result.Success ? 0 : 1;
 }
 
+static int RunProcessBatch(CliOptions options)
+{
+    var json = File.ReadAllText(options.ScenarioPath);
+    var recipe = MolyAldRecipe.FromJson(json);
+    var runs = new List<ProcessBatchRun>();
+
+    var normalRunner = new MolyAldRunner(new ManualClock(options.InitialUtc));
+    runs.Add(new ProcessBatchRun(
+        "normal",
+        FaultScenarioName: null,
+        ExpectedSuccess: true,
+        normalRunner.Run(recipe)));
+
+    foreach (var fault in recipe.FaultScenarios.OrderBy(fault => fault.Name, StringComparer.OrdinalIgnoreCase))
+    {
+        var runner = new MolyAldRunner(new ManualClock(options.InitialUtc));
+        runs.Add(new ProcessBatchRun(
+            fault.Name,
+            fault.Name,
+            ExpectedSuccess: false,
+            runner.Run(recipe, fault.Name)));
+    }
+
+    PrintProcessBatchResult(recipe, runs);
+
+    if (!string.IsNullOrWhiteSpace(options.ReportPath))
+    {
+        WriteProcessBatchMarkdownReport(options.ReportPath, recipe, runs, options);
+        Console.WriteLine();
+        Console.WriteLine($"Report: {options.ReportPath}");
+    }
+
+    return runs.All(run => run.ExpectationMet) ? 0 : 1;
+}
+
 static ScenarioCliRun ExecuteScenario(string scenarioPath, CliOptions options)
 {
     try
@@ -201,6 +237,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template run <template.json> <recipe> [--fault <fault-name>] [--inspection <scenario-name>] [--expect-execution-failure] [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- template batch <template.json> [--report <report.md>] [--initial-utc <iso-utc>]
           dotnet run --project src/EquipmentTwin.Cli -- process run <process-recipe.json> [--fault <fault-name>] [--report <report.md>] [--timeline <timeline.json>] [--initial-utc <iso-utc>]
+          dotnet run --project src/EquipmentTwin.Cli -- process batch <process-recipe.json> [--report <report.md>] [--initial-utc <iso-utc>]
 
         Examples:
           dotnet run --project src/EquipmentTwin.Cli -- scenarios/normal-cycle.json
@@ -214,6 +251,7 @@ static void PrintUsage()
           dotnet run --project src/EquipmentTwin.Cli -- template batch templates/vision-inspection-cell.json --report artifacts/template-batch-report.md
           dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md --timeline artifacts/moly-ald-timeline.json
           dotnet run --project src/EquipmentTwin.Cli -- process run processes/public-moly-ald-metallization.json --fault pumpdown-timeout
+          dotnet run --project src/EquipmentTwin.Cli -- process batch processes/public-moly-ald-metallization.json --report artifacts/moly-ald-fault-matrix-report.md
 
         Options:
           --default-timeouts       Use the default MVP timeout policy.
@@ -410,6 +448,31 @@ static void PrintProcessResult(MolyAldRunResult result)
     }
 }
 
+static void PrintProcessBatchResult(MolyAldRecipe recipe, IReadOnlyList<ProcessBatchRun> runs)
+{
+    var met = runs.Count(run => run.ExpectationMet);
+    var notMet = runs.Count - met;
+
+    Console.WriteLine("Process fault matrix");
+    Console.WriteLine($"Process:       {recipe.Name}");
+    Console.WriteLine($"Result:        {(notMet == 0 ? "PASS" : "FAIL")}");
+    Console.WriteLine($"Cases:         {runs.Count}");
+    Console.WriteLine($"Expectation OK: {met}");
+    Console.WriteLine($"Expectation NG: {notMet}");
+    Console.WriteLine();
+
+    foreach (var run in runs)
+    {
+        var actual = run.Result.Success ? "PASS" : "FAIL";
+        var expected = run.ExpectedSuccess ? "PASS" : "FAIL";
+        var expectation = run.ExpectationMet ? "MET" : "NOT_MET";
+        var failedStep = DescribeProcessFailedStep(run.Result);
+
+        Console.WriteLine(
+            $"{expectation,-7} {run.CaseName,-28} expected={expected,-4} actual={actual,-4} final={run.Result.FinalStep,-8} failed={failedStep}");
+    }
+}
+
 static void WriteTemplateMarkdownReport(string reportPath, TemplateRunResult result, CliOptions options)
 {
     var directory = Path.GetDirectoryName(reportPath);
@@ -514,6 +577,89 @@ static void WriteProcessTimelineJson(string timelinePath, MolyAldRunResult resul
 
     var timeline = MolyAldTimelineDocument.FromRunResult(result);
     File.WriteAllText(timelinePath, timeline.ToJson(), Encoding.UTF8);
+}
+
+static void WriteProcessBatchMarkdownReport(
+    string reportPath,
+    MolyAldRecipe recipe,
+    IReadOnlyList<ProcessBatchRun> runs,
+    CliOptions options)
+{
+    var directory = Path.GetDirectoryName(reportPath);
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    File.WriteAllText(reportPath, BuildProcessBatchMarkdownReport(recipe, runs, options), Encoding.UTF8);
+}
+
+static string BuildProcessBatchMarkdownReport(
+    MolyAldRecipe recipe,
+    IReadOnlyList<ProcessBatchRun> runs,
+    CliOptions options)
+{
+    var builder = new StringBuilder();
+    var met = runs.Count(run => run.ExpectationMet);
+    var notMet = runs.Count - met;
+
+    builder.AppendLine("# Public Molybdenum ALD Fault Matrix Report");
+    builder.AppendLine();
+    builder.AppendLine($"- Generated UTC: `{DateTimeOffset.UtcNow:O}`");
+    builder.AppendLine($"- Initial run UTC: `{options.InitialUtc:O}`");
+    builder.AppendLine($"- Process file: `{options.ScenarioPath}`");
+    builder.AppendLine($"- Recipe: `{recipe.Name}`");
+    builder.AppendLine($"- Cases: `{runs.Count}`");
+    builder.AppendLine($"- Expectation met: `{met}`");
+    builder.AppendLine($"- Expectation not met: `{notMet}`");
+    builder.AppendLine();
+    builder.AppendLine("> This report is a public/synthetic ALD fault-injection matrix. It is not a real vendor fault catalog, real alarm table, or real equipment log.");
+    builder.AppendLine();
+
+    builder.AppendLine("## Summary");
+    builder.AppendLine();
+    builder.AppendLine("| Case | Fault | Expected | Actual | Expectation | Final Step | Failed Step | Thickness A | Duration |");
+    builder.AppendLine("|---|---|---|---|---|---|---|---:|---:|");
+
+    foreach (var run in runs)
+    {
+        var actual = run.Result.Success ? "PASS" : "FAIL";
+        var expected = run.ExpectedSuccess ? "PASS" : "FAIL";
+        var expectation = run.ExpectationMet ? "MET" : "NOT_MET";
+        builder.AppendLine(
+            $"| {EscapeMarkdownTable(run.CaseName)} | {EscapeMarkdownTable(run.FaultScenarioName ?? "None")} | {expected} | {actual} | {expectation} | {run.Result.FinalStep} | {EscapeMarkdownTable(DescribeProcessFailedStep(run.Result))} | {run.Result.EstimatedThicknessAngstrom:0.###} | {run.Result.TotalDuration} |");
+    }
+
+    builder.AppendLine();
+    builder.AppendLine("## Details");
+    builder.AppendLine();
+
+    foreach (var run in runs)
+    {
+        builder.AppendLine($"### {run.CaseName}");
+        builder.AppendLine();
+        builder.AppendLine($"- Fault: `{run.FaultScenarioName ?? "None"}`");
+        builder.AppendLine($"- Expected: `{(run.ExpectedSuccess ? "PASS" : "FAIL")}`");
+        builder.AppendLine($"- Actual: `{(run.Result.Success ? "PASS" : "FAIL")}`");
+        builder.AppendLine($"- Expectation: `{(run.ExpectationMet ? "MET" : "NOT_MET")}`");
+        builder.AppendLine($"- Final step: `{run.Result.FinalStep}`");
+        builder.AppendLine($"- Failed step: `{DescribeProcessFailedStep(run.Result)}`");
+        builder.AppendLine($"- Message: `{EscapeMarkdownTable(run.Result.Message)}`");
+        builder.AppendLine();
+        builder.AppendLine("| # | Result | Step | Cycle | Pressure mTorr | Temp C | Thickness A | Message |");
+        builder.AppendLine("|---:|---|---|---:|---:|---:|---:|---|");
+
+        foreach (var step in run.Result.Steps)
+        {
+            var cycle = step.Cycle?.ToString() ?? "-";
+            builder.AppendLine(
+                $"| {step.Index} | {(step.Success ? "PASS" : "FAIL")} | {step.Step} | {cycle} | {step.ChamberPressureMtorr:0.#} | {step.WaferTemperatureC:0.#} | {step.EstimatedThicknessAngstrom:0.###} | {EscapeMarkdownTable(step.Message)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    return builder.ToString();
 }
 
 static string BuildProcessMarkdownReport(MolyAldRunResult result, CliOptions options)
@@ -675,6 +821,12 @@ static string DescribeTemplateMotionAxes(TemplateRunResult result)
 
                 return $"{axis.Name}: {axis.State} @ {axis.Position} ({alarm})";
             }));
+}
+
+static string DescribeProcessFailedStep(MolyAldRunResult result)
+{
+    var failedStep = result.FailedSteps.FirstOrDefault();
+    return failedStep is null ? "None" : failedStep.Step.ToString();
 }
 
 static void PrintBatchResult(IReadOnlyList<ScenarioCliRun> runs)
@@ -854,7 +1006,8 @@ internal enum CliMode
     Batch,
     TemplateRun,
     TemplateBatch,
-    ProcessRun
+    ProcessRun,
+    ProcessBatch
 }
 
 internal sealed record CliOptions(
@@ -877,7 +1030,7 @@ internal sealed record CliOptions(
 
     private static bool IsProcessMode(CliMode mode)
     {
-        return mode == CliMode.ProcessRun;
+        return mode is CliMode.ProcessRun or CliMode.ProcessBatch;
     }
 
     public static CliOptions Parse(string[] args)
@@ -927,13 +1080,20 @@ internal sealed record CliOptions(
                 throw new ArgumentException("Process command is required. Use 'process run'.");
             }
 
-            if (!args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
+            if (args[position].Equals("run", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Process command must be 'run'.");
+                mode = CliMode.ProcessRun;
+                position++;
             }
-
-            mode = CliMode.ProcessRun;
-            position++;
+            else if (args[position].Equals("batch", StringComparison.OrdinalIgnoreCase))
+            {
+                mode = CliMode.ProcessBatch;
+                position++;
+            }
+            else
+            {
+                throw new ArgumentException("Process command must be 'run' or 'batch'.");
+            }
         }
 
         if (position >= args.Length)
@@ -1094,7 +1254,7 @@ internal sealed record CliOptions(
             return new CliOptions(mode, scenarioPath, useDefaultTimeouts, initialUtc, reportPath, timelinePath, templatePath, recipeName, faultScenarioName, inspectionScenarioName, expectExecutionFailure);
         }
 
-        if ((mode == CliMode.Run || mode == CliMode.ProcessRun) && !File.Exists(scenarioPath))
+        if ((mode == CliMode.Run || IsProcessMode(mode)) && !File.Exists(scenarioPath))
         {
             var pathKind = IsProcessMode(mode) ? "Process recipe" : "Scenario";
             throw new FileNotFoundException($"{pathKind} file was not found: {scenarioPath}");
@@ -1107,6 +1267,15 @@ internal sealed record CliOptions(
 internal sealed record TemplateBatchRun(
     string RecipeName,
     TemplateRunResult Result);
+
+internal sealed record ProcessBatchRun(
+    string CaseName,
+    string? FaultScenarioName,
+    bool ExpectedSuccess,
+    MolyAldRunResult Result)
+{
+    public bool ExpectationMet => Result.Success == ExpectedSuccess;
+}
 
 internal sealed record ScenarioCliRun(
     string ScenarioPath,

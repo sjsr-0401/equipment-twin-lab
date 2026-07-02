@@ -59,6 +59,9 @@ jobs:
       - name: Run public moly ALD process through CLI
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- process run processes/public-moly-ald-metallization.json --report artifacts/moly-ald-process-report.md --timeline artifacts/moly-ald-timeline.json
 
+      - name: Run public moly ALD fault matrix through CLI
+        run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- process batch processes/public-moly-ald-metallization.json --report artifacts/moly-ald-fault-matrix-report.md
+
       - name: Verify Unity process player, primitive visual, and smoke-test files
         run: |
           test -f unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldTimelineData.cs
@@ -89,6 +92,7 @@ jobs:
           test -f goals/035-demo-rehearsal-runner.md
           test -f goals/036-demo-narration-cue-cards.md
           test -f goals/037-explanatory-unity-demo-screenshot.md
+          test -f goals/038-ald-fault-matrix-report.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Status Panel Background" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs

@@ -104,6 +104,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | 모션 축 모델 | 구현/테스트 완료 | `MotionAxis`, motion scenario tests |
 | Product/Inspection data model | 구현/테스트 완료 | `ProductRecipe`, `InspectionResult`, template CLI |
 | 공개/합성 ALD process | 구현/CLI 검증 완료 | `MolyAldRunner`, `process run` |
+| ALD fault matrix | 정상 + 모든 fault 기대 결과 자동 비교 | `process batch`, `docs/ald-fault-matrix-report.md` |
 | Unity timeline data contract | 구현/파일 검증 완료 | `MolyAldTimelineDocument`, sample JSON |
 | Unity primitive visual | 실제 Unity Editor batch 검증 완료 | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
 | Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |

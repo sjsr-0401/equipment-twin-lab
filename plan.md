@@ -1,6 +1,6 @@
 # Equipment Twin Lab 개발 계획
 
-> 상태: 초안 v1.2 — Unity screenshot과 3분 데모 체크리스트 추가
+> 상태: 초안 v1.3 — ALD fault matrix 자동 검증 추가
 > 작성일: 2026-06-25  
 > 프로젝트 성격: 장비 SW 엔지니어 대표 포트폴리오  
 > 제안 저장소명: `equipment-twin-lab`
@@ -14,7 +14,9 @@
 - CAD/Blender 모델 교체 경계는 `MolyAldVisualState`와 `MolyAldImportedModelVisualBinding`으로 분리한다.
 - 3분 녹화 전 리허설은 `scripts/Invoke-PortfolioDemoRehearsal.ps1`로 실행한다.
 - 3분 녹화 한글 큐카드는 `scripts/New-PortfolioDemoCueCards.ps1`로 생성한다.
-- Unity 대표 screenshot은 status panel, color key, process flow를 포함한 설명형 이미지로 개선 중이다.
+- Unity 대표 screenshot은 status panel, color key, process flow를 포함한 설명형 이미지로 개선했다.
+- 녹화는 보류하고, 개발 쪽으로 ALD 정상/fault batch 검증을 추가한다.
+- `process batch`는 정상 공정과 모든 configured fault를 실행해 기대 PASS/FAIL과 실제 결과를 자동 비교한다.
 
 ## 1. 프로젝트 한 줄 정의
 
@@ -2838,5 +2840,51 @@ Unity primitive visual = explanatory screenshot
 다음 권장 Goal:
 
 ```text
-Goal 038: 실제 3분 녹화 후 설명 막힘/화면 부족분 수정
+Goal 038: ALD fault matrix 자동 검증
+```
+
+## 60. 2026-07-02 Goal 038: ALD Fault Matrix Report
+
+Goal 038은 비주얼 녹화 대신 개발 검증을 강화하는 작업이다.
+
+핵심 목표:
+
+- 공개/합성 molybdenum ALD recipe의 정상 케이스 실행
+- 같은 recipe에 정의된 모든 fault scenario 실행
+- 정상은 `PASS`, fault는 `FAIL/Alarmed`가 되는지 자동 비교
+- 결과를 console summary와 Markdown report로 출력
+- CI에서 batch 검증 명령을 실행
+
+사용 명령:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process batch processes\public-moly-ald-metallization.json --report artifacts\moly-ald-fault-matrix-report.md
+```
+
+구조:
+
+```text
+MolyAldRunner = 공정 실행 source of truth
+process run   = MolyAldRunner 1회 실행
+process batch = MolyAldRunner 여러 번 실행 + 기대 결과 비교
+```
+
+이번 단계에서 중요한 설계 판단:
+
+- batch용 공정 로직을 따로 만들지 않는다.
+- 기존 `MolyAldRunner`를 재사용해서 정상 run과 fault run의 기준을 하나로 유지한다.
+- CLI exit code를 검증 결과와 연결해 CI에서 자동 실패/통과를 판단하게 한다.
+
+이번 단계에서 하지 않는 것:
+
+- 실제 vendor fault catalog 구현
+- 실제 장비 alarm code 구현
+- 실제 증착 물리 모델 구현
+- Unity 화면 개선
+- 실제 녹화
+
+다음 권장 Goal:
+
+```text
+Goal 039: 새 ALD fault kind 추가 또는 batch report를 HTML/간단 dashboard로 보기 좋게 개선
 ```

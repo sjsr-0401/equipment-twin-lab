@@ -368,3 +368,25 @@ Completion status:
 - Draft PR #35: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
 - CI: passed
 - Next: user records the 3-minute demo using the improved screenshot.
+
+## 2026-07-02 Triage Update: Goal 038
+
+Active focus moved from recording/demo visuals back to development validation.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | ALD fault matrix CLI | Batch validation proves normal and fault behavior without relying on a screen recording | In progress |
+| P1 | CI process batch check | Fault matrix should fail automatically if expectations drift | In progress |
+| P2 | Better visual/demo polish | User explicitly postponed recording for now | Deferred |
+
+Current validation boundary:
+
+- The ALD model is public/synthetic.
+- `process batch` verifies expected software behavior, not real vendor alarm tables.
+- Normal case should complete; configured fault cases should stop in `Alarmed`.
+
+Next priority:
+
+- Finish docs/logs for Goal 038.
+- Run Release build, Core tests, process batch CLI, and `git diff --check`.
+- Open PR and verify CI.
