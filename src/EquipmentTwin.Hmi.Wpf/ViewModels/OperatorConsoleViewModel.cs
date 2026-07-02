@@ -13,18 +13,18 @@ namespace EquipmentTwin.Hmi.Wpf.ViewModels;
 
 public sealed class OperatorConsoleViewModel : ObservableObject
 {
-    private static readonly Brush BackgroundBrush = Brush("#0B0F14");
-    private static readonly Brush SurfaceBrush = Brush("#151C24");
-    private static readonly Brush SurfaceRaisedBrush = Brush("#1D2733");
-    private static readonly Brush TextPrimaryBrush = Brush("#EAF0F7");
-    private static readonly Brush TextMutedBrush = Brush("#9AA8B7");
-    private static readonly Brush PrimaryBrush = Brush("#2EA8FF");
-    private static readonly Brush SuccessBrush = Brush("#2AD17D");
-    private static readonly Brush WarningBrush = Brush("#FFB84D");
-    private static readonly Brush AlarmBrush = Brush("#FF3B3B");
-    private static readonly Brush PrecursorBrush = Brush("#F7A83B");
-    private static readonly Brush ReactantBrush = Brush("#38CFFF");
-    private static readonly Brush PurgeBrush = Brush("#31D86B");
+    private static readonly Brush BackgroundBrush = Brush("#16191D");
+    private static readonly Brush SurfaceBrush = Brush("#20252B");
+    private static readonly Brush SurfaceRaisedBrush = Brush("#2B3138");
+    private static readonly Brush SurfaceActiveBrush = Brush("#3A424B");
+    private static readonly Brush ChamberNormalBrush = Brush("#202A31");
+    private static readonly Brush ChamberAlarmBrush = Brush("#4A2428");
+    private static readonly Brush TextPrimaryBrush = Brush("#E5E8EB");
+    private static readonly Brush TextMutedBrush = Brush("#A6ADB5");
+    private static readonly Brush NeutralSignalBrush = Brush("#8D97A3");
+    private static readonly Brush WarningBrush = Brush("#DCA84A");
+    private static readonly Brush AlarmBrush = Brush("#D14B4B");
+    private static readonly Brush AlarmSurfaceBrush = Brush("#5A2428");
 
     private readonly MolyAldRecipeService recipeService = new();
     private readonly MolyAldRunner runner = new(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
@@ -117,7 +117,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
     }
 
-    public Brush RunStateBrush => isAlarmActive ? AlarmBrush : isRunning ? SuccessBrush : WarningBrush;
+    public Brush RunStateBrush => isAlarmActive ? AlarmBrush : isRunning ? TextPrimaryBrush : TextMutedBrush;
 
     public string CurrentStepName => CurrentStep == null ? "-" : StepRowViewModel.DisplayStepName(CurrentStep.Step);
 
@@ -153,7 +153,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public string TemperatureStatus => CurrentStep == null ? "-" : RangeStatus(CurrentStep.WaferTemperatureC, 245, 255, "COOL", "OK", "HOT");
 
-    public string FilmStatus => CurrentStep == null ? "-" : CurrentStep.EstimatedThicknessAngstrom >= (timeline?.TargetThicknessAngstrom ?? 0) ? "TARGET" : "GROWING";
+    public string FilmStatus => CurrentStep == null ? "-" : CurrentStep.EstimatedThicknessAngstrom >= (timeline?.TargetThicknessAngstrom ?? 0) ? "OK TARGET" : "… GROWING";
 
     public Brush PressureStatusBrush => StatusBrush(PressureStatus);
 
@@ -161,31 +161,37 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public Brush FilmStatusBrush => StatusBrush(FilmStatus);
 
-    public string AlarmTitle => isAlarmActive ? "ALARM ACTIVE" : "NO ALARM";
+    public string AlarmIcon => isAlarmActive ? "!" : "OK";
+
+    public Brush AlarmIconBrush => isAlarmActive ? WarningBrush : TextMutedBrush;
+
+    public string AlarmTitle => isAlarmActive ? "ALARM ACTIVE" : "NO ACTIVE ALARM";
 
     public string AlarmDetail => isAlarmActive && CurrentStep != null
         ? $"{SelectedFaultScenario} | {FaultArea(CurrentStep.Step)} replay"
-        : "Interlocks nominal";
+        : "Interlocks nominal | no abnormal condition";
 
     public string AlarmCode => isAlarmActive && CurrentStep != null
         ? $"PRI 1 | CODE {FaultCode(CurrentStep.Step)}"
         : "PRI 0 | CODE ----";
 
-    public Brush AlarmCardBrush => isAlarmActive ? AlarmBrush : Brush("#173D34");
+    public Brush AlarmCodeBrush => isAlarmActive ? WarningBrush : TextMutedBrush;
 
-    public Brush ChamberBrush => isAlarmActive ? Brush("#9A3036") : Brush("#12212C");
+    public Brush AlarmCardBrush => isAlarmActive ? AlarmSurfaceBrush : SurfaceRaisedBrush;
 
-    public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? PrecursorBrush : SurfaceRaisedBrush;
+    public Brush ChamberBrush => isAlarmActive ? ChamberAlarmBrush : ChamberNormalBrush;
 
-    public Brush ReactantValveBrush => CurrentStep?.Valves.Reactant == true ? ReactantBrush : SurfaceRaisedBrush;
+    public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? SurfaceActiveBrush : SurfaceRaisedBrush;
 
-    public Brush PurgeValveBrush => CurrentStep?.Valves.Purge == true ? PurgeBrush : SurfaceRaisedBrush;
+    public Brush ReactantValveBrush => CurrentStep?.Valves.Reactant == true ? SurfaceActiveBrush : SurfaceRaisedBrush;
 
-    public string PrecursorValveText => CurrentStep?.Valves.MetalPrecursor == true ? "PRE\nON" : "PRE\nOFF";
+    public Brush PurgeValveBrush => CurrentStep?.Valves.Purge == true ? SurfaceActiveBrush : SurfaceRaisedBrush;
 
-    public string ReactantValveText => CurrentStep?.Valves.Reactant == true ? "RCT\nON" : "RCT\nOFF";
+    public string PrecursorValveText => CurrentStep?.Valves.MetalPrecursor == true ? "PRE\nOPEN" : "PRE\nCLOSED";
 
-    public string PurgeValveText => CurrentStep?.Valves.Purge == true ? "PRG\nON" : "PRG\nOFF";
+    public string ReactantValveText => CurrentStep?.Valves.Reactant == true ? "RCT\nOPEN" : "RCT\nCLOSED";
+
+    public string PurgeValveText => CurrentStep?.Valves.Purge == true ? "PRG\nOPEN" : "PRG\nCLOSED";
 
     public string FlowText
     {
@@ -193,25 +199,25 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             if (isAlarmActive)
             {
-                return "FLOW: held by alarm";
+                return "ALARM HOLD: flow inhibited";
             }
 
             if (CurrentStep?.Valves.MetalPrecursor == true)
             {
-                return "FLOW: precursor pulse -> chamber";
+                return "OPEN: precursor pulse -> chamber";
             }
 
             if (CurrentStep?.Valves.Reactant == true)
             {
-                return "FLOW: reactant pulse -> chamber";
+                return "OPEN: reactant pulse -> chamber";
             }
 
             if (CurrentStep?.Valves.Purge == true)
             {
-                return "FLOW: purge N2 -> exhaust";
+                return "OPEN: purge N2 -> exhaust";
             }
 
-            return "FLOW: idle / closed";
+            return "CLOSED: idle / all valves closed";
         }
     }
 
@@ -224,19 +230,11 @@ public sealed class OperatorConsoleViewModel : ObservableObject
                 return AlarmBrush;
             }
 
-            if (CurrentStep?.Valves.MetalPrecursor == true)
+            if (CurrentStep?.Valves.MetalPrecursor == true ||
+                CurrentStep?.Valves.Reactant == true ||
+                CurrentStep?.Valves.Purge == true)
             {
-                return PrecursorBrush;
-            }
-
-            if (CurrentStep?.Valves.Reactant == true)
-            {
-                return ReactantBrush;
-            }
-
-            if (CurrentStep?.Valves.Purge == true)
-            {
-                return PurgeBrush;
+                return TextPrimaryBrush;
             }
 
             return TextMutedBrush;
@@ -459,9 +457,12 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(PressureStatusBrush));
         OnPropertyChanged(nameof(TemperatureStatusBrush));
         OnPropertyChanged(nameof(FilmStatusBrush));
+        OnPropertyChanged(nameof(AlarmIcon));
+        OnPropertyChanged(nameof(AlarmIconBrush));
         OnPropertyChanged(nameof(AlarmTitle));
         OnPropertyChanged(nameof(AlarmDetail));
         OnPropertyChanged(nameof(AlarmCode));
+        OnPropertyChanged(nameof(AlarmCodeBrush));
         OnPropertyChanged(nameof(AlarmCardBrush));
         OnPropertyChanged(nameof(ChamberBrush));
         OnPropertyChanged(nameof(PrecursorValveBrush));
@@ -519,12 +520,12 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         if (value < low)
         {
-            return lowLabel;
+            return $"▼ {lowLabel}";
         }
 
         if (value > high)
         {
-            return highLabel;
+            return $"▲ {highLabel}";
         }
 
         return normalLabel;
@@ -532,10 +533,21 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     private static Brush StatusBrush(string status)
     {
-        return status is "OK" or "TARGET" ? SuccessBrush :
-            status is "GROWING" or "WAIT" ? PrimaryBrush :
-            status is "LOW" or "COOL" ? WarningBrush :
-            AlarmBrush;
+        if (status.Contains("HI", StringComparison.OrdinalIgnoreCase) ||
+            status.Contains("HOT", StringComparison.OrdinalIgnoreCase))
+        {
+            return AlarmBrush;
+        }
+
+        if (status.Contains("LOW", StringComparison.OrdinalIgnoreCase) ||
+            status.Contains("COOL", StringComparison.OrdinalIgnoreCase))
+        {
+            return WarningBrush;
+        }
+
+        return status.Contains("OK", StringComparison.OrdinalIgnoreCase)
+            ? TextPrimaryBrush
+            : TextMutedBrush;
     }
 
     private static string FaultCode(string stepName)

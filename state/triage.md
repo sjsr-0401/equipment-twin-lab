@@ -640,3 +640,19 @@ Completed:
 - Fixed the immediate WPF UI readability defects found from the screenshot.
 - Added a work log explaining why default WPF control styles leaked into the dark HMI.
 - Reprioritized the next work from recovery-panel implementation to visual-system R&D.
+
+## 2026-07-03 Triage Update after Goal 053
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | WPF HMI visual system | Done | Keep gray-base/color-reserved rules |
+| P1 | Instrument trend panel | Next | Add pressure/temp/film trend visibility |
+| P1 | WPF alarm recovery procedure | Waiting | Add after trend/overview hierarchy is cleaner |
+| P2 | Chart/gauge dependency decision | Waiting | Evaluate LiveCharts2 only when trend scope is concrete |
+
+Completed:
+
+- Applied gray-base HMI visual direction to WPF.
+- Reduced normal-operation color noise.
+- Added text/shape state encoding for valves, measurements, and alarm card.
+- Added R&D/design note for custom WPF tokens versus chart/gauge libraries.

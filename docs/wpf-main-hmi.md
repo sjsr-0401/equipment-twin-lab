@@ -132,3 +132,19 @@ Controls such as `DataGrid`, `ComboBox`, and future `TabControl` panels need exp
 - row height and spacing.
 
 If a new control appears with a white default background, treat it as a UI bug and add a local style before adding more features.
+
+## HMI visual-system direction
+
+The WPF HMI now follows an `ISA-101 inspired` / `High-Performance HMI inspired` direction:
+
+- normal operation stays mostly grayscale;
+- red is reserved for alarm;
+- amber is reserved for warning/caution;
+- normal `OK`, `TARGET`, `OPEN`, and `CLOSED` states should remain readable without bright color;
+- important states must be encoded with text or shape as well as color.
+
+The detailed design note is:
+
+```text
+docs/design/wpf-hmi-visual-system.md
+```
