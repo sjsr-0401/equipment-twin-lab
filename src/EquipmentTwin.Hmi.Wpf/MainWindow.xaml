@@ -9,22 +9,21 @@
         Background="{Binding PageBackground}"
         FontFamily="Segoe UI">
     <Window.Resources>
-        <SolidColorBrush x:Key="Background" Color="#0B0F14"/>
-        <SolidColorBrush x:Key="Surface" Color="#151C24"/>
-        <SolidColorBrush x:Key="SurfaceRaised" Color="#1D2733"/>
-        <SolidColorBrush x:Key="SurfaceInset" Color="#0F151B"/>
-        <SolidColorBrush x:Key="Border" Color="#2F3C4C"/>
-        <SolidColorBrush x:Key="BorderSoft" Color="#233142"/>
-        <SolidColorBrush x:Key="TextPrimary" Color="#EAF0F7"/>
-        <SolidColorBrush x:Key="TextMuted" Color="#9AA8B7"/>
-        <SolidColorBrush x:Key="Primary" Color="#2EA8FF"/>
-        <SolidColorBrush x:Key="PrimaryDim" Color="#173E5A"/>
-        <SolidColorBrush x:Key="Success" Color="#2AD17D"/>
-        <SolidColorBrush x:Key="Warning" Color="#FFB84D"/>
-        <SolidColorBrush x:Key="Alarm" Color="#FF3B3B"/>
-        <SolidColorBrush x:Key="Precursor" Color="#F7A83B"/>
-        <SolidColorBrush x:Key="Reactant" Color="#38CFFF"/>
-        <SolidColorBrush x:Key="Purge" Color="#31D86B"/>
+        <SolidColorBrush x:Key="Background" Color="#16191D"/>
+        <SolidColorBrush x:Key="Surface" Color="#20252B"/>
+        <SolidColorBrush x:Key="SurfaceRaised" Color="#2B3138"/>
+        <SolidColorBrush x:Key="SurfaceInset" Color="#171B20"/>
+        <SolidColorBrush x:Key="SurfaceActive" Color="#3A424B"/>
+        <SolidColorBrush x:Key="Border" Color="#3C444D"/>
+        <SolidColorBrush x:Key="BorderSoft" Color="#303740"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#E5E8EB"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#A6ADB5"/>
+        <SolidColorBrush x:Key="NeutralSignal" Color="#8D97A3"/>
+        <SolidColorBrush x:Key="ActionBlue" Color="#5E83A8"/>
+        <SolidColorBrush x:Key="PrimaryDim" Color="#263642"/>
+        <SolidColorBrush x:Key="Warning" Color="#DCA84A"/>
+        <SolidColorBrush x:Key="Alarm" Color="#D14B4B"/>
+        <SolidColorBrush x:Key="AlarmSurface" Color="#5A2428"/>
 
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Surface}"/>
@@ -52,8 +51,8 @@
 
         <Style TargetType="ProgressBar">
             <Setter Property="Height" Value="8"/>
-            <Setter Property="Foreground" Value="{StaticResource Primary}"/>
-            <Setter Property="Background" Value="#0F151B"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralSignal}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceInset}"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
@@ -193,20 +192,20 @@
                     <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
                         <StackPanel Margin="18,0">
                             <TextBlock Text="PRECURSOR" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
-                            <Border Width="58" Height="38" Background="{Binding PrecursorValveBrush}" CornerRadius="4" Margin="0,8,0,0">
-                                <TextBlock Text="{Binding PrecursorValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Width="78" Height="44" Background="{Binding PrecursorValveBrush}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="4" Margin="0,8,0,0">
+                                <TextBlock Text="{Binding PrecursorValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="12"/>
                             </Border>
                         </StackPanel>
                         <StackPanel Margin="18,0">
-                            <TextBlock Text="REACTANT" Foreground="{StaticResource Reactant}" FontSize="11" HorizontalAlignment="Center"/>
-                            <Border Width="58" Height="38" Background="{Binding ReactantValveBrush}" CornerRadius="4" Margin="0,8,0,0">
-                                <TextBlock Text="{Binding ReactantValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="REACTANT" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
+                            <Border Width="78" Height="44" Background="{Binding ReactantValveBrush}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="4" Margin="0,8,0,0">
+                                <TextBlock Text="{Binding ReactantValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="12"/>
                             </Border>
                         </StackPanel>
                         <StackPanel Margin="18,0">
                             <TextBlock Text="PURGE N2" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
-                            <Border Width="58" Height="38" Background="{Binding PurgeValveBrush}" CornerRadius="4" Margin="0,8,0,0">
-                                <TextBlock Text="{Binding PurgeValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Width="78" Height="44" Background="{Binding PurgeValveBrush}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="4" Margin="0,8,0,0">
+                                <TextBlock Text="{Binding PurgeValveText}" FontSize="10" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="12"/>
                             </Border>
                         </StackPanel>
                     </StackPanel>
@@ -222,8 +221,8 @@
                             <StackPanel Grid.Row="1" VerticalAlignment="Center">
                                 <Rectangle Height="14" Fill="#A9B3BE" Margin="60,0,60,24"/>
                                 <TextBlock Text="showerhead" Foreground="{StaticResource TextPrimary}" FontSize="10" HorizontalAlignment="Center" Margin="0,-20,0,24"/>
-                                <Rectangle Height="16" Fill="{StaticResource Primary}" Margin="80,0,80,0"/>
-                                <Rectangle Height="18" Fill="{StaticResource Warning}" Margin="70,0,70,0"/>
+                                <Rectangle Height="16" Fill="#B8BEC5" Margin="80,0,80,0"/>
+                                <Rectangle Height="18" Fill="#767F89" Margin="70,0,70,0"/>
                                 <TextBlock Text="wafer + film / susceptor heater" Foreground="{StaticResource TextPrimary}" FontSize="10" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                             </StackPanel>
                             <TextBlock Grid.Row="2" Text="{Binding FlowText}" Foreground="{Binding FlowBrush}" FontWeight="Bold" HorizontalAlignment="Right"/>
@@ -269,10 +268,10 @@
                 </Grid.RowDefinitions>
 
                 <UniformGrid Grid.Row="0" Columns="5" Margin="0,0,0,10">
-                    <Button Content="START" Command="{Binding StartCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Success}" Foreground="{StaticResource Background}"/>
-                    <Button Content="STOP" Command="{Binding PauseCommand}" Style="{StaticResource CommandButton}" Background="#A82D2D"/>
+                    <Button Content="START" Command="{Binding StartCommand}" Style="{StaticResource CommandButton}" BorderBrush="{StaticResource ActionBlue}"/>
+                    <Button Content="STOP" Command="{Binding PauseCommand}" Style="{StaticResource CommandButton}" Background="#352629" BorderBrush="{StaticResource Alarm}"/>
                     <Button Content="STEP" Command="{Binding StepForwardCommand}" Style="{StaticResource CommandButton}"/>
-                    <Button Content="FAULT REPLAY" Command="{Binding FaultReplayCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Warning}" Foreground="{StaticResource Background}"/>
+                    <Button Content="FAULT REPLAY" Command="{Binding FaultReplayCommand}" Style="{StaticResource CommandButton}" Background="#3A3427" BorderBrush="{StaticResource Warning}"/>
                     <Button Content="RESET" Command="{Binding ResetCommand}" Style="{StaticResource CommandButton}"/>
                 </UniformGrid>
 
@@ -329,35 +328,39 @@
                             <TextBlock Grid.Row="1" Text="Temp" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
                             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding TemperatureValue}" FontSize="18" FontWeight="Bold"/>
-                                <ProgressBar Value="{Binding TemperatureProgress, Mode=OneWay}" Maximum="100" Foreground="{StaticResource Warning}"/>
+                                <ProgressBar Value="{Binding TemperatureProgress, Mode=OneWay}" Maximum="100"/>
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding TemperatureStatus}" Foreground="{Binding TemperatureStatusBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
                             <TextBlock Grid.Row="2" Text="Film" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
                             <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding FilmValue}" FontSize="18" FontWeight="Bold"/>
-                                <ProgressBar Value="{Binding FilmProgress, Mode=OneWay}" Maximum="100" Foreground="{StaticResource Success}"/>
+                                <ProgressBar Value="{Binding FilmProgress, Mode=OneWay}" Maximum="100"/>
                             </StackPanel>
                             <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding FilmStatus}" Foreground="{Binding FilmStatusBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="4" Background="{Binding AlarmCardBrush}" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Grid.Row="4" Background="{Binding AlarmCardBrush}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="ALARM PRIORITY" Foreground="{StaticResource TextPrimary}" Opacity="0.7" FontWeight="Bold" FontSize="12"/>
-                        <TextBlock Grid.Row="1" Text="{Binding AlarmTitle}" FontSize="24" FontWeight="Bold" Margin="0,4,0,0"/>
-                        <StackPanel Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Grid.RowSpan="2" Width="36" Height="36" BorderBrush="{Binding AlarmIconBrush}" BorderThickness="2" CornerRadius="18" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding AlarmIcon}" Foreground="{Binding AlarmIconBrush}" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Text="ALARM PRIORITY" Foreground="{StaticResource TextPrimary}" Opacity="0.7" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding AlarmTitle}" FontSize="24" FontWeight="Bold" Margin="0,4,0,0"/>
+                        <StackPanel Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBlock Text="{Binding AlarmDetail}" FontSize="12" TextAlignment="Right"/>
-                            <TextBlock Text="{Binding AlarmCode}" Foreground="{StaticResource Warning}" FontWeight="Bold" FontSize="12" TextAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding AlarmCode}" Foreground="{Binding AlarmCodeBrush}" FontWeight="Bold" FontSize="12" TextAlignment="Right" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -370,7 +373,7 @@
                                 <DataTemplate>
                                     <DockPanel Margin="0,2">
                                         <TextBlock DockPanel.Dock="Left" Text="{Binding Time}" Foreground="{StaticResource TextMuted}" Width="58" FontSize="12"/>
-                                        <TextBlock DockPanel.Dock="Left" Text="{Binding Action}" Foreground="{StaticResource Warning}" Width="108" FontSize="12" FontWeight="Bold"/>
+                                        <TextBlock DockPanel.Dock="Left" Text="{Binding Action}" Foreground="{StaticResource TextPrimary}" Width="108" FontSize="12" FontWeight="Bold"/>
                                         <TextBlock Text="{Binding Detail}" Foreground="{StaticResource TextPrimary}" FontSize="12"/>
                                     </DockPanel>
                                 </DataTemplate>

@@ -1161,3 +1161,35 @@ Reason:
 
 - The immediate readability bugs are fixed.
 - Before adding more WPF panels, the project needs a stronger visual system for typography, spacing, color semantics, and industrial-HMI layout.
+
+## 2026-07-03 Loop Update: Goal 053 complete
+
+Current completed goal:
+
+- `Goal 053: WPF HMI Visual System`
+
+Direction:
+
+- Keep WPF as the main HMI/debug surface.
+- Use an `ISA-101 inspired` / `High-Performance HMI inspired` visual direction.
+- Do not claim certification or vendor equivalence.
+
+What changed:
+
+- WPF palette moved from colorful demo colors to gray-base HMI tokens.
+- Normal operation no longer uses large green/blue/yellow fills.
+- Red/amber are reserved for alarm/warning states.
+- Valve state uses `OPEN` / `CLOSED` text in addition to neutral visual state.
+- Instrument status uses symbols and text, such as `▲ HI` and `▼ COOL`.
+- Alarm card now has icon, priority, text, and code rather than relying only on color.
+- Added `docs/design/wpf-hmi-visual-system.md`.
+
+Current next recommendation:
+
+- `Goal 054: WPF HMI Instrument Trend Panel`
+
+Reason:
+
+- The visual-system direction is now documented and reflected in the shell.
+- The next high-value HMI feature is trend visibility for pressure, temperature, and film thickness.
+- Evaluate simple custom drawing before adding LiveCharts2.
