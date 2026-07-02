@@ -594,3 +594,19 @@ Completed:
 - HMI now exposes four public fault scenarios as selectable chips.
 - Scenario selection flows through `MolyAldOperatorCanvas` into `MolyAldProcessPlayer`.
 - Unity smoke test validates scenario selection, replay loading, active-fault selection lockout, and reset behavior.
+
+## 2026-07-03 Triage Update after Goal 050
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | WPF main HMI | Done | Use as daily debug surface |
+| P1 | WPF alarm recovery procedure | Next | Add operator recovery checklist by fault area |
+| P2 | Unity optional viewer launcher | Waiting | Later launch built Unity viewer executable from WPF |
+| P2 | WPF styling polish | Waiting | Improve visual density after recovery panel exists |
+
+Completed:
+
+- Main HMI direction changed from Unity-first to WPF-first.
+- WPF project is in the solution and builds.
+- WPF reads the public ALD recipe and calls Core runner directly.
+- Unity remains optional, not deleted.

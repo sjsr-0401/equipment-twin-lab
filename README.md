@@ -4,6 +4,34 @@
 
 ![Unity demo screenshot: public synthetic molybdenum ALD replay](docs/demo/moly-ald-demo.png)
 
+## WPF Main HMI
+
+The main operator-console direction is now WPF.
+
+Open:
+
+```text
+EquipmentTwinLab.sln
+```
+
+Set this project as startup:
+
+```text
+EquipmentTwin.Hmi.Wpf
+```
+
+Then press:
+
+```text
+F5
+```
+
+WPF is used for day-to-day HMI debugging. Unity remains an optional 3D/replay viewer.
+
+More details:
+
+[docs/wpf-main-hmi.md](docs/wpf-main-hmi.md)
+
 ## Unity Demo
 
 현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD process schematic, 오른쪽에는 Canvas 기반 HMI operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
