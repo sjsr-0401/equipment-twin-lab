@@ -113,6 +113,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | UI/UX reviewer system | screenshot을 전문가 기준으로 반복 리뷰하는 문서 체계 | `docs/design/uiux-agent-brief.md`, `docs/design/operator-console-design-system.md` |
 | Canvas operator panel | 오른쪽 operator panel과 하단 timeline을 2D Canvas UI로 분리 | `MolyAldOperatorCanvas`, `docs/demo/moly-ald-demo.png` |
 | HMI instrument panel | Pressure/Temp/Film을 값+단위 readout, 상태, 정상범위 bar로 분리 | `MolyAldOperatorCanvas`, `docs/design/operator-console-design-system.md` |
+| Process schematic main view | primitive 3D 대신 연결된 ALD schematic을 메인 화면으로 표시 | `MolyAldOperatorCanvas`, `docs/design/public-ald-schematic-reference.md` |
 | 3분 녹화 체크리스트 | 문서화 완료 | `docs/unity-demo-recording-checklist.md` |
 | 3분 녹화 리허설 | 자동 실행 스크립트 추가 | `scripts/Invoke-PortfolioDemoRehearsal.ps1`, `docs/demo-rehearsal-runner.md` |
 | 3분 녹화 한글 큐카드 | 자동 생성 스크립트 추가 | `scripts/New-PortfolioDemoCueCards.ps1`, `docs/portfolio-demo-narration.md` |

@@ -477,3 +477,25 @@ Current validation boundary:
 Next priority:
 
 - Add button click handling and fault scenario selection.
+
+## 2026-07-02 Triage Update: Goal 043
+
+Active focus moved from HMI instrument readability to the left-side main visual direction.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Process schematic main view | Avoids weak primitive 3D realism and better matches manufacturing HMI practice | Done |
+| P1 | Public reference boundary | Keeps the project honest and avoids vendor CAD/UI/process copying | Done |
+| P1 | Active valve schematic state | Shows process state as connected system, not isolated shapes | Done |
+| P2 | Gas flow animation | Makes schematic feel alive | Next |
+| P2 | 3D cutaway helper view | Keeps 3D differentiation without requiring CAD realism | Next |
+
+Current validation boundary:
+
+- Schematic is public/synthetic.
+- It is not a real tool schematic.
+- It is not a vendor UI.
+
+Next priority:
+
+- Validate screenshot and then wire button/fault interaction.

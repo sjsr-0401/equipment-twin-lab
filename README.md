@@ -6,9 +6,9 @@
 
 ## Unity Demo
 
-현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD 장비 형태, 오른쪽에는 Canvas 기반 HMI operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
+현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD process schematic, 오른쪽에는 Canvas 기반 HMI operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
 
-대표 screenshot에는 load port, process chamber, gas/valve panel, vacuum pump, recipe card, pressure/temp/film instrument card, alarm priority card, process timeline이 같이 표시된다. Pressure/Temp/Film은 값+단위 readout, 상태, 정상범위 band, 현재값 fill로 나눠 보여준다. 3D 장비와 2D Canvas UI를 분리해서, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 장비 SW 화면으로 보여준다.
+대표 screenshot에는 gas delivery, vacuum chamber, showerhead, wafer/film, susceptor heater, exhaust/pump path, recipe card, pressure/temp/film instrument card, alarm priority card, process timeline이 같이 표시된다. Pressure/Temp/Film은 값+단위 readout, 상태, 정상범위 band, 현재값 fill로 나눠 보여준다. 3D blockout은 메인 화면에서 내리고, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 2D HMI schematic으로 보여준다.
 
 검증된 실행 경로:
 
@@ -44,6 +44,10 @@ CAD/Blender 모델 교체 경계:
 UI/UX reviewer 기준과 Canvas operator panel 전환 계획:
 
 [docs/design/operator-console-design-system.md](docs/design/operator-console-design-system.md)
+
+공개 ALD/HMI schematic reference 경계:
+
+[docs/design/public-ald-schematic-reference.md](docs/design/public-ald-schematic-reference.md)
 
 ## 목표
 

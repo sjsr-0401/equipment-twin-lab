@@ -2093,6 +2093,32 @@ Core/CLI timeline JSON
 
 - START/STOP/RESET button click handler 연결
 - FAULT selector를 실제 configured fault scenario와 연결
+
+## 2026-07-02 이해 요약: Process Schematic Main View
+
+이번 Goal의 핵심은 3D primitive를 메인 주장으로 쓰지 않고, 2D process schematic을 메인 HMI로 올린 것이다.
+
+한 문장 설명:
+
+> `MolyAldOperatorCanvas`는 같은 `MolyAldVisualState`를 사용해 왼쪽에는 ALD process schematic, 오른쪽에는 HMI instrument panel, 아래에는 process timeline을 표시한다.
+
+왜 이렇게 했나:
+
+- primitive 3D는 현실 장비처럼 보이기 어렵다.
+- realistic 3D 모델링은 장비 SW보다 아트/기계설계 난이도가 커진다.
+- HMI schematic은 valve, chamber, wafer, exhaust, pump 연결을 보여주기 때문에 장비 SW 포트폴리오에 더 직접적이다.
+
+주의할 점:
+
+- 이 schematic은 공개 ALD 개념 기반이다.
+- 실제 Lam/ALTUS/Halo/Halo HX CAD, UI, recipe, station layout을 복제하지 않는다.
+- 3D는 버린 것이 아니라 future cutaway/debug 보조뷰로 남긴다.
+
+다음 구현:
+
+- gas flow pulse animation
+- fault mode schematic highlight
+- START/STOP/RESET/FAULT interaction
 - fault screenshot에서 alarm card와 장비 highlight를 같이 보여주기
 
 ## 2026-07-02 이해 요약: HMI Typography and Instrument Panel

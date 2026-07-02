@@ -3072,5 +3072,49 @@ MolyAldVisualState
 다음 권장 Goal:
 
 ```text
-Goal 043: Canvas Button Interaction and Fault Selector
+Goal 043: Process Schematic Main View
+```
+
+## 65. 2026-07-02 Goal 043: Process Schematic Main View
+
+Goal 043은 3D primitive 장비 view를 메인 화면에서 내리고, 공개 ALD 개념 기반의 2D process schematic을 메인으로 올린 작업이다.
+
+핵심 판단:
+
+- 지금 단계에서 realistic 3D equipment modeling은 ROI가 낮다.
+- 장비 SW 포트폴리오는 외형 모델링보다 process state, valve state, telemetry, alarm을 읽히게 만드는 것이 더 강하다.
+- 3D는 포기하지 않고 future cutaway/debug 보조뷰로 남긴다.
+
+공개 reference 경계:
+
+- Lam 공개 자료: ALTUS/ALTUS Halo는 CVD/ALD, Mo ALD, metallization, high-temperature/process sequence/wafer temperature control 같은 공개 개념만 사용한다.
+- Oxford Instruments ALD overview: ultra-thin film, precise thickness control, conformal coating 같은 일반 ALD 개념만 사용한다.
+- 실제 장비 CAD, UI, recipe, station layout은 사용하지 않는다.
+
+구현한 것:
+
+- `MolyAldOperatorCanvas`에 `BuildProcessSchematic()` 추가
+- 왼쪽 메인 panel을 `Process Schematic Main View`로 구성
+- schematic 구성:
+  - gas delivery
+  - precursor/reactant/purge valve
+  - vacuum chamber
+  - showerhead
+  - wafer + film
+  - susceptor heater
+  - P/T tap
+  - exhaust line
+  - gate valve
+  - pump
+- `UpdateProcessSchematic()`으로 visual state를 schematic에 연결
+  - active valve 색상
+  - active gas line 색상
+  - showerhead 색상
+  - film thickness fill
+  - alarm chamber/exhaust highlight
+
+다음 권장 Goal:
+
+```text
+Goal 044: Canvas Button Interaction and Fault Selector
 ```

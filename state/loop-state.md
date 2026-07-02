@@ -889,4 +889,43 @@ Validation so far:
 Known limitation:
 
 - Buttons are still visual only.
-- Next recommended goal: `Goal 043: Canvas Button Interaction and Fault Selector`.
+- Next recommended goal: `Goal 043: Process Schematic Main View`.
+
+## 2026-07-02 Update: Goal 043 complete
+
+- Current branch: `goal/043-process-schematic-main-view`.
+- Goal 043 changes the left main visual from primitive 3D equipment blockout to 2D ALD process schematic.
+
+Implementation notes:
+
+- `MolyAldOperatorCanvas` now builds:
+  - left process schematic;
+  - right HMI instrument panel;
+  - bottom timeline.
+- Schematic elements:
+  - gas delivery;
+  - precursor/reactant/purge valves;
+  - vacuum chamber;
+  - showerhead;
+  - wafer/film;
+  - susceptor heater;
+  - P/T tap;
+  - exhaust/gate/pump path.
+- Active valve and film fill are driven by `MolyAldVisualState`.
+
+Validation:
+
+- Release build passed.
+- Core console test passed: 81 tests.
+- Unity screenshot capture passed:
+  - `artifacts/unity-demo/moly-ald-demo-goal043.png`
+- Default Unity screenshot capture passed:
+  - `artifacts/unity-demo/moly-ald-demo.png`
+- `docs/demo/moly-ald-demo.png` was refreshed.
+- `git diff --check` passed.
+- Local CI marker check passed.
+
+Known limitation:
+
+- Flow animation is not implemented yet.
+- Button interaction and fault selector remain next.

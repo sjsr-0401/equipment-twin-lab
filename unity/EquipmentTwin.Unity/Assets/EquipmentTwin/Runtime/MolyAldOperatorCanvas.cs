@@ -30,6 +30,21 @@ namespace EquipmentTwin.Unity.Processes
         private Text alarmCodeText;
         private Text eventText;
         private Text hmiStateText;
+        private Text schematicStepText;
+        private Text schematicMetaText;
+        private Text precursorValveText;
+        private Text reactantValveText;
+        private Text purgeValveText;
+        private Image chamberImage;
+        private Image showerheadImage;
+        private Image filmFillImage;
+        private Image precursorValveImage;
+        private Image reactantValveImage;
+        private Image purgeValveImage;
+        private Image precursorLineImage;
+        private Image reactantLineImage;
+        private Image purgeLineImage;
+        private Image exhaustLineImage;
         private InstrumentView pressureInstrument;
         private InstrumentView temperatureInstrument;
         private InstrumentView filmInstrument;
@@ -50,6 +65,9 @@ namespace EquipmentTwin.Unity.Processes
         private static readonly Color NeutralButton = Hex(0x2B, 0x3A, 0x4A);
         private static readonly Color NormalBand = Hex(0x20, 0x6A, 0x4A);
         private static readonly Color GaugeTrack = Hex(0x0F, 0x15, 0x1B);
+        private static readonly Color SchematicBackground = Hex(0x07, 0x09, 0x0C);
+        private static readonly Color SchematicMetal = Hex(0x50, 0x5B, 0x66);
+        private static readonly Color SchematicGlass = Hex(0x12, 0x21, 0x2C);
         private static readonly Color Precursor = Hex(0xF7, 0xA8, 0x3B);
         private static readonly Color Reactant = Hex(0x38, 0xCF, 0xFF);
         private static readonly Color Purge = Hex(0x31, 0xD8, 0x6B);
@@ -110,6 +128,7 @@ namespace EquipmentTwin.Unity.Processes
 
             canvasObject.AddComponent<GraphicRaycaster>();
 
+            BuildProcessSchematic(canvasObject.transform);
             BuildOperatorPanel(canvasObject.transform);
             BuildTimeline(canvasObject.transform);
         }
@@ -146,6 +165,75 @@ namespace EquipmentTwin.Unity.Processes
                 roomTemperatureC,
                 processTemperatureC);
             ApplyVisualState(visualState);
+        }
+
+        private void BuildProcessSchematic(Transform parent)
+        {
+            var panel = CreatePanel(
+                parent,
+                "Process Schematic Main View",
+                new Vector2(0.00f, 0.19f),
+                new Vector2(0.65f, 0.94f),
+                SchematicBackground);
+
+            CreateText(panel, "Synthetic Moly ALD — Process Schematic", new Vector2(0.02f, 0.91f), new Vector2(0.96f, 0.985f), 22, TextPrimary, TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateText(panel, "public-reference HMI | not vendor CAD or process copy", new Vector2(0.02f, 0.865f), new Vector2(0.96f, 0.92f), 12, TextMuted, TextAnchor.MiddleLeft);
+
+            var runBadge = CreatePanel(panel, "Schematic Run Badge", new Vector2(0.72f, 0.92f), new Vector2(0.96f, 0.97f), SurfaceRaised);
+            schematicMetaText = CreateText(runBadge, "RUNNING | OK", new Vector2(0.05f, 0f), new Vector2(0.95f, 1f), 12, Success, TextAnchor.MiddleCenter, FontStyle.Bold);
+
+            var schematicArea = CreatePanel(panel, "Connected ALD Schematic Area", new Vector2(0.03f, 0.06f), new Vector2(0.97f, 0.84f), Background);
+
+            CreateText(schematicArea, "GAS DELIVERY", new Vector2(0.20f, 0.86f), new Vector2(0.78f, 0.94f), 11, TextMuted, TextAnchor.MiddleCenter, FontStyle.Bold);
+            CreateText(schematicArea, "PRECURSOR", new Vector2(0.23f, 0.78f), new Vector2(0.36f, 0.84f), 9, TextMuted, TextAnchor.MiddleCenter);
+            CreateText(schematicArea, "REACTANT", new Vector2(0.43f, 0.78f), new Vector2(0.56f, 0.84f), 9, Reactant, TextAnchor.MiddleCenter);
+            CreateText(schematicArea, "PURGE N2", new Vector2(0.62f, 0.78f), new Vector2(0.75f, 0.84f), 9, TextMuted, TextAnchor.MiddleCenter);
+
+            precursorLineImage = CreatePanel(schematicArea, "Precursor Gas Line", new Vector2(0.295f, 0.62f), new Vector2(0.303f, 0.78f), SchematicMetal).GetComponent<Image>();
+            reactantLineImage = CreatePanel(schematicArea, "Reactant Gas Line", new Vector2(0.495f, 0.62f), new Vector2(0.503f, 0.78f), Reactant).GetComponent<Image>();
+            purgeLineImage = CreatePanel(schematicArea, "Purge Gas Line", new Vector2(0.685f, 0.62f), new Vector2(0.693f, 0.78f), SchematicMetal).GetComponent<Image>();
+
+            precursorValveImage = CreatePanel(schematicArea, "Precursor Valve Symbol", new Vector2(0.268f, 0.705f), new Vector2(0.330f, 0.755f), SurfaceRaised).GetComponent<Image>();
+            reactantValveImage = CreatePanel(schematicArea, "Reactant Valve Symbol", new Vector2(0.468f, 0.705f), new Vector2(0.530f, 0.755f), Reactant).GetComponent<Image>();
+            purgeValveImage = CreatePanel(schematicArea, "Purge Valve Symbol", new Vector2(0.658f, 0.705f), new Vector2(0.720f, 0.755f), SurfaceRaised).GetComponent<Image>();
+            precursorValveText = CreateText(precursorValveImage.transform, "PRE\nOFF", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextMuted, TextAnchor.MiddleCenter);
+            reactantValveText = CreateText(reactantValveImage.transform, "RCT\nON", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, Background, TextAnchor.MiddleCenter, FontStyle.Bold);
+            purgeValveText = CreateText(purgeValveImage.transform, "PRG\nOFF", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextMuted, TextAnchor.MiddleCenter);
+
+            chamberImage = CreatePanel(schematicArea, "Vacuum Chamber Schematic", new Vector2(0.18f, 0.30f), new Vector2(0.76f, 0.68f), SchematicGlass).GetComponent<Image>();
+            CreateText(chamberImage.transform, "VACUUM CHAMBER", new Vector2(0.04f, 0.82f), new Vector2(0.45f, 0.98f), 9, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
+
+            showerheadImage = CreatePanel(chamberImage.transform, "Showerhead Gas Distributor", new Vector2(0.18f, 0.67f), new Vector2(0.84f, 0.75f), SchematicMetal).GetComponent<Image>();
+            CreateText(showerheadImage.transform, "showerhead", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextPrimary, TextAnchor.MiddleCenter);
+
+            for (var index = 0; index < 9; index++)
+            {
+                var x = 0.22f + index * 0.065f;
+                CreatePanel(chamberImage.transform, $"Gas Distribution Dot {index + 1}", new Vector2(x, 0.57f), new Vector2(x + 0.012f, 0.59f), Reactant);
+            }
+
+            CreateText(chamberImage.transform, "wafer + film", new Vector2(0.35f, 0.34f), new Vector2(0.65f, 0.44f), 9, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
+            var wafer = CreatePanel(chamberImage.transform, "Wafer Base", new Vector2(0.22f, 0.24f), new Vector2(0.78f, 0.31f), Primary);
+            filmFillImage = CreatePanel(wafer, "Film Thickness Fill", new Vector2(0f, 0.74f), new Vector2(1f, 1f), Success).GetComponent<Image>();
+            var heater = CreatePanel(chamberImage.transform, "Susceptor Heater", new Vector2(0.20f, 0.16f), new Vector2(0.80f, 0.24f), Warning);
+            CreateText(heater, "susceptor heater 250 C", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, Background, TextAnchor.MiddleCenter, FontStyle.Bold);
+
+            CreatePanel(schematicArea, "Load Port", new Vector2(0.045f, 0.40f), new Vector2(0.145f, 0.58f), SurfaceRaised);
+            CreatePanel(schematicArea, "Load Port Slot 1", new Vector2(0.065f, 0.52f), new Vector2(0.125f, 0.55f), GaugeTrack);
+            CreatePanel(schematicArea, "Load Port Slot 2", new Vector2(0.065f, 0.45f), new Vector2(0.125f, 0.48f), GaugeTrack);
+            CreateText(schematicArea, "LOAD PORT", new Vector2(0.04f, 0.34f), new Vector2(0.16f, 0.39f), 8, TextMuted, TextAnchor.MiddleCenter);
+            CreatePanel(schematicArea, "Transfer Link", new Vector2(0.145f, 0.485f), new Vector2(0.18f, 0.492f), Border);
+
+            CreatePanel(schematicArea, "Pressure Temperature Tap", new Vector2(0.12f, 0.25f), new Vector2(0.18f, 0.258f), Primary);
+            CreateText(schematicArea, "P/T tap", new Vector2(0.09f, 0.18f), new Vector2(0.20f, 0.24f), 8, Primary, TextAnchor.MiddleCenter);
+
+            exhaustLineImage = CreatePanel(schematicArea, "Exhaust Line", new Vector2(0.76f, 0.38f), new Vector2(0.86f, 0.392f), SchematicMetal).GetComponent<Image>();
+            var gate = CreatePanel(schematicArea, "Gate Valve", new Vector2(0.84f, 0.34f), new Vector2(0.89f, 0.43f), SurfaceRaised);
+            CreateText(gate, "GATE", new Vector2(0f, 0f), new Vector2(1f, 1f), 7, TextMuted, TextAnchor.MiddleCenter);
+            var pump = CreatePanel(schematicArea, "Vacuum Pump", new Vector2(0.88f, 0.27f), new Vector2(0.96f, 0.39f), SurfaceRaised);
+            CreateText(pump, "PUMP", new Vector2(0f, 0f), new Vector2(1f, 1f), 8, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
+
+            schematicStepText = CreateText(schematicArea, "STEP: Dose Reactant", new Vector2(0.20f, 0.07f), new Vector2(0.77f, 0.14f), 13, TextPrimary, TextAnchor.MiddleCenter, FontStyle.Bold);
         }
 
         private void BuildOperatorPanel(Transform parent)
@@ -246,6 +334,7 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             UpdateInstruments(visualState);
+            UpdateProcessSchematic(visualState);
 
             if (alarmText != null)
             {
@@ -280,6 +369,66 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             UpdateTimeline(visualState);
+        }
+
+        private void UpdateProcessSchematic(MolyAldVisualState visualState)
+        {
+            if (schematicStepText != null)
+            {
+                schematicStepText.text = $"STEP: {SplitCamelCase(visualState.StepName)} | Valve: {ActiveValveText(visualState)} | Film {visualState.EstimatedThicknessAngstrom:0.##} A";
+                schematicStepText.color = visualState.HasFault ? Alarm : TextPrimary;
+            }
+
+            if (schematicMetaText != null)
+            {
+                schematicMetaText.text = visualState.HasFault ? "HELD | ALARM" : "RUNNING | OK";
+                schematicMetaText.color = visualState.HasFault ? Alarm : Success;
+            }
+
+            SetValveState(
+                precursorValveImage,
+                precursorValveText,
+                precursorLineImage,
+                visualState.MetalPrecursorOpen,
+                Precursor,
+                "PRE");
+            SetValveState(
+                reactantValveImage,
+                reactantValveText,
+                reactantLineImage,
+                visualState.ReactantOpen,
+                Reactant,
+                "RCT");
+            SetValveState(
+                purgeValveImage,
+                purgeValveText,
+                purgeLineImage,
+                visualState.PurgeOpen,
+                Purge,
+                "PRG");
+
+            if (chamberImage != null)
+            {
+                chamberImage.color = visualState.HasFault
+                    ? Color.Lerp(SchematicGlass, Alarm, 0.35f)
+                    : SchematicGlass;
+            }
+
+            if (showerheadImage != null)
+            {
+                showerheadImage.color = ActiveValveColor(visualState);
+            }
+
+            if (filmFillImage != null)
+            {
+                filmFillImage.color = visualState.ThicknessRatio >= 0.98f ? Success : Primary;
+                SetHorizontalAnchors(filmFillImage.rectTransform, 0f, Mathf.Clamp01(visualState.ThicknessRatio));
+            }
+
+            if (exhaustLineImage != null)
+            {
+                exhaustLineImage.color = visualState.HasFault ? Alarm : SchematicMetal;
+            }
         }
 
         private void UpdateInstruments(MolyAldVisualState visualState)
@@ -323,6 +472,26 @@ namespace EquipmentTwin.Unity.Processes
                 1.00f);
 
             // Valve state is kept in the event line for now. The instrument card stays focused on numeric process variables.
+        }
+
+        private static void SetValveState(Image valveImage, Text valveText, Image lineImage, bool isOpen, Color activeColor, string label)
+        {
+            if (valveImage != null)
+            {
+                valveImage.color = isOpen ? activeColor : SurfaceRaised;
+            }
+
+            if (valveText != null)
+            {
+                valveText.text = isOpen ? $"{label}\nON" : $"{label}\nOFF";
+                valveText.color = isOpen ? Background : TextMuted;
+                valveText.fontStyle = isOpen ? FontStyle.Bold : FontStyle.Normal;
+            }
+
+            if (lineImage != null)
+            {
+                lineImage.color = isOpen ? activeColor : SchematicMetal;
+            }
         }
 
         private void UpdateTimeline(MolyAldVisualState visualState)
@@ -583,6 +752,26 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             return "None";
+        }
+
+        private static Color ActiveValveColor(MolyAldVisualState visualState)
+        {
+            if (visualState.MetalPrecursorOpen)
+            {
+                return Precursor;
+            }
+
+            if (visualState.ReactantOpen)
+            {
+                return Reactant;
+            }
+
+            if (visualState.PurgeOpen)
+            {
+                return Purge;
+            }
+
+            return SchematicMetal;
         }
 
         private static string RangeStatus(float value, float low, float high, string lowLabel, string normalLabel, string highLabel)

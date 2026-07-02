@@ -133,3 +133,40 @@ docs/demo/moly-ald-demo.png
 - [ ] fault screenshot에서 alarm card가 red priority state를 보여준다.
 - [ ] 버튼 interaction 결과가 작업 로그와 smoke test에 남는다.
 
+## 2026-07-02 Review 004: Process Schematic Main View
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
+### Verdict
+
+- 상태: Better product direction
+- 한 줄 판단: 3D primitive 외형을 메인으로 밀 때 생기던 장난감 느낌을 줄이고, 장비 SW 엔지니어가 설명하기 좋은 HMI schematic 방향으로 전환했다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Equipment logic | chamber, gas valves, showerhead, wafer/film, exhaust/pump가 연결된 시스템으로 보인다 |
+| Public-reference boundary | 실제 vendor CAD/UI/process 복제가 아니라 공개 ALD 개념 기반임을 문서화했다 |
+| Operator readability | Reactant valve ON 상태가 schematic과 right HMI에서 같이 읽힌다 |
+| Portfolio positioning | 3D 아트 실력이 아니라 process/HMI/state mapping 능력이 전면에 나온다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | Schematic은 아직 static diagram에 가깝다 | gas flow pulse animation 추가 |
+| P1 | 버튼 interaction이 없다 | Start/Stop/Reset/Fault selector 연결 |
+| P2 | 3D cutaway 보조뷰는 아직 없다 | 작은 optional cutaway/debug panel 추가 |
+| P2 | 실제 recipe range가 없다 | synthetic range와 future recipe metadata 경계 유지 |
+
+### Next Acceptance Criteria
+
+- [ ] Reactant dose step에서 gas dot/pulse animation이 보인다.
+- [ ] fault mode에서 chamber/exhaust/alarm card가 같이 highlight된다.
+- [ ] START/STOP/RESET/FAULT가 실제 player/fault scenario와 연결된다.
+
