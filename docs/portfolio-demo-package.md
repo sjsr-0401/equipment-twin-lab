@@ -110,6 +110,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
 | 설명 가능한 Unity screenshot | 부품 라벨, color key, status panel, process flow 추가 | `docs/unity-demo-screenshot.md`, `docs/demo/moly-ald-demo.png` |
 | Unity operator console layout | 왼쪽 장비 view + 오른쪽 조작 interface + 하단 timeline | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
+| UI/UX reviewer system | screenshot을 전문가 기준으로 반복 리뷰하는 문서 체계 | `docs/design/uiux-agent-brief.md`, `docs/design/operator-console-design-system.md` |
 | 3분 녹화 체크리스트 | 문서화 완료 | `docs/unity-demo-recording-checklist.md` |
 | 3분 녹화 리허설 | 자동 실행 스크립트 추가 | `scripts/Invoke-PortfolioDemoRehearsal.ps1`, `docs/demo-rehearsal-runner.md` |
 | 3분 녹화 한글 큐카드 | 자동 생성 스크립트 추가 | `scripts/New-PortfolioDemoCueCards.ps1`, `docs/portfolio-demo-narration.md` |

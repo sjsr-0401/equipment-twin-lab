@@ -412,3 +412,24 @@ Next priority:
 - Validate Unity screenshot capture.
 - Update docs and tracked screenshot.
 - Open PR after local and CI validation.
+
+## 2026-07-02 Triage Update: Goal 040
+
+Active focus moved from visual implementation to repeatable UI/UX review.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | UI/UX agent brief | Gives Codex/Claude/another model a stable reviewer role | In progress |
+| P1 | Current screenshot review | Converts subjective “looks bad” feedback into actionable criteria | In progress |
+| P1 | Canvas operator panel plan | Prevents more 3D TextMesh UI debt | In progress |
+| P2 | Canvas implementation | Should happen after review criteria are fixed | Next |
+
+Current validation boundary:
+
+- Goal 040 is documentation and process design only.
+- It does not implement the Canvas UI yet.
+- It sets acceptance criteria for Goal 041.
+
+Next priority:
+
+- Implement Canvas-based operator panel.

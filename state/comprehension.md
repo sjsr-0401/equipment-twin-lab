@@ -2015,3 +2015,41 @@ MolyAldProcessPlayer.CurrentStep
 - `Start`, `Stop`, `Fault`, `Reset` 버튼을 실제 `MolyAldProcessPlayer` 조작과 연결한다.
 - fault scenario selector를 추가한다.
 - alarm 발생 시 해당 장비 영역을 더 강하게 highlight한다.
+
+## 2026-07-02 이해 요약: UI/UX Agent Review System
+
+이번 Goal의 핵심은 별도 UI/UX 시선을 “문서화된 반복 루프”로 만든 것이다.
+
+한 문장 설명:
+
+> UI/UX Agent는 코드를 직접 고치는 사람이 아니라 screenshot을 보고 문제점, 우선순위, 수정안, acceptance criteria를 제시하는 reviewer다.
+
+운영 구조:
+
+```text
+Codex / 구현자
+    -> Unity screenshot 생성
+    -> UI/UX Agent brief로 리뷰
+    -> uiux-review-log.md에 기록
+    -> acceptance criteria에 맞춰 구현
+    -> 다시 screenshot 생성
+```
+
+현재 1차 리뷰 결론:
+
+- 오른쪽 조작 패널 방향은 맞다.
+- 하지만 3D TextMesh 기반 UI는 전문 HMI처럼 보이기 어렵다.
+- 다음 구현은 Canvas 기반 operator panel로 가야 한다.
+
+유지보수할 때 보는 파일:
+
+- `docs/design/uiux-agent-brief.md`
+- `docs/design/uiux-review-template.md`
+- `docs/design/uiux-review-log.md`
+- `docs/design/operator-console-design-system.md`
+
+다음 구현 기준:
+
+- current step, telemetry, alarm, timeline은 Canvas UI로 표시한다.
+- 3D TextMesh는 장비 label 정도로만 남긴다.
+- screenshot 50% 축소에서도 current step과 alarm state가 읽혀야 한다.

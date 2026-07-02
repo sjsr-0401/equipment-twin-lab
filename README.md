@@ -41,6 +41,10 @@ CAD/Blender 모델 교체 경계:
 
 [docs/unity-model-swap-boundary.md](docs/unity-model-swap-boundary.md)
 
+UI/UX reviewer 기준과 Canvas operator panel 전환 계획:
+
+[docs/design/operator-console-design-system.md](docs/design/operator-console-design-system.md)
+
 ## 목표
 
 - 장비 상태 전이, PLC/IO, 모션, 센서, 카메라 검사를 소프트웨어로 모델링한다.
