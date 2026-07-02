@@ -176,6 +176,7 @@ jobs:
           grep -q "Lam/ALTUS/Halo/Halo HX" docs/portfolio-demo-narration.md
           grep -q "Canvas Operator Panel" docs/design/operator-console-design-system.md
           grep -q "UI/UX Review" docs/design/uiux-review-template.md
-          grep -q 'LASTEXITCODE' scripts/Invoke-UnitySmokeTest.ps1
+          grep -q "Start-Process" scripts/Invoke-UnitySmokeTest.ps1
+          grep -q "UnityExitCode" scripts/Invoke-UnitySmokeTest.ps1
           grep -q "nographics" scripts/Invoke-UnitySmokeTest.ps1
           test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json
