@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace EquipmentTwin.Unity.Processes
@@ -51,6 +52,14 @@ namespace EquipmentTwin.Unity.Processes
         private Image[] gasDistributionDots = new Image[0];
         private Image[] gasFlowPulses = new Image[0];
         private Image[] exhaustFlowPulses = new Image[0];
+        private Image startButtonImage;
+        private Image stopButtonImage;
+        private Image faultButtonImage;
+        private Image resetButtonImage;
+        private Text startButtonText;
+        private Text stopButtonText;
+        private Text faultButtonText;
+        private Text resetButtonText;
         private InstrumentView pressureInstrument;
         private InstrumentView temperatureInstrument;
         private InstrumentView filmInstrument;
@@ -116,6 +125,7 @@ namespace EquipmentTwin.Unity.Processes
         {
             if (canvas != null)
             {
+                EnsureEventSystem();
                 return;
             }
 
@@ -133,6 +143,7 @@ namespace EquipmentTwin.Unity.Processes
             scaler.matchWidthOrHeight = 0.5f;
 
             canvasObject.AddComponent<GraphicRaycaster>();
+            EnsureEventSystem();
 
             BuildProcessSchematic(canvasObject.transform);
             BuildOperatorPanel(canvasObject.transform);
@@ -169,7 +180,8 @@ namespace EquipmentTwin.Unity.Processes
                 processPressureMtorr,
                 atmospherePressureMtorr,
                 roomTemperatureC,
-                processTemperatureC);
+                processTemperatureC,
+                player.OperatorFaultActive);
             ApplyVisualState(visualState);
         }
 
@@ -273,10 +285,10 @@ namespace EquipmentTwin.Unity.Processes
             var stateStrip = CreatePanel(panel, "Run State Strip", new Vector2(0.06f, 0.82f), new Vector2(0.94f, 0.875f), SurfaceRaised);
             hmiStateText = CreateText(stateStrip, "RUNNING  |  INTERLOCK OK", new Vector2(0.05f, 0f), new Vector2(0.95f, 1f), 15, Success, TextAnchor.MiddleCenter, FontStyle.Bold);
 
-            CreateCommandButton(panel, "START", new Vector2(0.06f, 0.745f), new Vector2(0.28f, 0.805f), Success, Background);
-            CreateCommandButton(panel, "STOP", new Vector2(0.305f, 0.745f), new Vector2(0.525f, 0.805f), Stop, TextPrimary);
-            CreateCommandButton(panel, "FAULT", new Vector2(0.55f, 0.745f), new Vector2(0.77f, 0.805f), Warning, Background);
-            CreateCommandButton(panel, "RESET", new Vector2(0.795f, 0.745f), new Vector2(0.94f, 0.805f), NeutralButton, TextPrimary);
+            CreateCommandButton(panel, "START", new Vector2(0.06f, 0.745f), new Vector2(0.28f, 0.805f), Success, Background, OnStartClicked, out startButtonImage, out startButtonText);
+            CreateCommandButton(panel, "STOP", new Vector2(0.305f, 0.745f), new Vector2(0.525f, 0.805f), Stop, TextPrimary, OnPauseClicked, out stopButtonImage, out stopButtonText);
+            CreateCommandButton(panel, "FAULT", new Vector2(0.55f, 0.745f), new Vector2(0.77f, 0.805f), Warning, Background, OnFaultClicked, out faultButtonImage, out faultButtonText);
+            CreateCommandButton(panel, "RESET", new Vector2(0.795f, 0.745f), new Vector2(0.94f, 0.805f), NeutralButton, TextPrimary, OnResetClicked, out resetButtonImage, out resetButtonText);
 
             var recipeCard = CreatePanel(panel, "Recipe Card", new Vector2(0.06f, 0.615f), new Vector2(0.94f, 0.725f), SurfaceRaised);
             CreateText(recipeCard, "CURRENT STEP", new Vector2(0.05f, 0.58f), new Vector2(0.48f, 0.92f), 12, TextMuted, TextAnchor.MiddleLeft, FontStyle.Bold);
@@ -349,14 +361,13 @@ namespace EquipmentTwin.Unity.Processes
 
             if (hmiStateText != null)
             {
-                hmiStateText.text = visualState.HasFault
-                    ? "HELD  |  OPERATOR ACTION REQUIRED"
-                    : "RUNNING  |  INTERLOCK OK";
-                hmiStateText.color = visualState.HasFault ? Alarm : Success;
+                hmiStateText.text = RunStateText(visualState);
+                hmiStateText.color = RunStateColor(visualState);
             }
 
             UpdateInstruments(visualState);
             UpdateProcessSchematic(visualState);
+            UpdateCommandButtons(visualState);
 
             if (alarmText != null)
             {
@@ -387,7 +398,8 @@ namespace EquipmentTwin.Unity.Processes
 
             if (eventText != null)
             {
-                eventText.text = $"EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve";
+                var playback = player != null && player.IsPlaying ? "RUN" : "HOLD";
+                eventText.text = $"EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve | {playback}";
             }
 
             UpdateTimeline(visualState);
@@ -403,8 +415,12 @@ namespace EquipmentTwin.Unity.Processes
 
             if (schematicMetaText != null)
             {
-                schematicMetaText.text = visualState.HasFault ? "HELD | ALARM" : "RUNNING | OK";
-                schematicMetaText.color = visualState.HasFault ? Alarm : Success;
+                schematicMetaText.text = visualState.HasFault
+                    ? "HELD | ALARM"
+                    : player != null && !player.IsPlaying ? "PAUSED | READY" : "RUNNING | OK";
+                schematicMetaText.color = visualState.HasFault
+                    ? Alarm
+                    : player != null && !player.IsPlaying ? Warning : Success;
             }
 
             SetValveState(
@@ -847,10 +863,144 @@ namespace EquipmentTwin.Unity.Processes
             return text;
         }
 
-        private void CreateCommandButton(Transform parent, string label, Vector2 anchorMin, Vector2 anchorMax, Color color, Color textColor)
+        private Button CreateCommandButton(
+            Transform parent,
+            string label,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Color color,
+            Color textColor,
+            System.Action onClick,
+            out Image buttonImage,
+            out Text buttonText)
         {
-            var button = CreatePanel(parent, $"{label} Button", anchorMin, anchorMax, color);
-            CreateText(button, label, new Vector2(0f, 0f), new Vector2(1f, 1f), 14, textColor, TextAnchor.MiddleCenter, FontStyle.Bold);
+            var buttonRect = CreatePanel(parent, $"{label} Button", anchorMin, anchorMax, color);
+            buttonImage = buttonRect.GetComponent<Image>();
+            buttonText = CreateText(buttonRect, label, new Vector2(0f, 0f), new Vector2(1f, 1f), 14, textColor, TextAnchor.MiddleCenter, FontStyle.Bold);
+
+            var button = buttonRect.gameObject.AddComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.transition = Selectable.Transition.None;
+
+            if (onClick != null)
+            {
+                button.onClick.AddListener(() => onClick());
+            }
+
+            return button;
+        }
+
+        private void OnStartClicked()
+        {
+            if (!TryResolvePlayer())
+            {
+                return;
+            }
+
+            player.Play();
+            RefreshCanvas();
+        }
+
+        private void OnPauseClicked()
+        {
+            if (!TryResolvePlayer())
+            {
+                return;
+            }
+
+            player.Pause();
+            RefreshCanvas();
+        }
+
+        private void OnFaultClicked()
+        {
+            if (!TryResolvePlayer())
+            {
+                return;
+            }
+
+            player.ToggleOperatorFault();
+            RefreshCanvas();
+        }
+
+        private void OnResetClicked()
+        {
+            if (!TryResolvePlayer())
+            {
+                return;
+            }
+
+            player.ResetToStart();
+            RefreshCanvas();
+        }
+
+        private bool TryResolvePlayer()
+        {
+            if (player == null)
+            {
+                player = GetComponent<MolyAldProcessPlayer>();
+            }
+
+            return player != null;
+        }
+
+        private void EnsureEventSystem()
+        {
+            if (FindObjectOfType<EventSystem>() != null)
+            {
+                return;
+            }
+
+            var eventSystemObject = new GameObject("EventSystem");
+            eventSystemObject.AddComponent<EventSystem>();
+            eventSystemObject.AddComponent<StandaloneInputModule>();
+        }
+
+        private void UpdateCommandButtons(MolyAldVisualState visualState)
+        {
+            var playing = player != null && player.IsPlaying;
+            var fault = visualState != null && visualState.HasFault;
+
+            SetCommandButton(startButtonImage, startButtonText, playing ? "RUNNING" : "START", playing ? Color.Lerp(Success, TextPrimary, 0.20f) : Success, Background);
+            SetCommandButton(stopButtonImage, stopButtonText, playing ? "STOP" : "PAUSED", playing ? Stop : Color.Lerp(NeutralButton, Warning, 0.30f), TextPrimary);
+            SetCommandButton(faultButtonImage, faultButtonText, fault ? "FAULT\nACTIVE" : "FAULT", fault ? Alarm : Warning, fault ? TextPrimary : Background);
+            SetCommandButton(resetButtonImage, resetButtonText, "RESET", NeutralButton, TextPrimary);
+        }
+
+        private static void SetCommandButton(Image image, Text text, string label, Color backgroundColor, Color textColor)
+        {
+            if (image != null)
+            {
+                image.color = backgroundColor;
+            }
+
+            if (text != null)
+            {
+                text.text = label;
+                text.color = textColor;
+            }
+        }
+
+        private string RunStateText(MolyAldVisualState visualState)
+        {
+            if (visualState != null && visualState.HasFault)
+            {
+                return "HELD  |  OPERATOR ACTION REQUIRED";
+            }
+
+            return player != null && !player.IsPlaying
+                ? "PAUSED  |  READY"
+                : "RUNNING  |  INTERLOCK OK";
+        }
+
+        private Color RunStateColor(MolyAldVisualState visualState)
+        {
+            if (visualState != null && visualState.HasFault)
+            {
+                return Alarm;
+            }
+
+            return player != null && !player.IsPlaying ? Warning : Success;
         }
 
         private Camera ResolveCamera()

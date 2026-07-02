@@ -207,3 +207,42 @@ docs/demo/moly-ald-demo.png
 - [ ] FAULT가 synthetic fault scenario를 선택한다.
 - [ ] fault screenshot에서 flow가 멈추고 alarm/fault highlight가 보인다.
 
+## 2026-07-02 Review 006: Canvas Button Interaction
+
+리뷰 대상:
+
+```text
+MolyAldOperatorCanvas
+MolyAldProcessPlayer
+MolyAldEditorSmokeTest
+```
+
+### Verdict
+
+- 상태: Interaction baseline complete
+- 한 줄 판단: HMI command button이 visual mock에서 runtime state를 바꾸는 control로 승격됐다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Operator command | START/STOP/RESET/FAULT가 process player 상태와 연결됐다 |
+| Safety behavior | START는 fault를 자동 해제하지 않고, RESET 또는 FAULT toggle이 필요하다 |
+| Visual feedback | button label/color가 running, paused, fault 상태를 반영한다 |
+| Testability | Unity smoke test가 Button, EventSystem, Play/Pause/Fault/Reset 전이를 검증한다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | fault 상태 screenshot artifact가 아직 없다 | red alarm/fault screenshot capture 추가 |
+| P1 | operator action history가 화면에 없다 | START/STOP/FAULT/RESET event log panel 추가 |
+| P2 | FAULT는 JSON fault scenario 선택이 아니라 synthetic override다 | process fault matrix와 UI selector 연결 |
+| P2 | 실제 click play-mode 수동 검증 절차가 문서화되지 않았다 | Unity Editor demo checklist 보강 |
+
+### Next Acceptance Criteria
+
+- [ ] fault mode screenshot에서 alarm card와 schematic highlight가 동시에 보인다.
+- [ ] HMI 하단 또는 우측에 최근 operator action 3~5개가 표시된다.
+- [ ] demo 설명에서 synthetic override와 process-runner fault를 구분한다.
+

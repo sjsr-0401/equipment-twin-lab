@@ -3152,3 +3152,49 @@ Goal 044는 Process Schematic을 정적인 도식에서 현재 step에 반응하
 ```text
 Goal 045: Canvas Button Interaction and Fault Selector
 ```
+
+## 2026-07-02 Goal 045: Canvas Button Interaction and Fault Selector 완료
+
+목표:
+
+- Unity Canvas HMI의 command button을 실제 runtime state와 연결한다.
+- 버튼이 단순 visual mock으로 남지 않게 한다.
+
+구현:
+
+- `MolyAldProcessPlayer`
+  - `OperatorFaultActive` 추가
+  - `ToggleOperatorFault()` 추가
+  - `ResetToStart()` 추가
+  - fault active 상태에서는 `Play()`가 재생을 시작하지 않도록 guard 추가
+- `MolyAldVisualStateMapper`
+  - `forceFault` optional parameter 추가
+  - synthetic operator fault를 기존 alarm/fault visual path에 연결
+- `MolyAldOperatorCanvas`
+  - `UnityEngine.UI.Button` component 생성
+  - `START`, `STOP`, `FAULT`, `RESET` click handler 연결
+  - `EventSystem` 자동 생성
+  - button label/color와 HMI state strip을 running/paused/fault 상태에 맞게 갱신
+- `MolyAldEditorSmokeTest`
+  - Button 4개 이상 생성 확인
+  - EventSystem 생성 확인
+  - Play/Pause/Fault/Reset state transition 확인
+
+설계 판단:
+
+- START가 fault를 자동 해제하지 않는다.
+- operator는 RESET 또는 FAULT toggle로 held state를 명시적으로 해제해야 한다.
+- 이 방식이 장비 HMI 안전 동작 설명에 더 적합하다.
+
+막혔던 점:
+
+- 기존 button은 `Image + Text`만 있는 visual object였다.
+  - 해결: `Button` component와 `GraphicRaycaster`, `EventSystem` 경로를 완성했다.
+- process fault와 operator fault가 섞일 수 있었다.
+  - 해결: 현재는 `OperatorFaultActive`를 synthetic override로 명명하고 문서에 boundary를 남겼다.
+
+다음 권장 Goal:
+
+```text
+Goal 046: Fault Mode Screenshot and Operator Action Log
+```

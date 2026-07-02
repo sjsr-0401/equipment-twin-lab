@@ -10,7 +10,8 @@ namespace EquipmentTwin.Unity.Processes
             float processPressureMtorr,
             float atmospherePressureMtorr,
             float roomTemperatureC,
-            float processTemperatureC)
+            float processTemperatureC,
+            bool forceFault = false)
         {
             if (step == null)
             {
@@ -23,7 +24,7 @@ namespace EquipmentTwin.Unity.Processes
             var thicknessRatio = ThicknessRatio(timeline, step);
             var totalSteps = timeline != null && timeline.steps != null ? timeline.steps.Length : 0;
             var cycleCount = timeline != null ? timeline.cycleCount : 0;
-            var hasFault = timeline != null && (!timeline.success || !step.success);
+            var hasFault = forceFault || (timeline != null && (!timeline.success || !step.success));
             var valves = step.valves;
             var metalPrecursorOpen = valves != null && valves.metalPrecursor;
             var reactantOpen = valves != null && valves.reactant;

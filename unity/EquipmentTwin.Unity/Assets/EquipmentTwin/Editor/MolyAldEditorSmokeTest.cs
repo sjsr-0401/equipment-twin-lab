@@ -4,7 +4,9 @@ using EquipmentTwin.Unity.Processes;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace EquipmentTwin.Unity.EditorTools
 {
@@ -131,6 +133,7 @@ namespace EquipmentTwin.Unity.EditorTools
             }
 
             ValidateVisualStateMapper(root);
+            ValidateOperatorControls(root);
 
             Debug.Log(
                 $"{SuccessMarker}: recipe={timeline.recipeName}, steps={timeline.steps.Length}, renderers={renderers.Length}");
@@ -200,6 +203,7 @@ namespace EquipmentTwin.Unity.EditorTools
 
             player.LoadTimeline();
             MoveToRepresentativeStep(player);
+            player.Play();
 
             var visualizer = root.GetComponent<MolyAldPrimitiveVisualizer>();
             if (visualizer == null)
@@ -241,6 +245,64 @@ namespace EquipmentTwin.Unity.EditorTools
             {
                 throw new InvalidOperationException(
                     $"Expected the representative visual state to show reactant flow, but step was {visualState.StepName}.");
+            }
+        }
+
+        private static void ValidateOperatorControls(GameObject root)
+        {
+            if (UnityEngine.Object.FindObjectOfType<EventSystem>() == null)
+            {
+                throw new InvalidOperationException("EventSystem was not created for Canvas button interaction.");
+            }
+
+            var buttons = UnityEngine.Object.FindObjectsOfType<Button>();
+            if (buttons.Length < 4)
+            {
+                throw new InvalidOperationException($"Expected at least 4 Canvas command buttons, but found {buttons.Length}.");
+            }
+
+            var player = root.GetComponent<MolyAldProcessPlayer>();
+            if (player == null)
+            {
+                throw new InvalidOperationException("MolyAldProcessPlayer was not found for operator-control validation.");
+            }
+
+            player.Play();
+            if (!player.IsPlaying)
+            {
+                throw new InvalidOperationException("Play command did not set the process player to running.");
+            }
+
+            player.Pause();
+            if (player.IsPlaying)
+            {
+                throw new InvalidOperationException("Pause command did not stop the process player.");
+            }
+
+            player.ToggleOperatorFault();
+            if (!player.OperatorFaultActive)
+            {
+                throw new InvalidOperationException("Fault selector did not enable the operator fault override.");
+            }
+
+            var faultState = MolyAldVisualStateMapper.FromTimeline(
+                player.Timeline,
+                player.CurrentStep,
+                850f,
+                760000f,
+                25f,
+                250f,
+                player.OperatorFaultActive);
+
+            if (faultState == null || !faultState.HasFault)
+            {
+                throw new InvalidOperationException("Forced operator fault was not reflected in the visual state mapper.");
+            }
+
+            player.ResetToStart();
+            if (player.OperatorFaultActive || player.IsPlaying || player.CurrentStepIndex != 0)
+            {
+                throw new InvalidOperationException("Reset command did not clear fault, stop playback, and return to step 0.");
             }
         }
 

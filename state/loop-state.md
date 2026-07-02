@@ -956,3 +956,25 @@ Known limitation:
 
 - Buttons are still visual only.
 - Fault selector remains next.
+## 2026-07-02 Loop Update: Goal 045 complete
+
+Current completed goal:
+
+- `Goal 045: Canvas Button Interaction and Fault Selector`
+
+What changed:
+
+- Canvas command buttons are now actual Unity `Button` components.
+- `START`, `STOP`, `FAULT`, and `RESET` are connected to `MolyAldProcessPlayer`.
+- `OperatorFaultActive` can force the existing alarm/fault visual path.
+- `EventSystem` is automatically created for click interaction.
+- Unity smoke test validates button creation and state transitions.
+
+Current next recommendation:
+
+- `Goal 046: Fault Mode Screenshot and Operator Action Log`
+
+Reason:
+
+- Interaction exists now, but the portfolio artifact does not yet show the fault mode.
+- Next loop should make the `normal -> fault hold -> reset` demo visible and explainable.

@@ -226,3 +226,24 @@ docs/demo/moly-ald-demo.png
 - 3분 데모 영상을 실제로 녹화한다.
 - 실제 CAD/Blender asset이 생기면 `MolyAldImportedModelVisualBinding`에 model part를 연결한다.
 - screenshot 품질을 계속 개선한다: imported model, lighting, camera path, simple animation.
+
+## 2026-07-02 Unity HMI interaction update
+
+현재 Unity HMI button 상태:
+
+| Button | Runtime behavior |
+|---|---|
+| START | `MolyAldProcessPlayer.Play()` 호출 |
+| STOP | `MolyAldProcessPlayer.Pause()` 호출 |
+| FAULT | synthetic `OperatorFaultActive` toggle |
+| RESET | 첫 step으로 복귀, fault 해제, 정지 |
+
+검증:
+
+- Unity Canvas에 `Button` component가 생성되는지 smoke test에서 확인한다.
+- `EventSystem`이 자동 생성되는지 확인한다.
+- Play/Pause/Fault/Reset 상태 전이를 smoke test에서 직접 호출해 확인한다.
+
+면접 설명 포인트:
+
+> 이 프로젝트는 버튼 모양만 있는 mock HMI가 아니라, command button이 process player state와 연결되어 있습니다. 다만 현재 Fault는 실제 장비 fault가 아니라 synthetic operator override이며, 다음 단계에서 fault screenshot과 operator action log로 데모 흐름을 강화할 예정입니다.
