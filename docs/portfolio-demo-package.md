@@ -247,3 +247,35 @@ docs/demo/moly-ald-demo.png
 면접 설명 포인트:
 
 > 이 프로젝트는 버튼 모양만 있는 mock HMI가 아니라, command button이 process player state와 연결되어 있습니다. 다만 현재 Fault는 실제 장비 fault가 아니라 synthetic operator override이며, 다음 단계에서 fault screenshot과 operator action log로 데모 흐름을 강화할 예정입니다.
+
+## 2026-07-02 Fault hold demo artifact
+
+Goal 046 adds the fault-mode portfolio screenshot.
+
+Artifacts:
+
+| Artifact | Purpose |
+|---|---|
+| `docs/demo/moly-ald-demo.png` | normal running HMI |
+| `docs/demo/moly-ald-demo-fault.png` | synthetic fault hold HMI |
+
+Demo explanation:
+
+```text
+START records a normal running action.
+FAULT records a synthetic hold action.
+The HMI state strip, alarm card, schematic, and action log all change together.
+```
+
+This is useful in an interview because it demonstrates more than a static UI:
+
+- command button state;
+- alarm state;
+- process schematic state;
+- operator action trace;
+- automated screenshot generation.
+
+Boundary:
+
+- The fault screenshot is still synthetic.
+- It is not a real vendor alarm, not a real chamber fault, and not yet a named JSON fault scenario selected from the process fault matrix.

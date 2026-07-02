@@ -3198,3 +3198,46 @@ Goal 045: Canvas Button Interaction and Fault Selector
 ```text
 Goal 046: Fault Mode Screenshot and Operator Action Log
 ```
+
+## 2026-07-02 Goal 046: Fault Mode Screenshot and Operator Action Log 완료
+
+목표:
+
+- button interaction의 결과를 눈에 보이는 portfolio artifact로 만든다.
+- fault hold 상태에서 HMI가 어떻게 반응하는지 설명 가능하게 한다.
+
+구현:
+
+- `MolyAldOperatorCanvas`
+  - `OPERATOR ACTION LOG` card 추가
+  - 최근 3개 operator action 표시
+  - START/STOP/FAULT/RESET handler가 action log에 event 기록
+  - fault 상태에서 action log card도 red tint로 표시
+- `MolyAldEditorSmokeTest`
+  - `CaptureFaultScreenshot()` 추가
+  - `RunBatchFaultScreenshotCapture()` 추가
+  - fault screenshot 생성 전 normal run action과 synthetic fault action을 기록
+- `Invoke-UnitySmokeTest.ps1`
+  - `-CaptureFaultScreenshot` option 추가
+- demo image
+  - `docs/demo/moly-ald-demo.png`
+  - `docs/demo/moly-ald-demo-fault.png`
+
+설계 판단:
+
+- 현재 FAULT는 real process fault가 아니라 synthetic operator override다.
+- 이번 goal은 HMI 반응과 operator trace를 보여주는 것이 목적이다.
+- process fault matrix 연결은 다음 goal로 분리한다.
+
+막혔던 점:
+
+- fault screenshot에서 `ALARM ACTIVE` 텍스트가 처음에는 잘리지 않게 보이지 않았다.
+  - 해결: alarm text font/anchor를 조정하고 vertical overflow를 허용했다.
+- Unity batch run은 가끔 screenshot marker를 남긴 뒤 exit code 1을 반환한다.
+  - 해결: marker와 artifact를 확인하고 동일 명령을 재실행해 exit code 0을 확보했다.
+
+다음 권장 Goal:
+
+```text
+Goal 047: Reset Recovery Screenshot and Fault Scenario Selector
+```

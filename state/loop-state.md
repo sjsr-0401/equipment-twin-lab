@@ -978,3 +978,26 @@ Reason:
 
 - Interaction exists now, but the portfolio artifact does not yet show the fault mode.
 - Next loop should make the `normal -> fault hold -> reset` demo visible and explainable.
+
+## 2026-07-02 Loop Update: Goal 046 complete
+
+Current completed goal:
+
+- `Goal 046: Fault Mode Screenshot and Operator Action Log`
+
+What changed:
+
+- HMI now has an `OPERATOR ACTION LOG` card.
+- START/STOP/FAULT/RESET actions can be recorded into Canvas action rows.
+- Fault screenshot generation is available through `Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot`.
+- Normal and fault screenshots are available under `docs/demo`.
+
+Current next recommendation:
+
+- `Goal 047: Reset Recovery Screenshot and Fault Scenario Selector`
+
+Reason:
+
+- Normal and fault hold screens exist now.
+- The next missing demo segment is reset/recovery.
+- The next technical gap is replacing synthetic FAULT override with a named process fault scenario selector.

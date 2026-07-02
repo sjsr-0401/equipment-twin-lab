@@ -232,3 +232,41 @@ Important boundary:
 - The current fault selector is a synthetic operator override.
 - It is not yet selecting one of the process-runner JSON fault scenarios.
 - START does not clear a fault; the operator must clear the held state with RESET or the FAULT toggle first.
+
+## 2026-07-02 Fault screenshot and operator action log update
+
+Goal 046 adds a fault-mode demo artifact.
+
+Normal screenshot:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
+```
+
+Fault screenshot:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot
+```
+
+Generated artifacts:
+
+```text
+artifacts/unity-demo/moly-ald-demo.png
+artifacts/unity-demo/moly-ald-demo-fault.png
+docs/demo/moly-ald-demo.png
+docs/demo/moly-ald-demo-fault.png
+```
+
+What the fault screenshot should show:
+
+- top state: `HELD | OPERATOR ACTION REQUIRED`;
+- red alarm card with `ALARM ACTIVE`;
+- red chamber/exhaust/pump schematic highlight;
+- `FAULT ACTIVE` command button;
+- `OPERATOR ACTION LOG` with `START` and `FAULT` entries.
+
+Important boundary:
+
+- This screenshot uses synthetic `OperatorFaultActive`.
+- It demonstrates HMI behavior, not a real vendor fault or a real chamber process fault.

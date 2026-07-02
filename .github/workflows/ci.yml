@@ -91,6 +91,7 @@ jobs:
           test -f docs/design/operator-console-design-system.md
           test -f docs/design/public-ald-schematic-reference.md
           test -f docs/demo/moly-ald-demo.png
+          test -f docs/demo/moly-ald-demo-fault.png
           test -f goals/031-portfolio-demo-package.md
           test -f goals/032-unity-screenshot-readme-image.md
           test -f goals/033-unity-demo-polish-recording-checklist.md
@@ -106,6 +107,7 @@ jobs:
           test -f goals/043-process-schematic-main-view.md
           test -f goals/044-gas-flow-animation-fault-highlight.md
           test -f goals/045-canvas-button-interaction-fault-selector.md
+          test -f goals/046-fault-mode-screenshot-operator-action-log.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -138,6 +140,12 @@ jobs:
           grep -q "forceFault" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs
           grep -q "ValidateOperatorControls" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "FindObjectsOfType<Button>" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+          grep -q "OPERATOR ACTION LOG" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "RecordOperatorAction" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "OperatorActionLogEntryCount" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "RunBatchFaultScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+          grep -q "CaptureFaultScreenshot" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
+          grep -q "EQUIPMENT_TWIN_UNITY_FAULT_SCREENSHOT_SAVED" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "PROCESS INSTRUMENTS" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "InstrumentView" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "Normal Range Band" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
@@ -149,6 +157,8 @@ jobs:
           grep -q "fieldOfView = 46f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           grep -q "orthographicSize = 2.55f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           grep -q "CaptureScreenshot" scripts/Invoke-UnitySmokeTest.ps1
+          grep -q "CaptureFaultScreenshot" scripts/Invoke-UnitySmokeTest.ps1
+          grep -q "equipmentTwinFaultScreenshot" scripts/Invoke-UnitySmokeTest.ps1
           grep -q "pumpdown-timeout" scripts/Invoke-PortfolioDemoRehearsal.ps1
           grep -q "AllowedExitCodes @(1)" scripts/Invoke-PortfolioDemoRehearsal.ps1
           grep -q "New-PortfolioDemoCueCards.ps1" scripts/Invoke-PortfolioDemoRehearsal.ps1

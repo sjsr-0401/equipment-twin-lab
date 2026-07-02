@@ -534,3 +534,18 @@ Completed:
 
 - Button interaction is no longer the next blocker.
 - Unity smoke test now covers Button, EventSystem, and player state transitions.
+
+## 2026-07-02 Triage Update after Goal 046
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Reset recovery screenshot | Still missing | Capture or storyboard RESET -> READY state |
+| P1 | Process fault scenario selector | Still synthetic override | Connect FAULT to named fault matrix scenario |
+| P2 | Action log persistence | In-memory only | Later connect to run report/file log if useful |
+| P2 | Log panel readability | Acceptable but small | Expand if layout changes |
+
+Completed:
+
+- Fault mode screenshot exists.
+- Operator action log exists in Canvas.
+- Normal and fault screenshots are available in `docs/demo`.

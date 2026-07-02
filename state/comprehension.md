@@ -2196,3 +2196,42 @@ START/STOP/FAULT/RESET button
 
 - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
 - `ValidateOperatorControls()`가 Button, EventSystem, Play/Pause/Fault/Reset 전이를 확인한다.
+
+## 2026-07-02 — Goal 046 Fault Screenshot / Action Log 이해 포인트
+
+Goal 046은 HMI interaction의 결과를 screenshot artifact로 남긴 작업이다.
+
+Action log 흐름:
+
+```text
+OnStartClicked()
+OnPauseClicked()
+OnFaultClicked()
+OnResetClicked()
+    -> RecordOperatorAction(action, detail)
+    -> operatorActionLogEntries[]
+    -> RefreshOperatorActionLog()
+    -> OPERATOR ACTION LOG Canvas rows
+```
+
+Fault screenshot 흐름:
+
+```text
+Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot
+    -> MolyAldEditorSmokeTest.RunBatchFaultScreenshotCapture()
+    -> CaptureFaultScreenshot()
+    -> PrepareFaultDemoStateForCapture()
+    -> RenderCameraToPng()
+```
+
+핵심 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `scripts/Invoke-UnitySmokeTest.ps1`
+
+중요한 boundary:
+
+- `OperatorFaultActive`는 synthetic operator override다.
+- 아직 process fault matrix JSON scenario selector가 아니다.
+- screenshot은 HMI 반응을 보여주는 artifact다.

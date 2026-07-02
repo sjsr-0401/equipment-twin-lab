@@ -221,15 +221,38 @@ Implementation boundary:
 - START does not clear a fault. RESET or FAULT toggle must clear the held state first.
 - This keeps the HMI behavior closer to equipment safety expectations.
 
-## Goal 046 Candidate
+## Goal 046 Acceptance Criteria
 
 ```text
 Goal 046: Fault Mode Screenshot and Operator Action Log
 ```
 
+- [x] Capture a fault-mode screenshot that shows red alarm card and schematic fault highlight.
+- [x] Add an operator action log for START/STOP/FAULT/RESET.
+- [x] Show `normal run -> fault hold` in demo artifacts.
+- [x] Document how the synthetic override differs from process-runner fault scenarios.
+- [x] Unity smoke script supports `-CaptureFaultScreenshot`.
+
+Implemented artifacts:
+
+- `docs/demo/moly-ald-demo.png`
+- `docs/demo/moly-ald-demo-fault.png`
+
+Implementation boundary:
+
+- The action log is an in-memory Canvas log.
+- The fault screenshot uses synthetic `OperatorFaultActive`.
+- It does not yet select a named JSON fault scenario from the process fault matrix.
+
+## Goal 047 Candidate
+
+```text
+Goal 047: Reset Recovery Screenshot and Fault Scenario Selector
+```
+
 Next acceptance criteria:
 
-- [ ] Capture a fault-mode screenshot that shows red alarm card and schematic fault highlight.
-- [ ] Add an operator action log for START/STOP/FAULT/RESET.
-- [ ] Show `normal run -> fault hold -> reset recovery` in one demo artifact.
-- [ ] Document how the synthetic override differs from process-runner fault scenarios.
+- [ ] Add reset/recovery screenshot or storyboard artifact.
+- [ ] Connect FAULT button to at least one named process fault scenario.
+- [ ] Show `START -> FAULT -> RESET -> START` as a documented operator flow.
+- [ ] Keep synthetic override and process fault injection clearly separated in docs.
