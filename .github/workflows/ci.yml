@@ -93,16 +93,21 @@ jobs:
           test -f goals/036-demo-narration-cue-cards.md
           test -f goals/037-explanatory-unity-demo-screenshot.md
           test -f goals/038-ald-fault-matrix-report.md
+          test -f goals/039-unity-operator-console-layout.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
-          grep -q "Status Panel Background" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
-          grep -q "Color key" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Telemetry Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Process flow" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
-          grep -q "Moly ALD Replay" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Timeline Progress Track" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Operator Interface" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Synthetic Moly ALD Module" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
+          grep -q "Gas / valve panel" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldVisualStateMapper.FromTimeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldImportedModelVisualBinding" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs
           grep -q "ValidateVisualStateMapper" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
-          grep -q "fieldOfView = 42f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
+          grep -q "fieldOfView = 46f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
+          grep -q "orthographicSize = 2.55f" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs
           grep -q "CaptureScreenshot" scripts/Invoke-UnitySmokeTest.ps1
           grep -q "pumpdown-timeout" scripts/Invoke-PortfolioDemoRehearsal.ps1
           grep -q "AllowedExitCodes @(1)" scripts/Invoke-PortfolioDemoRehearsal.ps1

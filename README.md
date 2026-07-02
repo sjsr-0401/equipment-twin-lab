@@ -6,9 +6,9 @@
 
 ## Unity Demo
 
-현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, chamber/wafer/film/vacuum gauge/valve/gas line 상태를 primitive 3D object로 재생한다.
+현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD 장비 형태, 오른쪽에는 operator interface, 아래에는 process timeline을 배치한 장비 콘솔 화면으로 재생한다.
 
-대표 screenshot에는 현재 step, status panel, color key, process flow가 같이 표시된다. 목적은 “예쁜 3D 모델”보다 Core/CLI가 만든 공정 timeline을 Unity가 어떻게 replay하는지 한눈에 보여주는 것이다.
+대표 screenshot에는 load port, process chamber, gas/valve panel, vacuum pump, recipe card, live telemetry, alarm card, process timeline이 같이 표시된다. 목적은 “실제 장비 복제”가 아니라 Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 장비 SW 화면으로 보여주는 것이다.
 
 검증된 실행 경로:
 
@@ -23,7 +23,7 @@ EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
 EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 ```
 
-주의: 이 이미지는 실제 Lam/ALTUS/Halo/Halo HX 장비 CAD나 내부 sequence가 아니라, 공개/합성 공정 상태를 보여주는 포트폴리오용 replay visual이다.
+주의: 이 이미지는 실제 Lam/ALTUS/Halo/Halo HX 장비 CAD, 실제 UI, 실제 내부 sequence가 아니라, 공개/합성 공정 상태를 보여주는 포트폴리오용 synthetic equipment console이다.
 
 3분 녹화 체크리스트:
 

@@ -767,3 +767,39 @@ Local validation so far:
 Next recommended goal after completion:
 
 - Add one new synthetic ALD fault kind, or improve report readability with a simple local dashboard.
+
+## 2026-07-02 Update: Goal 039 in progress
+
+- Current branch: `goal/039-unity-operator-console-layout`.
+- User requested stronger design quality and a layout similar to public equipment presentation:
+  - equipment on the left;
+  - operation interface on the right;
+  - cleaner, more user-friendly visual composition.
+- Goal 039 changes the Unity screenshot into a synthetic equipment console.
+- It keeps the same architecture:
+  - Core/CLI calculates the process;
+  - Unity replays and visualizes the timeline.
+
+New visual composition:
+
+- left 3D equipment view:
+  - cabinet;
+  - load port;
+  - process chamber;
+  - wafer/film;
+  - gas/valve panel;
+  - pump/exhaust;
+- right operator interface:
+  - Start/Stop/Fault/Reset buttons;
+  - recipe card;
+  - live telemetry card;
+  - alarm card;
+- bottom process timeline and event summary.
+
+Validation so far:
+
+- Unity screenshot capture passed locally.
+- `docs/demo/moly-ald-demo.png` was refreshed.
+- Release build passed.
+- Core console tests passed: 81 tests.
+- `git diff --check` passed.
