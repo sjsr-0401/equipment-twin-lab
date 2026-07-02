@@ -1023,3 +1023,25 @@ Reason:
 
 - The HMI can now tell the operator story: normal run, named fault hold, reset recovery.
 - The next technical gap is process truth: Unity should replay the actual selected fault timeline instead of only applying a synthetic hold overlay.
+
+## 2026-07-02 Loop Update: Goal 048 complete
+
+Current completed goal:
+
+- `Goal 048: Fault Timeline Replay Binding`
+
+What changed:
+
+- Unity now loads selected public fault timeline JSON from `StreamingAssets/faults`.
+- `precursor-dose-timeout` replay moves the player to the first failed process step.
+- HMI shows `FAULT REPLAY` instead of only a synthetic hold label.
+- Smoke test validates `FaultTimelineReplayActive`, scenario name match, and failed-step positioning.
+
+Current next recommendation:
+
+- `Goal 049: Fault Scenario Selector UI`
+
+Reason:
+
+- Replay binding is now present.
+- The next interaction gap is letting the operator choose which public fault scenario to replay from the HMI.

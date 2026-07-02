@@ -110,6 +110,7 @@ jobs:
           test -f goals/045-canvas-button-interaction-fault-selector.md
           test -f goals/046-fault-mode-screenshot-operator-action-log.md
           test -f goals/047-reset-recovery-fault-scenario-selector.md
+          test -f goals/048-fault-timeline-replay-binding.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -180,3 +181,12 @@ jobs:
           grep -q "UnityExitCode" scripts/Invoke-UnitySmokeTest.ps1
           grep -q "nographics" scripts/Invoke-UnitySmokeTest.ps1
           test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/moly-ald-timeline.sample.json
+          test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.pumpdown-timeout.json
+          test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.temperature-not-stable.json
+          test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.precursor-dose-timeout.json
+          test -f unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.purge-timeout.json
+          grep -q "FaultTimelineReplayActive" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
+          grep -q "BuildFaultTimelineRelativePath" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
+          grep -q "FindFirstFailedStepIndex" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldProcessPlayer.cs
+          grep -q "FAULT REPLAY" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "replay" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs

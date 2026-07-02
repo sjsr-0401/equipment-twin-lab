@@ -322,3 +322,40 @@ docs/demo/moly-ald-demo-recovery.png
 - [ ] HMI hold state는 safety overlay로 유지하고, process truth는 timeline replay에서 가져온다.
 - [ ] fault timeline step이 schematic, action log, alarm detail에 일관되게 표시된다.
 
+## 2026-07-02 Review 009: Fault Timeline Replay Binding
+
+리뷰 대상:
+
+```text
+artifacts/unity-demo/moly-ald-demo-fault-goal048.png
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/*.json
+```
+
+### Verdict
+
+- 상태: Process truth 연결 개선.
+- 한 줄 판단: 이제 fault 화면은 단순 빨간 override가 아니라 selected fault timeline의 failed step을 보여준다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Replay truth | `precursor-dose-timeout` JSON을 읽고 failed `DoseMetalPrecursor` step으로 이동한다 |
+| HMI wording | button이 `FAULT REPLAY`로 바뀌어 synthetic hold와 구분된다 |
+| Schematic state | Precursor valve ON, film 2A, cycle 2/4 상태가 fault timeline과 맞는다 |
+| Testability | smoke test가 replay-active, scenario match, failed-step positioning을 검증한다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | scenario selector가 아직 사용자 조작 UI에 없다 | FAULT 옆에 small cycle/select control 추가 |
+| P2 | action log row가 길면 일부가 잘린다 | dedicated event panel 또는 shorter log code 적용 |
+| P2 | replay JSON을 수동 생성했다 | 필요하면 regeneration script 추가 |
+
+### Next Acceptance Criteria
+
+- [ ] HMI에서 fault scenario를 cycle/select할 수 있다.
+- [ ] 선택된 scenario label과 replay JSON source path가 일관되게 표시된다.
+- [ ] 4개 public fault scenario 중 최소 2개를 screenshot/demo에서 전환해 볼 수 있다.
+

@@ -373,7 +373,7 @@ namespace EquipmentTwin.Unity.EditorTools
             }
 
             operatorCanvas.EnsureCanvas();
-            operatorCanvas.RecordOperatorAction("FAULT", $"{player.SelectedFaultScenarioName} selected");
+            operatorCanvas.RecordOperatorAction("FAULT", $"{player.ActiveFaultScenarioName} replay {ShortStepName(player.CurrentStep.step)}");
             operatorCanvas.RefreshCanvas();
         }
 
@@ -488,6 +488,21 @@ namespace EquipmentTwin.Unity.EditorTools
                 throw new InvalidOperationException("Fault selector did not keep a selected public fault scenario name.");
             }
 
+            if (!player.FaultTimelineReplayActive)
+            {
+                throw new InvalidOperationException("Fault selector did not load the selected process fault replay timeline.");
+            }
+
+            if (!string.Equals(player.Timeline.faultScenarioName, player.SelectedFaultScenarioName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Fault replay timeline scenario name does not match the selected fault scenario.");
+            }
+
+            if (player.CurrentStep == null || player.CurrentStep.success)
+            {
+                throw new InvalidOperationException("Fault replay did not move the player to a failed process step.");
+            }
+
             var faultState = MolyAldVisualStateMapper.FromTimeline(
                 player.Timeline,
                 player.CurrentStep,
@@ -499,7 +514,7 @@ namespace EquipmentTwin.Unity.EditorTools
 
             if (faultState == null || !faultState.HasFault)
             {
-                throw new InvalidOperationException("Forced operator fault was not reflected in the visual state mapper.");
+                throw new InvalidOperationException("Replayed process fault was not reflected in the visual state mapper.");
             }
 
             player.ResetToStart();
@@ -532,6 +547,13 @@ namespace EquipmentTwin.Unity.EditorTools
             {
                 player.AdvanceStep();
             }
+        }
+
+        private static string ShortStepName(string stepName)
+        {
+            return string.Equals(stepName, "DoseMetalPrecursor", StringComparison.OrdinalIgnoreCase)
+                ? "Dose Precursor"
+                : stepName;
         }
 
         private static MolyAldTimelineDocumentDto LoadSampleTimeline()

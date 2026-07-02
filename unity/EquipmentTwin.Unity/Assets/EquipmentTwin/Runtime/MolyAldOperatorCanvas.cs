@@ -402,7 +402,7 @@ namespace EquipmentTwin.Unity.Processes
 
             if (currentStepText != null)
             {
-                currentStepText.text = SplitCamelCase(visualState.StepName);
+                currentStepText.text = DisplayStepName(visualState.StepName);
             }
 
             if (recipeText != null)
@@ -428,7 +428,7 @@ namespace EquipmentTwin.Unity.Processes
             if (alarmDetailText != null)
             {
                 alarmDetailText.text = visualState.HasFault
-                    ? $"{SelectedFaultScenarioName()} | {FaultArea(visualState.StepName)} hold"
+                    ? $"{ActiveFaultScenarioName()} | {FaultArea(visualState.StepName)} {FaultModeText()}"
                     : "Interlocks nominal";
             }
 
@@ -456,7 +456,9 @@ namespace EquipmentTwin.Unity.Processes
 
             if (eventText != null)
             {
-                var playback = player != null && player.IsPlaying ? "RUN" : "HOLD";
+                var playback = player != null && player.FaultTimelineReplayActive
+                    ? "FAULT REPLAY"
+                    : player != null && player.IsPlaying ? "RUN" : "HOLD";
                 eventText.text = $"LIVE EVENT: {SplitCamelCase(visualState.StepName)} | {ActiveValveText(visualState)} valve | {playback}";
             }
 
@@ -986,7 +988,7 @@ namespace EquipmentTwin.Unity.Processes
             player.ToggleOperatorFault();
             RecordOperatorAction(
                 player.OperatorFaultActive ? "FAULT" : "FAULT CLEAR",
-                player.OperatorFaultActive ? $"{SelectedFaultScenarioName()} selected" : "override cleared");
+                player.OperatorFaultActive ? FaultActionDetail() : "override cleared");
             RefreshCanvas();
         }
 
@@ -1028,10 +1030,14 @@ namespace EquipmentTwin.Unity.Processes
         {
             var playing = player != null && player.IsPlaying;
             var fault = visualState != null && visualState.HasFault;
+            var replay = player != null && player.FaultTimelineReplayActive;
+            var faultLabel = fault
+                ? (replay ? "FAULT\nREPLAY" : "FAULT\nACTIVE")
+                : "FAULT";
 
             SetCommandButton(startButtonImage, startButtonText, playing ? "RUNNING" : "START", playing ? Color.Lerp(Success, TextPrimary, 0.20f) : Success, Background);
             SetCommandButton(stopButtonImage, stopButtonText, playing ? "STOP" : "PAUSED", playing ? Stop : Color.Lerp(NeutralButton, Warning, 0.30f), TextPrimary);
-            SetCommandButton(faultButtonImage, faultButtonText, fault ? "FAULT\nACTIVE" : "FAULT", fault ? Alarm : Warning, fault ? TextPrimary : Background);
+            SetCommandButton(faultButtonImage, faultButtonText, faultLabel, fault ? Alarm : Warning, fault ? TextPrimary : Background);
             SetCommandButton(resetButtonImage, resetButtonText, "RESET", NeutralButton, TextPrimary);
         }
 
@@ -1044,8 +1050,9 @@ namespace EquipmentTwin.Unity.Processes
 
             var scenarioName = SelectedFaultScenarioName();
             var isFault = visualState != null && visualState.HasFault;
+            var isReplay = player != null && player.FaultTimelineReplayActive;
             faultScenarioText.text = isFault
-                ? $"ACTIVE FAULT SCENARIO: {scenarioName}"
+                ? $"{(isReplay ? "REPLAYED" : "ACTIVE")} FAULT SCENARIO: {ActiveFaultScenarioName()}"
                 : $"SELECTED FAULT SCENARIO: {scenarioName}";
             faultScenarioText.color = isFault ? Alarm : Warning;
         }
@@ -1106,6 +1113,41 @@ namespace EquipmentTwin.Unity.Processes
         private string SelectedFaultScenarioName()
         {
             return player != null ? player.SelectedFaultScenarioName : "precursor-dose-timeout";
+        }
+
+        private string ActiveFaultScenarioName()
+        {
+            if (player == null || string.IsNullOrWhiteSpace(player.ActiveFaultScenarioName))
+            {
+                return SelectedFaultScenarioName();
+            }
+
+            return player.ActiveFaultScenarioName;
+        }
+
+        private string FaultModeText()
+        {
+            return player != null && player.FaultTimelineReplayActive ? "replay" : "hold";
+        }
+
+        private string FaultActionDetail()
+        {
+            if (player == null)
+            {
+                return $"{SelectedFaultScenarioName()} selected";
+            }
+
+            if (!string.IsNullOrWhiteSpace(player.FaultReplayError))
+            {
+                return $"{ActiveFaultScenarioName()} fallback hold: {player.FaultReplayError}";
+            }
+
+            if (player.FaultTimelineReplayActive && player.CurrentStep != null)
+            {
+                return $"{ActiveFaultScenarioName()} replay {DisplayStepName(player.CurrentStep.step)}";
+            }
+
+            return $"{ActiveFaultScenarioName()} selected";
         }
 
         private Camera ResolveCamera()
@@ -1331,6 +1373,31 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             return System.Text.RegularExpressions.Regex.Replace(value, "([a-z])([A-Z])", "$1 $2");
+        }
+
+        private static string DisplayStepName(string stepName)
+        {
+            if (string.Equals(stepName, "DoseMetalPrecursor", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Dose Precursor";
+            }
+
+            if (string.Equals(stepName, "PurgeAfterPrecursor", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Purge Precursor";
+            }
+
+            if (string.Equals(stepName, "PurgeAfterReactant", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Purge Reactant";
+            }
+
+            if (string.Equals(stepName, "StabilizeTemperature", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Stabilize Temp";
+            }
+
+            return SplitCamelCase(stepName);
         }
 
         private static Color Hex(byte red, byte green, byte blue)

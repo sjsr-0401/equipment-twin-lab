@@ -2274,3 +2274,38 @@ RESET
 - 지금 Unity FAULT는 아직 실제 JSON fault timeline replay가 아니다.
 - `precursor-dose-timeout`이라는 이름은 붙었지만, 현재는 HMI hold를 설명하는 selected scenario label이다.
 - 다음 goal에서 process-runner의 실제 fault step/timeline을 Unity player에 연결해야 한다.
+
+## 2026-07-02 — Goal 048 Fault Timeline Replay Binding 이해 사인오프
+
+이번 변경의 핵심은 Unity가 fault를 "그럴듯하게 빨갛게 칠하는 것"에서 벗어나, Core/CLI가 만든 fault timeline JSON을 실제 source로 읽는 것이다.
+
+데이터 흐름:
+
+```text
+processes/public-moly-ald-metallization.json
+    -> EquipmentTwin.Cli process run --fault precursor-dose-timeout --timeline ...
+    -> unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.precursor-dose-timeout.json
+    -> MolyAldProcessPlayer.ActivateSelectedFaultScenario()
+    -> MolyAldVisualStateMapper.FromTimeline()
+    -> MolyAldOperatorCanvas
+```
+
+코드 관점:
+
+- `MolyAldProcessPlayer`
+  - normal timeline과 fault replay timeline을 둘 다 다룬다.
+  - fault replay 시 selected scenario 이름으로 JSON path를 만든다.
+  - timeline 안의 `faultScenarioName`이 selected scenario와 맞는지 확인한다.
+  - 첫 failed step으로 이동해서 HMI가 실제 실패 지점을 보여주게 한다.
+- `MolyAldOperatorCanvas`
+  - `FaultTimelineReplayActive`를 보고 `FAULT REPLAY`를 표시한다.
+  - HMI용 label은 `DoseMetalPrecursor` 대신 `Dose Precursor`처럼 짧게 표시한다.
+- `MolyAldEditorSmokeTest`
+  - scenario 이름 일치, replay active, failed step 이동을 검증한다.
+
+중요한 boundary:
+
+- Unity는 여전히 공정 계산기가 아니다.
+- 공정 결과 계산은 Core/CLI가 한다.
+- Unity는 그 결과 JSON을 replay하는 visualization layer다.
+- HMI safety hold와 process truth는 분리되어 있다.

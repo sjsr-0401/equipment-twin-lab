@@ -15,6 +15,9 @@ namespace EquipmentTwin.Unity.Processes
         [Header("Timeline source")]
         [SerializeField] private TextAsset timelineAsset;
         [SerializeField] private string streamingAssetsRelativePath = "moly-ald-timeline.sample.json";
+        [SerializeField] private string faultTimelineDirectory = "faults";
+        [SerializeField] private string faultTimelineFilePrefix = "moly-ald-timeline.";
+        [SerializeField] private string faultTimelineFileExtension = ".json";
 
         [Header("Playback")]
         [SerializeField] private bool playOnStart = true;
@@ -30,6 +33,10 @@ namespace EquipmentTwin.Unity.Processes
         private float elapsedInCurrentStepSeconds;
         private bool isPlaying;
         private bool operatorFaultActive;
+        private bool faultTimelineReplayActive;
+        private string activeFaultScenarioName = string.Empty;
+        private string activeTimelineRelativePath = string.Empty;
+        private string faultReplayError = string.Empty;
         private string loadError = string.Empty;
 
         public MolyAldTimelineDocumentDto Timeline => timeline;
@@ -55,7 +62,26 @@ namespace EquipmentTwin.Unity.Processes
 
         public string SelectedFaultScenarioName => NormalizeFaultScenarioName(selectedFaultScenarioName);
 
-        public string ActiveFaultScenarioName => operatorFaultActive ? SelectedFaultScenarioName : string.Empty;
+        public string ActiveFaultScenarioName
+        {
+            get
+            {
+                if (!operatorFaultActive)
+                {
+                    return string.Empty;
+                }
+
+                return string.IsNullOrWhiteSpace(activeFaultScenarioName)
+                    ? SelectedFaultScenarioName
+                    : activeFaultScenarioName;
+            }
+        }
+
+        public bool FaultTimelineReplayActive => faultTimelineReplayActive;
+
+        public string ActiveTimelineRelativePath => activeTimelineRelativePath;
+
+        public string FaultReplayError => faultReplayError;
 
         public string LoadError => loadError;
 
@@ -111,6 +137,10 @@ namespace EquipmentTwin.Unity.Processes
                 currentStepIndex = 0;
                 elapsedInCurrentStepSeconds = 0f;
                 operatorFaultActive = false;
+                faultTimelineReplayActive = false;
+                activeFaultScenarioName = string.Empty;
+                activeTimelineRelativePath = timelineAsset != null ? "[TextAsset]" : streamingAssetsRelativePath;
+                faultReplayError = string.Empty;
                 selectedFaultScenarioName = SelectedFaultScenarioName;
             }
             catch (System.Exception ex)
@@ -118,6 +148,10 @@ namespace EquipmentTwin.Unity.Processes
                 timeline = null;
                 isPlaying = false;
                 operatorFaultActive = false;
+                faultTimelineReplayActive = false;
+                activeFaultScenarioName = string.Empty;
+                activeTimelineRelativePath = string.Empty;
+                faultReplayError = string.Empty;
                 loadError = ex.Message;
                 Debug.LogError($"Failed to load ALD timeline: {ex.Message}", this);
             }
@@ -140,17 +174,33 @@ namespace EquipmentTwin.Unity.Processes
 
         public void Restart()
         {
+            if (faultTimelineReplayActive)
+            {
+                LoadTimeline();
+            }
+
             currentStepIndex = 0;
             elapsedInCurrentStepSeconds = 0f;
             operatorFaultActive = false;
+            faultTimelineReplayActive = false;
+            activeFaultScenarioName = string.Empty;
+            faultReplayError = string.Empty;
             Play();
         }
 
         public void ResetToStart()
         {
+            if (faultTimelineReplayActive)
+            {
+                LoadTimeline();
+            }
+
             currentStepIndex = 0;
             elapsedInCurrentStepSeconds = 0f;
             operatorFaultActive = false;
+            faultTimelineReplayActive = false;
+            activeFaultScenarioName = string.Empty;
+            faultReplayError = string.Empty;
             Pause();
         }
 
@@ -168,6 +218,15 @@ namespace EquipmentTwin.Unity.Processes
         public void ActivateSelectedFaultScenario()
         {
             selectedFaultScenarioName = SelectedFaultScenarioName;
+            activeFaultScenarioName = selectedFaultScenarioName;
+            faultReplayError = string.Empty;
+
+            if (!TryLoadSelectedFaultTimeline(selectedFaultScenarioName, out var replayError))
+            {
+                faultReplayError = replayError;
+                Debug.LogError($"Failed to replay ALD fault timeline '{selectedFaultScenarioName}': {replayError}", this);
+            }
+
             operatorFaultActive = true;
             Pause();
         }
@@ -175,6 +234,13 @@ namespace EquipmentTwin.Unity.Processes
         public void ClearOperatorFault()
         {
             operatorFaultActive = false;
+            activeFaultScenarioName = string.Empty;
+            faultReplayError = string.Empty;
+
+            if (faultTimelineReplayActive)
+            {
+                LoadTimeline();
+            }
         }
 
         public void SelectFaultScenario(string scenarioName)
@@ -227,6 +293,82 @@ namespace EquipmentTwin.Unity.Processes
         private float GetStepDurationSeconds(MolyAldTimelineStepDto step)
         {
             return Mathf.Max(minimumStepSeconds, step.durationMilliseconds / 1000f);
+        }
+
+        private bool TryLoadSelectedFaultTimeline(string scenarioName, out string replayError)
+        {
+            replayError = string.Empty;
+            var previousTimeline = timeline;
+            var previousStepIndex = currentStepIndex;
+            var previousElapsed = elapsedInCurrentStepSeconds;
+            var previousTimelinePath = activeTimelineRelativePath;
+            var previousReplayActive = faultTimelineReplayActive;
+
+            try
+            {
+                var relativePath = BuildFaultTimelineRelativePath(scenarioName);
+                var replayTimeline = MolyAldTimelineLoader.FromStreamingAssetsFile(relativePath);
+
+                if (replayTimeline.success)
+                {
+                    throw new System.InvalidOperationException($"Fault replay timeline '{relativePath}' is marked success=true.");
+                }
+
+                if (!string.Equals(replayTimeline.faultScenarioName, scenarioName, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new System.InvalidOperationException(
+                        $"Fault replay timeline '{relativePath}' contains scenario '{replayTimeline.faultScenarioName}', expected '{scenarioName}'.");
+                }
+
+                timeline = replayTimeline;
+                currentStepIndex = FindFirstFailedStepIndex(replayTimeline);
+                elapsedInCurrentStepSeconds = 0f;
+                activeTimelineRelativePath = relativePath;
+                activeFaultScenarioName = replayTimeline.faultScenarioName;
+                faultTimelineReplayActive = true;
+                loadError = string.Empty;
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                timeline = previousTimeline;
+                currentStepIndex = previousStepIndex;
+                elapsedInCurrentStepSeconds = previousElapsed;
+                activeTimelineRelativePath = previousTimelinePath;
+                faultTimelineReplayActive = previousReplayActive;
+                replayError = ex.Message;
+                return false;
+            }
+        }
+
+        private string BuildFaultTimelineRelativePath(string scenarioName)
+        {
+            var safeDirectory = string.IsNullOrWhiteSpace(faultTimelineDirectory)
+                ? string.Empty
+                : faultTimelineDirectory.Trim().Trim('/', '\\');
+            var fileName = $"{faultTimelineFilePrefix}{scenarioName}{faultTimelineFileExtension}";
+
+            return string.IsNullOrWhiteSpace(safeDirectory)
+                ? fileName
+                : $"{safeDirectory}/{fileName}";
+        }
+
+        private static int FindFirstFailedStepIndex(MolyAldTimelineDocumentDto replayTimeline)
+        {
+            if (replayTimeline == null || replayTimeline.steps == null || replayTimeline.steps.Length == 0)
+            {
+                return 0;
+            }
+
+            for (var index = 0; index < replayTimeline.steps.Length; index++)
+            {
+                if (!replayTimeline.steps[index].success)
+                {
+                    return index;
+                }
+            }
+
+            return replayTimeline.steps.Length - 1;
         }
 
         private static string NormalizeFaultScenarioName(string scenarioName)
