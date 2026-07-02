@@ -311,3 +311,30 @@ Boundary:
 - `precursor-dose-timeout` is currently used as the selected scenario name.
 - The Unity view does not yet execute that scenario's complete JSON timeline.
 - Next useful work is binding the selected scenario to actual fault timeline replay.
+
+## 2026-07-02 Fault timeline replay package update
+
+Goal 048 connects the selected fault scenario to actual replay data.
+
+New replay source:
+
+| Source | Purpose |
+|---|---|
+| `StreamingAssets/faults/moly-ald-timeline.pumpdown-timeout.json` | pump-down failure replay |
+| `StreamingAssets/faults/moly-ald-timeline.temperature-not-stable.json` | thermal stabilization failure replay |
+| `StreamingAssets/faults/moly-ald-timeline.precursor-dose-timeout.json` | precursor dose failure replay |
+| `StreamingAssets/faults/moly-ald-timeline.purge-timeout.json` | purge failure replay |
+
+Updated interview explanation:
+
+```text
+The fault screen is no longer just a red override. Core/CLI generated the fault timeline,
+and Unity loads that timeline from StreamingAssets, jumps to the failed step, and renders
+the HMI/alarm/schematic from that process state.
+```
+
+Boundary:
+
+- This is still public/synthetic process data.
+- It is not a vendor recipe or a real tool log.
+- The useful claim is architecture: Core produces process truth; Unity replays it.

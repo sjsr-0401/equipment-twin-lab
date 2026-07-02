@@ -269,3 +269,31 @@ Implementation boundary:
 - The Unity FAULT button still applies a synthetic HMI hold state.
 - The selected scenario name is now visible/logged, but Unity is not yet replaying the full JSON fault timeline.
 - Full process-runner fault timeline replay is the next architecture step.
+
+## Goal 048 Acceptance Criteria
+
+```text
+Goal 048: Fault Timeline Replay Binding
+```
+
+Accepted behavior:
+
+- [x] Unity loads selected fault timeline JSON from `StreamingAssets/faults`.
+- [x] FAULT replay validates that the timeline scenario matches the selected scenario.
+- [x] FAULT replay moves to the first failed process step.
+- [x] HMI command button shows `FAULT REPLAY`.
+- [x] Alarm detail uses `scenario | area replay` wording.
+- [x] Smoke test checks replay-active state and failed-step positioning.
+
+Implemented artifacts:
+
+- `unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.pumpdown-timeout.json`
+- `unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.temperature-not-stable.json`
+- `unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.precursor-dose-timeout.json`
+- `unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.purge-timeout.json`
+
+Implementation boundary:
+
+- Unity is still a replay/view layer.
+- Core/CLI generated timeline JSON is the process truth.
+- User-facing scenario selection remains a next step.

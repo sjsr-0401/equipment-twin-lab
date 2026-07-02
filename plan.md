@@ -3289,3 +3289,48 @@ Goal 047: Reset Recovery Screenshot and Fault Scenario Selector
 ```text
 Goal 048: Fault Timeline Replay Binding
 ```
+
+## 2026-07-02 Goal 048: Fault Timeline Replay Binding 완료
+
+목표:
+
+- Unity가 fault scenario 이름만 표시하는 단계를 넘어서, Core/CLI가 만든 실제 fault timeline JSON을 replay하게 만든다.
+- HMI safety hold와 process truth를 분리한다.
+
+구현:
+
+- `unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/`
+  - public Moly ALD fault timeline JSON 4개 추가
+  - `pumpdown-timeout`
+  - `temperature-not-stable`
+  - `precursor-dose-timeout`
+  - `purge-timeout`
+- `MolyAldProcessPlayer`
+  - selected scenario 이름으로 `faults/moly-ald-timeline.{scenario}.json` path를 만든다.
+  - fault timeline을 로드하고 `faultScenarioName` 일치를 검증한다.
+  - 첫 failed step으로 이동한다.
+  - `FaultTimelineReplayActive` 상태를 노출한다.
+- `MolyAldOperatorCanvas`
+  - replay 상태에서 `FAULT REPLAY`를 표시한다.
+  - alarm detail에 `scenario | area replay`를 표시한다.
+  - action log에 replay step을 남긴다.
+- `MolyAldEditorSmokeTest`
+  - FAULT 검증에서 replay timeline 로드 여부, scenario 일치, failed step 이동을 확인한다.
+
+설계 판단:
+
+- Unity는 공정을 계산하지 않는다.
+- Core/CLI가 만든 timeline JSON이 process truth다.
+- Unity는 그 timeline을 읽어 operator console, schematic, alarm을 replay한다.
+
+남은 한계:
+
+- fault scenario를 화면에서 cycle/select하는 UI는 아직 없다.
+- fault timeline JSON은 현재 static StreamingAssets artifact다.
+- run report와 operator action log는 아직 연결되지 않았다.
+
+다음 권장 Goal:
+
+```text
+Goal 049: Fault Scenario Selector UI
+```

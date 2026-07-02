@@ -564,3 +564,18 @@ Completed:
 - Reset recovery screenshot exists.
 - FAULT now carries the selected public scenario name `precursor-dose-timeout`.
 - Normal, fault, and recovery screenshots are available in `docs/demo`.
+
+## 2026-07-02 Triage Update after Goal 048
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Fault scenario selector UI | Missing | Add a small HMI control to cycle selected scenario |
+| P1 | Replay truth boundary | Improved | Keep documenting that Core/CLI timeline is process truth |
+| P2 | Fault timeline regeneration script | Missing | Add script if static JSON upkeep becomes annoying |
+| P2 | Operator log persistence | In-memory only | Later export action log/run report |
+
+Completed:
+
+- Unity fault replay now loads `StreamingAssets/faults/moly-ald-timeline.{scenario}.json`.
+- `precursor-dose-timeout` moves to the failed `DoseMetalPrecursor` step.
+- HMI shows `FAULT REPLAY`.

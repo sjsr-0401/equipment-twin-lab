@@ -305,3 +305,37 @@ Important boundary:
 - The FAULT control now carries a named scenario label.
 - Unity still uses a synthetic hold for the operator-console demonstration.
 - It does not yet replay the full process-runner fault timeline JSON.
+
+## 2026-07-02 Fault timeline replay update
+
+Goal 048 changes the fault screenshot from a named synthetic hold into a replay of the selected process fault timeline.
+
+Fault replay screenshot:
+
+```powershell
+.\scripts\Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot -ScreenshotPath artifacts\unity-demo\moly-ald-demo-fault-goal048.png
+```
+
+Fault replay source files:
+
+```text
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.pumpdown-timeout.json
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.temperature-not-stable.json
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.precursor-dose-timeout.json
+unity/EquipmentTwin.Unity/Assets/StreamingAssets/faults/moly-ald-timeline.purge-timeout.json
+```
+
+What the fault replay screenshot should show:
+
+- command button: `FAULT REPLAY`;
+- selected/replayed scenario: `precursor-dose-timeout`;
+- current step: `Dose Precursor`;
+- recipe/cycle: `Step 8/8 | Cycle 2/4`;
+- precursor valve ON;
+- alarm detail uses replay wording, not only synthetic hold wording.
+
+Important boundary:
+
+- Unity still does not calculate the process.
+- Core/CLI generated the fault timeline JSON.
+- Unity replays the timeline and renders the HMI state.
