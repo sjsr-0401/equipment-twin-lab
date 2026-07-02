@@ -656,3 +656,20 @@ Completed:
 - Reduced normal-operation color noise.
 - Added text/shape state encoding for valves, measurements, and alarm card.
 - Added R&D/design note for custom WPF tokens versus chart/gauge libraries.
+
+## 2026-07-03 Triage Update after Goal 054
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Demo-friendly WPF color direction | Done | Keep green/blue normal-state readability for the portfolio demo |
+| P1 | From-zero development explanation | Done | Extend it whenever the user asks about unknown terms |
+| P1 | WPF line-by-line learning note | Next | Explain `MainWindow.xaml` and `OperatorConsoleViewModel` in junior-readable Korean |
+| P1 | Instrument trend panel | Waiting | Add after the user understands the current WPF layout |
+| P1 | WPF alarm recovery procedure | Waiting | Add after trend/learning pass or when demo story needs recovery flow |
+
+Completed:
+
+- Reverted the overly strict gray-base normal-state color direction.
+- Kept readability fixes from the previous WPF pass.
+- Added `docs/learning/development-from-zero.md` so the project history can be studied from the beginning.
+- Updated CI markers to keep the learning note and demo color indicators present.

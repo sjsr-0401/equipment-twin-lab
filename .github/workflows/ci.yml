@@ -96,6 +96,7 @@ jobs:
           test -f docs/design/operator-console-design-system.md
           test -f docs/design/public-ald-schematic-reference.md
           test -f docs/design/wpf-hmi-visual-system.md
+          test -f docs/learning/development-from-zero.md
           test -f docs/demo/moly-ald-demo.png
           test -f docs/demo/moly-ald-demo-fault.png
           test -f docs/demo/moly-ald-demo-recovery.png
@@ -122,6 +123,7 @@ jobs:
           test -f goals/051-fix-wpf-progress-bindings.md
           test -f goals/052-wpf-ui-readability-fix.md
           test -f goals/053-wpf-hmi-visual-system.md
+          test -f goals/054-demo-color-restore-junior-notes.md
           test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
@@ -220,7 +222,8 @@ jobs:
           grep -q "DataGridCell" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "BorderSoft" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "LOAD PORT" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
-          grep -q "NeutralSignal" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
-          grep -q "NO ACTIVE ALARM" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
-          grep -q "OPEN" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "Success" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "NO ALARM" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "GROWING" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "WPF HMI Visual System" docs/design/wpf-hmi-visual-system.md
+          grep -q "처음부터 다시 이해" docs/learning/development-from-zero.md
