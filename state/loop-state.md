@@ -1045,3 +1045,27 @@ Reason:
 
 - Replay binding is now present.
 - The next interaction gap is letting the operator choose which public fault scenario to replay from the HMI.
+
+## 2026-07-03 Loop Update: Goal 049 complete
+
+Current completed goal:
+
+- `Goal 049: Fault Scenario Selector UI`
+
+What changed:
+
+- HMI now has a `FAULT SCENARIO SELECTOR` card.
+- Four public fault scenarios are visible as operator-selectable chips.
+- `MolyAldProcessPlayer` exposes the public fault scenario catalog and selected index.
+- `MolyAldOperatorCanvas.SelectFaultScenarioForOperator(index)` changes the selected replay scenario.
+- Selector changes are blocked while a replay alarm is active, so the HMI cannot show a different selected fault than the active replay timeline.
+- Normal, fault, and recovery screenshots were regenerated with the new selector UI.
+
+Current next recommendation:
+
+- `Goal 050: Fault Recovery Procedure Panel`
+
+Reason:
+
+- The operator can now select and replay a fault.
+- The next portfolio improvement is to show what an operator should check after the alarm: alarm cause, affected subsystem, reset condition, and recovery steps.

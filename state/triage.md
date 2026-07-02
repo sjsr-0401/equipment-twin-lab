@@ -579,3 +579,18 @@ Completed:
 - Unity fault replay now loads `StreamingAssets/faults/moly-ald-timeline.{scenario}.json`.
 - `precursor-dose-timeout` moves to the failed `DoseMetalPrecursor` step.
 - HMI shows `FAULT REPLAY`.
+
+## 2026-07-03 Triage Update after Goal 049
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P1 | Fault recovery procedure panel | Next | Show operator-facing recovery checklist after a replay alarm |
+| P1 | Fault selector UI | Done | Keep selector locked while fault replay is active |
+| P2 | Fault timeline regeneration script | Waiting | Add only if static JSON maintenance becomes repetitive |
+| P2 | Operator log persistence | Waiting | Later export action log/run report if it improves the demo story |
+
+Completed:
+
+- HMI now exposes four public fault scenarios as selectable chips.
+- Scenario selection flows through `MolyAldOperatorCanvas` into `MolyAldProcessPlayer`.
+- Unity smoke test validates scenario selection, replay loading, active-fault selection lockout, and reset behavior.

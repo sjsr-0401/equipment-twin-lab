@@ -477,6 +477,22 @@ namespace EquipmentTwin.Unity.EditorTools
                 throw new InvalidOperationException("Pause command did not stop the process player.");
             }
 
+            for (var scenarioIndex = 0; scenarioIndex < MolyAldProcessPlayer.PublicFaultScenarioCount; scenarioIndex++)
+            {
+                operatorCanvas.SelectFaultScenarioForOperator(scenarioIndex);
+                var expectedScenario = MolyAldProcessPlayer.GetPublicFaultScenarioName(scenarioIndex);
+                if (!string.Equals(player.SelectedFaultScenarioName, expectedScenario, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException($"Fault scenario selector did not choose '{expectedScenario}'.");
+                }
+            }
+
+            operatorCanvas.SelectFaultScenarioForOperator(2);
+            if (!string.Equals(player.SelectedFaultScenarioName, "precursor-dose-timeout", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Fault scenario selector did not return to the precursor dose timeout scenario.");
+            }
+
             player.ToggleOperatorFault();
             if (!player.OperatorFaultActive)
             {
@@ -501,6 +517,12 @@ namespace EquipmentTwin.Unity.EditorTools
             if (player.CurrentStep == null || player.CurrentStep.success)
             {
                 throw new InvalidOperationException("Fault replay did not move the player to a failed process step.");
+            }
+
+            operatorCanvas.SelectFaultScenarioForOperator(0);
+            if (!string.Equals(player.SelectedFaultScenarioName, "precursor-dose-timeout", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Fault scenario selector changed scenario while a replay alarm was active.");
             }
 
             var faultState = MolyAldVisualStateMapper.FromTimeline(

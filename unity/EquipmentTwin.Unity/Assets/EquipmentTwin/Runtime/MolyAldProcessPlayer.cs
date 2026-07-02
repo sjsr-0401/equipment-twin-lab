@@ -60,6 +60,12 @@ namespace EquipmentTwin.Unity.Processes
 
         public bool OperatorFaultActive => operatorFaultActive;
 
+        public static int PublicFaultScenarioCount => PublicFaultScenarioNames.Length;
+
+        public int FaultScenarioCount => PublicFaultScenarioNames.Length;
+
+        public int SelectedFaultScenarioIndex => FindFaultScenarioIndex(SelectedFaultScenarioName);
+
         public string SelectedFaultScenarioName => NormalizeFaultScenarioName(selectedFaultScenarioName);
 
         public string ActiveFaultScenarioName
@@ -248,6 +254,11 @@ namespace EquipmentTwin.Unity.Processes
             selectedFaultScenarioName = NormalizeFaultScenarioName(scenarioName);
         }
 
+        public void SelectFaultScenarioByIndex(int scenarioIndex)
+        {
+            selectedFaultScenarioName = GetPublicFaultScenarioName(scenarioIndex);
+        }
+
         public void SelectNextFaultScenario()
         {
             var current = SelectedFaultScenarioName;
@@ -263,6 +274,23 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             selectedFaultScenarioName = PublicFaultScenarioNames[nextIndex];
+        }
+
+        public void SelectPreviousFaultScenario()
+        {
+            var current = SelectedFaultScenarioName;
+            var previousIndex = PublicFaultScenarioNames.Length - 1;
+
+            for (var index = 0; index < PublicFaultScenarioNames.Length; index++)
+            {
+                if (string.Equals(PublicFaultScenarioNames[index], current, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    previousIndex = index == 0 ? PublicFaultScenarioNames.Length - 1 : index - 1;
+                    break;
+                }
+            }
+
+            selectedFaultScenarioName = PublicFaultScenarioNames[previousIndex];
         }
 
         public void AdvanceStep()
@@ -369,6 +397,31 @@ namespace EquipmentTwin.Unity.Processes
             }
 
             return replayTimeline.steps.Length - 1;
+        }
+
+        public static string GetPublicFaultScenarioName(int scenarioIndex)
+        {
+            if (PublicFaultScenarioNames.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            return PublicFaultScenarioNames[Mathf.Clamp(scenarioIndex, 0, PublicFaultScenarioNames.Length - 1)];
+        }
+
+        private static int FindFaultScenarioIndex(string scenarioName)
+        {
+            var normalized = NormalizeFaultScenarioName(scenarioName);
+
+            for (var index = 0; index < PublicFaultScenarioNames.Length; index++)
+            {
+                if (string.Equals(PublicFaultScenarioNames[index], normalized, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return index;
+                }
+            }
+
+            return 0;
         }
 
         private static string NormalizeFaultScenarioName(string scenarioName)

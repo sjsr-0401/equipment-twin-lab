@@ -3334,3 +3334,37 @@ Goal 048: Fault Timeline Replay Binding
 ```text
 Goal 049: Fault Scenario Selector UI
 ```
+
+## 2026-07-03 Goal 049: Fault Scenario Selector UI 완료
+
+목표:
+
+- HMI에서 operator가 replay할 fault scenario를 직접 선택하게 만든다.
+- 선택값이 `MolyAldProcessPlayer`의 fault timeline replay 경로로 이어지게 한다.
+- active alarm 중에는 scenario 변경을 막아 화면 모순을 방지한다.
+
+구현:
+
+- `MolyAldProcessPlayer`
+  - public fault scenario catalog API 추가
+  - selected scenario index와 index 기반 선택 함수 추가
+- `MolyAldOperatorCanvas`
+  - `FAULT SCENARIO SELECTOR` card 추가
+  - 4개 chip UI 추가: Pump timeout, Temp unstable, Precursor timeout, Purge timeout
+  - `SelectFaultScenarioForOperator(index)` 추가
+  - active fault 중 `SELECT BLOCKED` action log 기록
+- `MolyAldEditorSmokeTest`
+  - 모든 public scenario 선택 가능 여부 검증
+  - replay alarm 중 scenario 변경 차단 검증
+
+설계 판단:
+
+- Canvas는 파일을 직접 읽지 않는다.
+- Canvas는 선택 이벤트만 player에 전달한다.
+- 실제 replay timeline 로딩과 검증은 `MolyAldProcessPlayer`가 계속 담당한다.
+
+다음 권장 Goal:
+
+```text
+Goal 050: Fault Recovery Procedure Panel
+```
