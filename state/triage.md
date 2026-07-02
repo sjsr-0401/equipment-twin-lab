@@ -338,3 +338,33 @@ Completion status:
 
 - Draft PR #34: <https://github.com/sjsr-0401/equipment-twin-lab/pull/34>
 - CI: passed after replacing a fragile Korean grep check with an ASCII marker check.
+
+## 2026-07-02 Triage Update: Goal 037
+
+Active focus moved from narration readiness to screenshot clarity.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Explanatory Unity screenshot | The previous image rendered correctly but was not self-explanatory | In progress |
+| P1 | README demo image update | Portfolio first impression depends on the screenshot | In progress |
+| P2 | Actual 3-minute recording | User will handle recording after image quality improves | Next |
+
+Current validation boundary:
+
+- The screenshot can show labels, color key, status, and process flow.
+- It still does not claim real CAD, real vendor sequence, or real deposition physics.
+
+Next priority:
+
+- Open `docs/demo/moly-ald-demo.png` and decide if it is good enough for first recording.
+- If yes, record the 3-minute demo.
+
+Validation status:
+
+- Full rehearsal passed and updated `artifacts/demo-rehearsal/moly-ald-demo.png`.
+
+Completion status:
+
+- Draft PR #35: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
+- CI: passed
+- Next: user records the 3-minute demo using the improved screenshot.

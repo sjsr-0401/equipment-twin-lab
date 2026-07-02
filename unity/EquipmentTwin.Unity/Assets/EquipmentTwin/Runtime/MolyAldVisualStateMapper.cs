@@ -22,6 +22,7 @@ namespace EquipmentTwin.Unity.Processes
             var temperatureRatio = Mathf.InverseLerp(roomTemperatureC, processTemperatureC, step.waferTemperatureC);
             var thicknessRatio = ThicknessRatio(timeline, step);
             var totalSteps = timeline != null && timeline.steps != null ? timeline.steps.Length : 0;
+            var cycleCount = timeline != null ? timeline.cycleCount : 0;
             var hasFault = timeline != null && (!timeline.success || !step.success);
             var valves = step.valves;
             var metalPrecursorOpen = valves != null && valves.metalPrecursor;
@@ -40,6 +41,7 @@ namespace EquipmentTwin.Unity.Processes
                 step.index,
                 totalSteps,
                 step.cycle,
+                cycleCount,
                 step.HasCycle,
                 hasFault,
                 metalPrecursorOpen,

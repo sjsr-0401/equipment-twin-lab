@@ -8,6 +8,8 @@
 
 현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, chamber/wafer/film/vacuum gauge/valve/gas line 상태를 primitive 3D object로 재생한다.
 
+대표 screenshot에는 현재 step, status panel, color key, process flow가 같이 표시된다. 목적은 “예쁜 3D 모델”보다 Core/CLI가 만든 공정 timeline을 Unity가 어떻게 replay하는지 한눈에 보여주는 것이다.
+
 검증된 실행 경로:
 
 ```powershell

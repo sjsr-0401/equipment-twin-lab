@@ -681,3 +681,47 @@ Completion update:
   - push run `28522333300`
   - pull_request run `28522335584`
 - Next recommended goal: `Goal 037: record the actual 3-minute demo and fix explanation or visual gaps`.
+
+## 2026-07-02 Update: Goal 037 in progress
+
+- PR #34 merged into `main`.
+- Current branch: `goal/037-explanatory-unity-demo-screenshot`.
+- Goal 037 improves the Unity screenshot so it is understandable without a long verbal explanation.
+- User feedback that triggered this goal:
+  - The previous screenshot proved Unity rendered, but did not clearly show what each part meant.
+- New visual elements:
+  - component labels;
+  - status panel;
+  - color key;
+  - process flow bar;
+  - bottom note explaining `Core/CLI calculates, Unity replays`.
+- `MolyAldVisualState` now carries `CycleCount` so the visualizer does not hardcode cycle display.
+- New tracked screenshot:
+  - `docs/demo/moly-ald-demo.png`
+
+Local validation so far:
+
+- Release build passed.
+- Core console tests passed: 80 tests.
+- Unity screenshot capture passed.
+- Full demo rehearsal passed.
+
+Next required action:
+
+- update final state/log if needed;
+- commit, push, open draft PR, watch CI.
+
+Completion update:
+
+- Draft PR #35 opened: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
+- Commit: `8ce7365 feat: improve unity demo screenshot clarity`
+- Local validation passed:
+  - `git diff --check`
+  - Release build
+  - Core console tests: 80 passed
+  - Unity screenshot capture
+  - full demo rehearsal
+- PR CI passed:
+  - push run `28563274336`
+  - pull_request run `28563282879`
+- Next recommended goal: `Goal 038: record the actual 3-minute demo and fix explanation or visual gaps`.

@@ -107,6 +107,7 @@ CAD/Blender 모델이 생기면 primitive visual만 교체하는 것입니다.
 | Unity timeline data contract | 구현/파일 검증 완료 | `MolyAldTimelineDocument`, sample JSON |
 | Unity primitive visual | 실제 Unity Editor batch 검증 완료 | `MolyAldPrimitiveVisualizer`, `docs/demo/moly-ald-demo.png` |
 | Unity screenshot capture | 실제 PNG 생성 완료 | `Invoke-UnitySmokeTest.ps1 -CaptureScreenshot` |
+| 설명 가능한 Unity screenshot | 부품 라벨, color key, status panel, process flow 추가 | `docs/unity-demo-screenshot.md`, `docs/demo/moly-ald-demo.png` |
 | 3분 녹화 체크리스트 | 문서화 완료 | `docs/unity-demo-recording-checklist.md` |
 | 3분 녹화 리허설 | 자동 실행 스크립트 추가 | `scripts/Invoke-PortfolioDemoRehearsal.ps1`, `docs/demo-rehearsal-runner.md` |
 | 3분 녹화 한글 큐카드 | 자동 생성 스크립트 추가 | `scripts/New-PortfolioDemoCueCards.ps1`, `docs/portfolio-demo-narration.md` |

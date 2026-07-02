@@ -1887,3 +1887,44 @@ docs/portfolio-demo-narration.md
 ```text
 artifacts/demo-rehearsal/recording-cue-cards.md
 ```
+
+## 2026-07-02 이해 요약: Explanatory Unity Demo Screenshot
+
+이번 Goal의 핵심은 “돌아가는 화면”을 “처음 보는 사람이 이해할 수 있는 화면”으로 바꾸는 것이다.
+
+한 문장 설명:
+
+> `MolyAldPrimitiveVisualizer`가 chamber/wafer/gas line을 그리는 것에서 끝나지 않고, status panel, color key, process flow까지 같이 표시한다.
+
+코드 흐름:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldVisualStateMapper.FromTimeline()
+    -> MolyAldVisualState
+    -> MolyAldPrimitiveVisualizer
+       -> 3D primitive objects
+       -> component labels
+       -> status panel
+       -> color key
+       -> process flow bar
+```
+
+중요한 변경:
+
+- `MolyAldVisualState`에 `CycleCount`가 추가됐다.
+- 이유: 화면에서 `Cycle 1/1` 같은 값을 하드코딩하지 않기 위해서다.
+
+사용자가 녹화 때 짚을 것:
+
+- 왼쪽 status panel: 현재 step/cycle/film/valve
+- 오른쪽 color key: gas 색상 의미
+- 중앙 chamber/wafer/film
+- 아래 process flow: 현재 공정 위치
+- 하단 문구: Core/CLI가 계산하고 Unity는 replay만 한다
+
+유지보수할 때 볼 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualState.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldVisualStateMapper.cs`
