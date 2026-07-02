@@ -610,3 +610,18 @@ Completed:
 - WPF project is in the solution and builds.
 - WPF reads the public ALD recipe and calls Core runner directly.
 - Unity remains optional, not deleted.
+
+## 2026-07-03 Triage Update after Goal 051
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P0 | WPF startup binding exception | Done | Keep progress indicators one-way bound |
+| P1 | WPF alarm recovery procedure | Next | Add operator recovery checklist by fault area |
+| P2 | WPF styling polish | Waiting | Improve visual density after recovery panel exists |
+| P2 | Unity optional viewer launcher | Waiting | Later launch built Unity viewer executable from WPF |
+
+Completed:
+
+- Fixed the WPF `ProgressBar.Value` binding exception caused by read-only calculated ViewModel properties.
+- Added a goal record and work log explaining the MVVM binding rule.
+- Added CI markers so the same progress binding regression is easier to catch.

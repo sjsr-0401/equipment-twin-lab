@@ -102,3 +102,19 @@ Useful breakpoints:
 - `MolyAldTimelineDocument.FromRunResult`
 
 Use WPF when you want to debug the operator/HMI flow. Use Core tests when you want to debug low-level process rules.
+
+## Binding rule used in this HMI
+
+Progress values are calculated by the ViewModel and displayed by WPF.
+
+Therefore progress bars must use one-way binding:
+
+```text
+Value="{Binding TimelineProgress, Mode=OneWay}"
+```
+
+Use this rule when adding more HMI indicators:
+
+- display-only calculated value: `Mode=OneWay`
+- operator input/selection: `Mode=TwoWay` only when the ViewModel property has a setter
+- operator action: `Command`

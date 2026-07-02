@@ -1098,3 +1098,36 @@ Reason:
 
 - WPF can now run and replay faults.
 - The next HMI value is a recovery guide that explains what an operator should check after each fault.
+
+## 2026-07-03 Loop Update: Goal 051 complete
+
+Current completed goal:
+
+- `Goal 051: Fix WPF ProgressBar Binding Mode`
+
+What triggered it:
+
+- Visual Studio stopped on a WPF binding exception while debugging the new WPF HMI.
+- The failing property was `OperatorConsoleViewModel.TimelineProgress`.
+
+What changed:
+
+- WPF progress bars now bind to calculated ViewModel properties with explicit `Mode=OneWay`.
+- A short WPF binding rule was added to `docs/wpf-main-hmi.md`.
+- CI now checks that the WPF progress indicators keep the one-way binding markers.
+
+Validation:
+
+- WPF Release build passed.
+- Full solution Release build passed.
+- Core tests passed: 81 tests.
+- WPF startup smoke passed.
+
+Current next recommendation:
+
+- `Goal 052: WPF Alarm Recovery Procedure Panel`
+
+Reason:
+
+- The WPF HMI is now startable/debuggable again.
+- The next value-add is showing operator-facing recovery steps after selected public faults.
