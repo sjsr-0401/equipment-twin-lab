@@ -12,10 +12,13 @@
         <SolidColorBrush x:Key="Background" Color="#0B0F14"/>
         <SolidColorBrush x:Key="Surface" Color="#151C24"/>
         <SolidColorBrush x:Key="SurfaceRaised" Color="#1D2733"/>
+        <SolidColorBrush x:Key="SurfaceInset" Color="#0F151B"/>
         <SolidColorBrush x:Key="Border" Color="#2F3C4C"/>
+        <SolidColorBrush x:Key="BorderSoft" Color="#233142"/>
         <SolidColorBrush x:Key="TextPrimary" Color="#EAF0F7"/>
         <SolidColorBrush x:Key="TextMuted" Color="#9AA8B7"/>
         <SolidColorBrush x:Key="Primary" Color="#2EA8FF"/>
+        <SolidColorBrush x:Key="PrimaryDim" Color="#173E5A"/>
         <SolidColorBrush x:Key="Success" Color="#2AD17D"/>
         <SolidColorBrush x:Key="Warning" Color="#FFB84D"/>
         <SolidColorBrush x:Key="Alarm" Color="#FF3B3B"/>
@@ -53,13 +56,76 @@
             <Setter Property="Background" Value="#0F151B"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
+
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceInset}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,0"/>
+        </Style>
+
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceRaised}"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryDim}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryDim}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Background" Value="{StaticResource SurfaceRaised}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="#111820"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#182536"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryDim}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryDim}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="150"/>
+            <RowDefinition Height="176"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.55*"/>
@@ -116,11 +182,11 @@
                         <RowDefinition Height="82"/>
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Column="0" Grid.Row="1" Width="94" Height="92" Background="{StaticResource SurfaceRaised}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="4">
-                        <StackPanel VerticalAlignment="Center" Margin="16">
-                            <Rectangle Height="16" Fill="{StaticResource Background}" Margin="0,0,0,12"/>
-                            <Rectangle Height="16" Fill="{StaticResource Background}"/>
-                            <TextBlock Text="LOAD PORT" Foreground="{StaticResource TextMuted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                    <Border Grid.Column="0" Grid.Row="1" Width="104" Height="118" Background="{StaticResource SurfaceRaised}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="6">
+                        <StackPanel VerticalAlignment="Center" Margin="12">
+                            <Rectangle Height="14" Fill="{StaticResource Background}" Margin="0,0,0,10"/>
+                            <Rectangle Height="14" Fill="{StaticResource Background}"/>
+                            <TextBlock Text="LOAD PORT" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -178,10 +244,14 @@
                 </Grid>
 
                 <StackPanel Grid.Row="2" Margin="0,8,0,0">
-                    <DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Text="PROCESS TIMELINE" Foreground="{StaticResource TextMuted}" FontSize="14" FontWeight="Bold"/>
-                        <TextBlock DockPanel.Dock="Right" Text="{Binding TimelineProgress, StringFormat={}{0:0}%}" Foreground="{StaticResource TextMuted}"/>
-                    </DockPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding TimelineProgress, StringFormat={}{0:0}%}" Foreground="{StaticResource TextMuted}" Margin="12,0,0,0"/>
+                    </Grid>
                     <ProgressBar Value="{Binding TimelineProgress, Mode=OneWay}" Maximum="100" Margin="0,8,0,0"/>
                 </StackPanel>
             </Grid>
@@ -212,7 +282,6 @@
                         <ComboBox ItemsSource="{Binding FaultScenarios}"
                                   SelectedItem="{Binding SelectedFaultScenario, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Margin="0,8,0,6"
-                                  Height="34"
                                   FontSize="14"/>
                         <TextBlock Text="{Binding SelectorStatus}" Foreground="{StaticResource TextMuted}" FontSize="11"/>
                     </StackPanel>
@@ -335,8 +404,13 @@
                           Foreground="{StaticResource TextPrimary}"
                           RowBackground="#111820"
                           AlternatingRowBackground="#0F151B"
-                          GridLinesVisibility="None"
-                          BorderThickness="0"
+                          HorizontalGridLinesBrush="{StaticResource BorderSoft}"
+                          VerticalGridLinesBrush="{StaticResource BorderSoft}"
+                          GridLinesVisibility="All"
+                          BorderBrush="{StaticResource Border}"
+                          BorderThickness="1"
+                          RowHeight="25"
+                          ColumnHeaderHeight="30"
                           Margin="0,8,0,0">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="#" Binding="{Binding Index}" Width="45"/>
