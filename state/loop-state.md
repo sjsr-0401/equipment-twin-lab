@@ -803,3 +803,25 @@ Validation so far:
 - Release build passed.
 - Core console tests passed: 81 tests.
 - `git diff --check` passed.
+
+## 2026-07-02 Update: Goal 040 in progress
+
+- Current branch: `goal/040-uiux-agent-review-system`.
+- User asked how to keep a separate UI/UX agent/reviewer because the current visual still looks poor by expert standards.
+- Goal 040 creates a documented review system instead of spawning a permanent background agent.
+
+Added review system:
+
+- `docs/design/uiux-agent-brief.md`
+- `docs/design/uiux-review-template.md`
+- `docs/design/uiux-review-log.md`
+- `docs/design/operator-console-design-system.md`
+
+Key decision:
+
+- Stop growing UI text through 3D `TextMesh`.
+- Move operator panel/timeline/alarm UI to Unity Canvas in the next implementation goal.
+
+Next recommended goal:
+
+- `Goal 041: Canvas Operator Panel Implementation`

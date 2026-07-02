@@ -2933,3 +2933,51 @@ Unity는 공정 계산을 하지 않고 timeline JSON을 표시한다.
 ```text
 Goal 040: Unity operator interaction buttons or fault scenario selector
 ```
+
+## 62. 2026-07-02 Goal 040: UI/UX Agent Review System
+
+Goal 040은 Unity 화면을 계속 직접 감으로 고치지 않고, UI/UX reviewer 기준을 먼저 고정하는 작업이다.
+
+추가한 문서:
+
+- `docs/design/uiux-agent-brief.md`
+- `docs/design/uiux-review-template.md`
+- `docs/design/uiux-review-log.md`
+- `docs/design/operator-console-design-system.md`
+
+핵심 판단:
+
+```text
+현재 문제 = 3D TextMesh UI와 약한 정보 위계
+다음 방향 = Canvas 기반 operator panel
+```
+
+현재 screenshot에 대한 1차 UI/UX verdict:
+
+```text
+Needs Work
+```
+
+좋아진 점:
+
+- 왼쪽 장비 + 오른쪽 operator interface 방향은 맞다.
+- 장비 SW 콘솔처럼 보이기 시작했다.
+
+아직 부족한 점:
+
+- 글자 품질과 정렬이 3D TextMesh에 묶여 있다.
+- 색상 token과 typography scale이 없다.
+- alarm/fault 정보 위계가 telemetry보다 충분히 강하지 않다.
+
+다음 권장 Goal:
+
+```text
+Goal 041: Canvas Operator Panel Implementation
+```
+
+Goal 041 acceptance criteria:
+
+- 오른쪽 operator panel은 Canvas 기반이다.
+- current step, telemetry, alarm, timeline은 Canvas text로 표시된다.
+- TextMesh는 장비 label 수준으로만 남긴다.
+- screenshot 50% 축소 상태에서도 current step과 alarm state가 읽힌다.
