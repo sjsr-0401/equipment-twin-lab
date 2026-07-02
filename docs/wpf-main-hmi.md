@@ -135,13 +135,15 @@ If a new control appears with a white default background, treat it as a UI bug a
 
 ## HMI visual-system direction
 
-The WPF HMI now follows an `ISA-101 inspired` / `High-Performance HMI inspired` direction:
+The WPF HMI currently uses a demo-first color direction:
 
-- normal operation stays mostly grayscale;
-- red is reserved for alarm;
-- amber is reserved for warning/caution;
-- normal `OK`, `TARGET`, `OPEN`, and `CLOSED` states should remain readable without bright color;
-- important states must be encoded with text or shape as well as color.
+- green means normal, ready, target, or no alarm;
+- blue means progress or active process signal;
+- amber means warning or fault replay action;
+- red means alarm, stop, or operator action required;
+- gray remains the base panel/table color.
+
+This is intentionally more colorful than strict high-performance industrial HMI because the current goal is portfolio demo readability.
 
 The detailed design note is:
 

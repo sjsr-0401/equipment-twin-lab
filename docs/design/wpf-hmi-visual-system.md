@@ -2,77 +2,51 @@
 
 This document defines the visual direction for the WPF operator console.
 
-The project uses an `ISA-101 inspired` and `High-Performance HMI inspired` approach. It does not claim certification or vendor equivalence.
+## Current decision
 
-## Goal
+The current project direction is **demo-first color**.
 
-Make the WPF HMI look and behave like a practical equipment-operator screen:
+We reviewed ISA-101 / High-Performance HMI ideas, but we are not enforcing a strict industrial gray-base color rule right now.
 
-- calm during normal operation;
-- obvious during abnormal operation;
-- readable without relying on color alone;
-- explainable in an interview as a deliberate engineering decision, not decoration.
+Reason:
 
-## Core principles
+- this is a portfolio/demo HMI;
+- the reviewer needs to understand the state quickly;
+- green/blue normal-state signals make the demo easier to read;
+- strict HMI color discipline can be revisited later if the project becomes more realistic.
 
-### 1. Gray base first
+This project does not claim ISA-101 certification or vendor UI equivalence.
 
-Normal operation should be mostly grayscale.
+## Demo color rules
 
-The base palette is:
+Use color as a clear demo signal:
 
-| Token | Role |
+| Color | Meaning in this project |
 |---|---|
-| `Background` | full window background |
-| `Surface` | main panel background |
-| `SurfaceRaised` | cards, controls, idle components |
-| `SurfaceActive` | active-but-normal component state |
-| `Border`, `BorderSoft` | structure and table lines |
-| `TextPrimary`, `TextMuted` | normal text hierarchy |
-| `NeutralSignal` | normal progress/measurement fill |
+| Green | normal, ready, target, no alarm |
+| Blue | progress, active process flow, normal process signal |
+| Amber | warning, caution, fault replay action |
+| Red | alarm, stop, operator action required |
+| Gray | inactive, background, structure, debug table |
 
-### 2. Color is reserved for attention
+This is intentionally more colorful than a strict high-performance industrial HMI.
 
-Color is not used to make normal operation look exciting.
+## Still keep text readable
 
-| Color role | Meaning |
-|---|---|
-| Red / `Alarm` | alarm, unsafe, operator must act |
-| Amber / `Warning` | warning, caution, not-yet-normal value |
-| Muted blue / `ActionBlue` | primary available operator action |
-| Gray / neutral | normal, idle, complete, inactive |
+Even though this demo uses color, important states still need text.
 
-### 3. Do not encode state with color only
+Examples:
 
-Every important state must also have text or shape.
+- valve boxes show `ON` / `OFF`;
+- status labels show `OK`, `HI`, `COOL`, `TARGET`, or `GROWING`;
+- alarm card shows title, priority, code, and icon;
+- run state shows `RUNNING`, `PAUSED`, or `OPERATOR ACTION REQUIRED`.
 
-Examples in the current WPF HMI:
+## Why not use a full UI theme package yet?
 
-- valves show `OPEN` / `CLOSED`, not only colored boxes;
-- pressure and temperature use `▲ HI`, `▼ COOL`, `OK`;
-- alarm card uses color, label, priority, code, and icon;
-- run state uses text such as `RUNNING`, `PAUSED`, and `OPERATOR ACTION REQUIRED`.
+Do not replace the whole WPF UI with a general-purpose modern app theme yet.
 
-### 4. Keep level hierarchy clear
-
-The current WPF screen acts as a Level 1/Level 2 hybrid:
-
-- left: process overview schematic;
-- right: operation and current state;
-- bottom: debug table for engineering verification.
-
-Future work should split this more cleanly:
-
-- Level 1: overview / abnormality-first status;
-- Level 2: equipment module detail;
-- Level 3: engineering/debug table;
-- Level 4: raw log/config.
-
-## Library decision
-
-Do not replace the whole WPF UI with a general-purpose modern app theme.
-
-The base HMI look should remain custom because the design goal is industrial operator readability, not a generic desktop-app style.
+The base HMI look should remain custom because the design goal is an equipment software portfolio demo, not a generic desktop-app style.
 
 Recommended path:
 
@@ -84,7 +58,7 @@ Recommended path:
 Current decision:
 
 ```text
-No chart/gauge dependency added in Goal 053.
+No chart/gauge dependency added yet.
 ```
 
 ## References to verify before dependency adoption
@@ -95,22 +69,22 @@ No chart/gauge dependency added in Goal 053.
 
 ## Current implementation notes
 
-Goal 053 changes the WPF shell from colorful demo UI to restrained HMI UI:
+Goal 054 restores the demo-friendly color strategy:
 
-- normal progress bars are neutral gray;
-- `NO ACTIVE ALARM` is neutral, not green;
-- alarm state remains red/amber;
-- valve state uses text and neutral active state;
-- measurement status uses symbols plus text;
-- normal `OK TARGET` is not green;
-- action buttons use subdued borders rather than large saturated fills.
+- normal progress bars use blue;
+- `NO ALARM` uses green;
+- `TARGET` uses green;
+- valve active states use gas/process colors;
+- alarm remains red;
+- fault replay action remains amber;
+- DataGrid readability fixes remain in place.
 
 ## Next design work
 
 Suggested next design goal:
 
 ```text
-Goal 054: WPF HMI Instrument Trend Panel
+Goal 055: WPF HMI Instrument Trend Panel
 ```
 
-That goal should decide whether to add LiveCharts2 for small pressure/temperature/film trend charts, or to draw simple custom mini-trends first.
+That goal should add a small pressure/temperature/film trend area and decide whether to draw it directly or use LiveCharts2.

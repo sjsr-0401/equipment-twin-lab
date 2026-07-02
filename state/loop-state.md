@@ -1193,3 +1193,39 @@ Reason:
 - The visual-system direction is now documented and reflected in the shell.
 - The next high-value HMI feature is trend visibility for pressure, temperature, and film thickness.
 - Evaluate simple custom drawing before adding LiveCharts2.
+
+## 2026-07-03 Loop Update: Goal 054 complete
+
+Current completed goal:
+
+- `Goal 054: Demo Color Restore and Junior Development Notes`
+
+What triggered it:
+
+- The strict gray-base HMI direction from Goal 053 was technically defensible, but it did not match the current portfolio-demo goal.
+- The user clarified that normal states should remain visually obvious with green/blue colors.
+- The user also clarified that the learning document must start from the very beginning of the project, not only from the latest WPF work.
+
+What changed:
+
+- WPF returned to a demo-friendly color direction:
+  - green for `NO ALARM`, ready/running, and target states;
+  - blue for normal process progress;
+  - amber for warning/fault-replay action;
+  - red for stop/alarm states;
+  - gas colors for active valves and flow.
+- The previous readability fixes remain:
+  - dark DataGrid styles;
+  - readable `LOAD PORT` label;
+  - one-way WPF progress bindings.
+- `docs/design/wpf-hmi-visual-system.md` now documents the current demo-first decision.
+- `docs/learning/development-from-zero.md` now explains the project from the original idea through Core, tests, CLI, Unity, and WPF.
+
+Current next recommendation:
+
+- `Goal 055: MainWindow.xaml line-by-line walkthrough`
+
+Reason:
+
+- The user wants to make the code their own, not only receive generated changes.
+- The next best learning step is to explain the real WPF screen file block by block: layout, binding, styles, commands, and debug table.
