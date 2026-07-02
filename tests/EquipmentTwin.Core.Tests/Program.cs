@@ -74,6 +74,7 @@ var tests = new (string Name, Action Body)[]
     ("Moly ALD runner completes public demo process", MolyAldRunnerCompletesPublicDemoProcess),
     ("Moly ALD runner records valve timeline", MolyAldRunnerRecordsValveTimeline),
     ("Moly ALD runner injects pumpdown fault", MolyAldRunnerInjectsPumpdownFault),
+    ("Moly ALD runner injects all configured faults", MolyAldRunnerInjectsAllConfiguredFaults),
     ("Moly ALD recipe rejects invalid cycle count", MolyAldRecipeRejectsInvalidCycleCount),
     ("Moly ALD recipe rejects duplicate fault names", MolyAldRecipeRejectsDuplicateFaultNames),
     ("Moly ALD timeline document maps run result", MolyAldTimelineDocumentMapsRunResult),
@@ -1150,6 +1151,24 @@ static void MolyAldRunnerInjectsPumpdownFault()
     AssertEqual(0.0, result.EstimatedThicknessAngstrom, "Pumpdown fault must stop before film growth.");
     AssertEqual(1, result.FailedSteps.Count, "Pumpdown fault should record one failed step.");
     AssertEqual(MolyAldProcessStep.PumpDown, result.FailedSteps[0].Step, "Failed step mismatch.");
+}
+
+static void MolyAldRunnerInjectsAllConfiguredFaults()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+
+    foreach (var fault in recipe.FaultScenarios)
+    {
+        var runner = new MolyAldRunner(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
+
+        var result = runner.Run(recipe, fault.Name);
+
+        AssertFalse(result.Success, $"Fault '{fault.Name}' must fail the process run.");
+        AssertEqual(MolyAldProcessStep.Alarmed, result.FinalStep, $"Fault '{fault.Name}' must move the process to Alarmed.");
+        AssertEqual(fault.Name, result.FaultScenario?.Name, $"Fault '{fault.Name}' scenario name mismatch.");
+        AssertEqual(1, result.FailedSteps.Count, $"Fault '{fault.Name}' should record one failed step.");
+        AssertTrue(result.Steps.Count >= 2, $"Fault '{fault.Name}' should keep timeline context before failure.");
+    }
 }
 
 static void MolyAldRecipeRejectsInvalidCycleCount()

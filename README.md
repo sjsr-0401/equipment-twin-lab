@@ -432,6 +432,15 @@ Run a synthetic pump-down fault:
 dotnet run --project src\EquipmentTwin.Cli -- process run processes\public-moly-ald-metallization.json --fault pumpdown-timeout
 ```
 
+Run the normal process and all configured synthetic faults as a matrix:
+
+```powershell
+dotnet run --project src\EquipmentTwin.Cli -- process batch processes\public-moly-ald-metallization.json --report artifacts\moly-ald-fault-matrix-report.md
+```
+
+The batch command expects the normal case to pass and every configured fault case to fail safely into `Alarmed`.
+It exits with code `0` only when all expectations are met.
+
 The process report contains a Unity-ready replay timeline:
 
 ```text

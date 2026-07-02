@@ -725,3 +725,45 @@ Completion update:
   - push run `28563274336`
   - pull_request run `28563282879`
 - Next recommended goal: `Goal 038: record the actual 3-minute demo and fix explanation or visual gaps`.
+
+## 2026-07-02 Update: Goal 038 in progress
+
+- User postponed recording because the current visual is not worth recording yet.
+- Current branch: `goal/038-ald-fault-matrix-report`.
+- Goal 038 adds a development-focused ALD fault matrix.
+- New CLI path:
+  - `process batch processes/public-moly-ald-metallization.json`
+- Batch behavior:
+  - run normal process once and expect `PASS`;
+  - run every configured fault scenario and expect `FAIL`;
+  - treat all failures as valid only when the runner ends in the expected failed state;
+  - return exit code `0` only when all expectations are met.
+
+Files being changed:
+
+- `src/EquipmentTwin.Cli/Program.cs`
+- `tests/EquipmentTwin.Core.Tests/Program.cs`
+- `.github/workflows/ci.yml`
+- `docs/ald-fault-matrix-report.md`
+- `goals/038-ald-fault-matrix-report.md`
+- `README.md`
+- `docs/portfolio-demo-package.md`
+- state/log files
+
+Validation plan:
+
+- Release build
+- Core console tests
+- `process batch` CLI report generation
+- `git diff --check`
+
+Local validation so far:
+
+- Release build passed.
+- Core console tests passed: 81 tests.
+- `process batch` generated `artifacts/moly-ald-fault-matrix-report.md` and returned exit code 0.
+- `git diff --check` passed.
+
+Next recommended goal after completion:
+
+- Add one new synthetic ALD fault kind, or improve report readability with a simple local dashboard.
