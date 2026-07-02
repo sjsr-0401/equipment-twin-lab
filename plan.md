@@ -2886,5 +2886,50 @@ process batch = MolyAldRunner 여러 번 실행 + 기대 결과 비교
 다음 권장 Goal:
 
 ```text
-Goal 039: 새 ALD fault kind 추가 또는 batch report를 HTML/간단 dashboard로 보기 좋게 개선
+Goal 039: Unity operator console layout
+```
+
+## 61. 2026-07-02 Goal 039: Unity Operator Console Layout
+
+Goal 039는 사용자가 요청한 “공개된 장비 느낌 + 사용자 친화적인 장비 조작 인터페이스”를 반영하는 Unity visual 작업이다.
+
+핵심 목표:
+
+- 왼쪽에 장비 자체를 둔다.
+- 오른쪽에 operator interface를 둔다.
+- 아래에 process timeline과 event summary를 둔다.
+- 실제 vendor CAD/UI를 복제하지 않고 공개/합성 장비 콘셉트로 유지한다.
+
+구현한 화면 구성:
+
+```text
+Synthetic Moly ALD Module
+├─ 3D Equipment View
+│  ├─ load port
+│  ├─ transfer arm
+│  ├─ process chamber
+│  ├─ wafer + film
+│  ├─ gas / valve panel
+│  └─ vacuum pump
+├─ Operator Interface
+│  ├─ Start / Stop / Fault / Reset
+│  ├─ Recipe
+│  ├─ Live telemetry
+│  └─ Alarm
+└─ Process timeline
+```
+
+아키텍처 원칙:
+
+```text
+Core/CLI = process truth
+Unity = operator console visualization
+```
+
+Unity는 공정 계산을 하지 않고 timeline JSON을 표시한다.
+
+다음 권장 Goal:
+
+```text
+Goal 040: Unity operator interaction buttons or fault scenario selector
 ```

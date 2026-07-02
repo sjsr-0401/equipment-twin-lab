@@ -1975,3 +1975,43 @@ processes/public-moly-ald-metallization.json
 3. `MolyAldRunner`에서 해당 fault가 어느 step에서 멈출지 구현한다.
 4. Core test를 추가한다.
 5. `process batch`를 돌려 정상/fault matrix가 맞는지 확인한다.
+
+## 2026-07-02 이해 요약: Unity Operator Console Layout
+
+이번 Goal의 핵심은 Unity 화면을 “그냥 3D 물체”에서 “장비 조작 프로그램처럼 보이는 화면”으로 바꾼 것이다.
+
+한 문장 설명:
+
+> `MolyAldPrimitiveVisualizer`는 Core/CLI가 만든 ALD timeline을 받아서 왼쪽 장비 view, 오른쪽 operator interface, 아래 process timeline으로 보여주는 synthetic equipment console이다.
+
+구조:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldVisualStateMapper
+    -> MolyAldVisualState
+    -> MolyAldPrimitiveVisualizer
+       -> equipment body
+       -> operator interface
+       -> timeline
+       -> alarm highlight
+```
+
+중요한 점:
+
+- Unity는 아직 공정을 계산하지 않는다.
+- 버튼은 현재 “보이는 UI”이며 실제 command wiring은 다음 작업이다.
+- 공개 장비 스타일은 참고하지만 실제 vendor CAD/UI를 복제하지 않는다.
+
+유지보수할 때 보는 파일:
+
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldDemoBootstrap.cs`
+- `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
+- `docs/demo/moly-ald-demo.png`
+
+다음에 자연스러운 작업:
+
+- `Start`, `Stop`, `Fault`, `Reset` 버튼을 실제 `MolyAldProcessPlayer` 조작과 연결한다.
+- fault scenario selector를 추가한다.
+- alarm 발생 시 해당 장비 영역을 더 강하게 highlight한다.

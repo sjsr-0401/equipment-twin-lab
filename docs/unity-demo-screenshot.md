@@ -109,3 +109,35 @@ Added visual explanation elements:
 - bottom note: `Moly ALD Replay | Core/CLI calculates the process. Unity only replays the timeline.`
 
 The screenshot is still a public/synthetic process visualization. It is not a real equipment CAD model or vendor sequence.
+
+## 2026-07-02 operator console layout update
+
+Goal 039 changed the screenshot from a centered primitive equipment render into a user-friendly equipment console.
+
+Added layout:
+
+- left-side 3D equipment view;
+- right-side operator interface;
+- bottom process timeline and event summary.
+
+Added equipment-like visual parts:
+
+- synthetic cabinet;
+- load port;
+- wafer transfer arm;
+- process chamber;
+- wafer and film overlay;
+- gas / valve panel;
+- vacuum pump and exhaust line;
+- alarm beacon.
+
+Added operator UI parts:
+
+- Start / Stop / Fault / Reset buttons;
+- recipe card;
+- live telemetry card;
+- alarm card;
+- event summary.
+
+The design intentionally uses public-reference equipment styling only.
+It does not copy a real vendor CAD model, real user interface, real chamber layout, or real process sequence.

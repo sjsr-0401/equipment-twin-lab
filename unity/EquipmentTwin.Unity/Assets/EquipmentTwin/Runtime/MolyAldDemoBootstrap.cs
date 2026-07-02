@@ -50,13 +50,15 @@ namespace EquipmentTwin.Unity.Processes
             {
                 var cameraObject = new GameObject("Moly ALD Demo Camera");
                 cameraObject.tag = "MainCamera";
-                cameraObject.transform.position = new Vector3(0f, 3.85f, -6.95f);
-                cameraObject.transform.rotation = Quaternion.Euler(30f, 0f, 0f);
+                cameraObject.transform.position = new Vector3(0f, 3.85f, -8.20f);
+                cameraObject.transform.rotation = Quaternion.Euler(28f, 0f, 0f);
 
                 var camera = cameraObject.AddComponent<Camera>();
                 camera.clearFlags = CameraClearFlags.SolidColor;
-                camera.backgroundColor = new Color(0.04f, 0.045f, 0.055f);
-                camera.fieldOfView = 42f;
+                camera.backgroundColor = new Color(0.035f, 0.042f, 0.055f);
+                camera.orthographic = true;
+                camera.orthographicSize = 2.55f;
+                camera.fieldOfView = 46f;
             }
 
             if (FindObjectOfType<Light>() == null)
@@ -66,7 +68,7 @@ namespace EquipmentTwin.Unity.Processes
 
                 var light = lightObject.AddComponent<Light>();
                 light.type = LightType.Directional;
-                light.intensity = 1.15f;
+                light.intensity = 1.30f;
             }
         }
     }

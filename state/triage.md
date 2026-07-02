@@ -390,3 +390,25 @@ Next priority:
 - Finish docs/logs for Goal 038.
 - Run Release build, Core tests, process batch CLI, and `git diff --check`.
 - Open PR and verify CI.
+
+## 2026-07-02 Triage Update: Goal 039
+
+Active focus moved from development validation back to Unity presentation quality.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Unity operator console layout | User wants a public-reference equipment style with a friendly control interface | In progress |
+| P1 | Screenshot refresh | README first impression depends on the visual quality | In progress |
+| P2 | Real interactive buttons | Current buttons are visual controls, not yet wired to runtime commands | Next |
+
+Current validation boundary:
+
+- The layout can look like a semiconductor equipment console.
+- It must not claim to be a real vendor CAD/UI/sequence.
+- Unity still replays Core/CLI timeline data instead of calculating process logic.
+
+Next priority:
+
+- Validate Unity screenshot capture.
+- Update docs and tracked screenshot.
+- Open PR after local and CI validation.
