@@ -94,3 +94,18 @@ Goal 033 improved the screenshot readability:
 - gas lines were added next to the valve indicators;
 - a title label was added;
 - the PowerShell runner now treats a blank `$LASTEXITCODE` after a successful Unity invocation as `0`.
+
+## 2026-07-02 explanatory update
+
+Goal 037 changed the screenshot from a render proof into a more self-explanatory portfolio image.
+
+Added visual explanation elements:
+
+- component labels: `Chamber`, `Wafer + film`, `Vacuum gauge`;
+- gas/valve labels: `Precursor`, `Reactant ON`, `Purge`;
+- status panel showing current step, cycle, film, and active valve;
+- color key panel explaining precursor/reactant/purge/off colors;
+- process flow bar with the current step highlighted;
+- bottom note: `Moly ALD Replay | Core/CLI calculates the process. Unity only replays the timeline.`
+
+The screenshot is still a public/synthetic process visualization. It is not a real equipment CAD model or vendor sequence.

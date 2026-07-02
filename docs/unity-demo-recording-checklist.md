@@ -96,6 +96,13 @@ vacuum gauge, valve, gas line 상태로 표시합니다.
 3D 모델이 나중에 생겨도 Core 공정 로직은 유지하고 visual adapter만 교체하는 구조입니다.
 ```
 
+스크린샷에서 짚을 위치:
+
+- 왼쪽 `Status`: 현재 step, cycle, film, active valve
+- 오른쪽 `Color key`: precursor/reactant/purge/off 색상 의미
+- 중앙 `Chamber`, `Wafer + film`
+- 아래 `Process flow`: 현재 step이 어느 공정 위치인지
+
 ### 2:30-3:00 — 정직한 한계와 다음 단계
 
 말할 내용:

@@ -8,6 +8,7 @@ namespace EquipmentTwin.Unity.Processes
             int stepIndex,
             int totalSteps,
             int cycle,
+            int cycleCount,
             bool hasCycle,
             bool hasFault,
             bool metalPrecursorOpen,
@@ -28,6 +29,7 @@ namespace EquipmentTwin.Unity.Processes
             StepIndex = stepIndex;
             TotalSteps = totalSteps;
             Cycle = cycle;
+            CycleCount = cycleCount;
             HasCycle = hasCycle;
             HasFault = hasFault;
             MetalPrecursorOpen = metalPrecursorOpen;
@@ -53,6 +55,8 @@ namespace EquipmentTwin.Unity.Processes
         public int TotalSteps { get; }
 
         public int Cycle { get; }
+
+        public int CycleCount { get; }
 
         public bool HasCycle { get; }
 

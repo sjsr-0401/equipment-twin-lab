@@ -14,6 +14,7 @@
 - CAD/Blender 모델 교체 경계는 `MolyAldVisualState`와 `MolyAldImportedModelVisualBinding`으로 분리한다.
 - 3분 녹화 전 리허설은 `scripts/Invoke-PortfolioDemoRehearsal.ps1`로 실행한다.
 - 3분 녹화 한글 큐카드는 `scripts/New-PortfolioDemoCueCards.ps1`로 생성한다.
+- Unity 대표 screenshot은 status panel, color key, process flow를 포함한 설명형 이미지로 개선 중이다.
 
 ## 1. 프로젝트 한 줄 정의
 
@@ -2792,4 +2793,50 @@ Portfolio narration = 면접 설명 기준
 
 ```text
 Goal 037: 실제 3분 데모 녹화 후 설명 막힘과 화면 부족분 수정
+```
+
+## 59. 2026-07-02 Goal 037: Explanatory Unity Demo Screenshot
+
+Goal 037은 실제 녹화 전에 Unity 대표 screenshot의 설명력을 개선하는 작업이다.
+
+사용자 피드백:
+
+```text
+이걸 봐도 뭘 알 수가 없는 사진이다.
+```
+
+목표:
+
+```text
+처음 보는 사람이 screenshot만 봐도 chamber, wafer, gas line, current step, color key, process flow를 이해할 수 있게 한다.
+```
+
+구현 범위:
+
+- component labels
+- status panel
+- color key
+- process flow bar
+- bottom architecture note
+- README 대표 screenshot 갱신
+
+핵심 설계:
+
+```text
+Core/CLI = process truth
+MolyAldVisualState = display state
+Unity primitive visual = explanatory screenshot
+```
+
+이번 단계에서 하지 않는 것:
+
+- 실제 화면 녹화
+- 실제 CAD/Blender 모델
+- 실제 vendor 장비 외형 복제
+- 실제 증착 물리 시뮬레이션
+
+다음 권장 Goal:
+
+```text
+Goal 038: 실제 3분 녹화 후 설명 막힘/화면 부족분 수정
 ```

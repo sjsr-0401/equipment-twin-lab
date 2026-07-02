@@ -34,9 +34,23 @@ namespace EquipmentTwin.Unity.Processes
         [SerializeField] private Renderer precursorValveRenderer;
         [SerializeField] private Renderer reactantValveRenderer;
         [SerializeField] private Renderer purgeValveRenderer;
+        [SerializeField] private Renderer statusPanelRenderer;
+        [SerializeField] private Renderer legendPanelRenderer;
+        [SerializeField] private Renderer processFlowPanelRenderer;
+        [SerializeField] private Renderer[] processFlowRenderers = new Renderer[0];
         [SerializeField] private TextMesh titleLabel;
         [SerializeField] private TextMesh stepLabel;
         [SerializeField] private TextMesh valueLabel;
+        [SerializeField] private TextMesh chamberLabel;
+        [SerializeField] private TextMesh waferLabel;
+        [SerializeField] private TextMesh pressureLabel;
+        [SerializeField] private TextMesh precursorLabel;
+        [SerializeField] private TextMesh reactantLabel;
+        [SerializeField] private TextMesh purgeLabel;
+        [SerializeField] private TextMesh legendLabel;
+        [SerializeField] private TextMesh statusPanelLabel;
+        [SerializeField] private TextMesh processFlowLabel;
+        [SerializeField] private TextMesh architectureLabel;
 
         private static readonly Color BasePlate = new Color(0.075f, 0.09f, 0.115f);
         private static readonly Color ChamberAtAtmosphere = new Color(0.35f, 0.35f, 0.38f);
@@ -51,6 +65,18 @@ namespace EquipmentTwin.Unity.Processes
         private static readonly Color PurgeOn = new Color(0.2f, 0.9f, 0.35f);
         private static readonly Color Alarm = new Color(0.95f, 0.08f, 0.08f);
         private static readonly Color TextColor = new Color(0.92f, 0.92f, 0.92f);
+        private static readonly Color PanelColor = new Color(0.02f, 0.025f, 0.035f);
+        private static readonly Color InactiveStep = new Color(0.25f, 0.27f, 0.3f);
+        private static readonly Color ActiveStep = new Color(0.25f, 0.75f, 1.0f);
+        private static readonly string[] ProcessFlowNames =
+        {
+            "Load",
+            "PumpDown",
+            "DosePrecursor",
+            "Purge",
+            "DoseReactant",
+            "Complete"
+        };
 
         private void Reset()
         {
@@ -192,17 +218,110 @@ namespace EquipmentTwin.Unity.Processes
 
             if (createLabels && titleLabel == null)
             {
-                titleLabel = CreateLabel("Equipment Twin - Public Moly ALD Replay", new Vector3(0f, 2.9f, 0.05f), 0.052f);
+                titleLabel = CreateLabel(
+                    "Moly ALD Replay - public/synthetic demo",
+                    new Vector3(0f, 2.92f, 0.05f),
+                    0.034f);
             }
 
             if (createLabels && stepLabel == null)
             {
-                stepLabel = CreateLabel("Step", new Vector3(0f, 2.55f, 0.05f), 0.082f);
+                stepLabel = CreateLabel("Current step", new Vector3(0f, 2.56f, 0.05f), 0.052f);
             }
 
             if (createLabels && valueLabel == null)
             {
-                valueLabel = CreateLabel("Values", new Vector3(0f, 2.2f, 0.05f), 0.046f);
+                valueLabel = CreateLabel("Values", new Vector3(0f, 2.33f, 0.05f), 0.031f);
+            }
+
+            if (createLabels && chamberLabel == null)
+            {
+                chamberLabel = CreateLabel("Chamber", new Vector3(-1.05f, 1.35f, -1.02f), 0.032f);
+            }
+
+            if (createLabels && waferLabel == null)
+            {
+                waferLabel = CreateLabel("Wafer + film", new Vector3(1.05f, 1.45f, -1.02f), 0.032f);
+            }
+
+            if (createLabels && pressureLabel == null)
+            {
+                pressureLabel = CreateLabel("Vacuum gauge", new Vector3(-3.05f, 1.35f, -0.72f), 0.028f);
+            }
+
+            if (createLabels && precursorLabel == null)
+            {
+                precursorLabel = CreateLabel("Precursor", new Vector3(2.35f, 1.42f, 0.95f), 0.027f);
+            }
+
+            if (createLabels && reactantLabel == null)
+            {
+                reactantLabel = CreateLabel("Reactant ON", new Vector3(2.1f, 1.0f, 0.12f), 0.031f);
+            }
+
+            if (createLabels && purgeLabel == null)
+            {
+                purgeLabel = CreateLabel("Purge", new Vector3(2.1f, 0.45f, -0.78f), 0.028f);
+            }
+
+            if (statusPanelRenderer == null)
+            {
+                statusPanelRenderer = CreatePrimitive(
+                    "Status Panel Background",
+                    PrimitiveType.Cube,
+                    new Vector3(-2.35f, 2.18f, -1.1f),
+                    new Vector3(1.55f, 0.035f, 0.62f),
+                    PanelColor);
+            }
+
+            if (legendPanelRenderer == null)
+            {
+                legendPanelRenderer = CreatePrimitive(
+                    "Legend Panel Background",
+                    PrimitiveType.Cube,
+                    new Vector3(2.35f, 2.18f, -1.1f),
+                    new Vector3(1.55f, 0.035f, 0.62f),
+                    PanelColor);
+            }
+
+            if (processFlowPanelRenderer == null)
+            {
+                processFlowPanelRenderer = CreatePrimitive(
+                    "Process Flow Panel Background",
+                    PrimitiveType.Cube,
+                    new Vector3(0f, 0.08f, -1.45f),
+                    new Vector3(5.55f, 0.035f, 0.42f),
+                    PanelColor);
+            }
+
+            if (createLabels && statusPanelLabel == null)
+            {
+                statusPanelLabel = CreateLabel("Status panel", new Vector3(-2.35f, 2.22f, -1.18f), 0.024f);
+            }
+
+            if (createLabels && legendLabel == null)
+            {
+                legendLabel = CreateLabel("Legend", new Vector3(2.35f, 2.22f, -1.18f), 0.024f);
+            }
+
+            if (createLabels && processFlowLabel == null)
+            {
+                processFlowLabel = CreateLabel("Process flow", new Vector3(0f, 0.34f, -1.58f), 0.027f);
+            }
+
+            if (createLabels && architectureLabel == null)
+            {
+                architectureLabel = CreateLabel(
+                    "Moly ALD Replay | Core/CLI calculates the process. Unity only replays the timeline.",
+                    new Vector3(0f, -0.08f, -1.6f),
+                    0.025f);
+            }
+
+            EnsureProcessFlowBlocks();
+
+            if (createLabels)
+            {
+                SetStaticLabelText();
             }
         }
 
@@ -250,6 +369,8 @@ namespace EquipmentTwin.Unity.Processes
             UpdatePressure(visualState.VacuumRatio);
             UpdateValves(visualState);
             UpdateProcessLines(visualState);
+            UpdateStatusPanel(visualState);
+            UpdateProcessFlow(visualState);
             UpdateLabels(visualState);
         }
 
@@ -291,6 +412,46 @@ namespace EquipmentTwin.Unity.Processes
             label.color = TextColor;
             label.text = name;
             return label;
+        }
+
+        private void EnsureProcessFlowBlocks()
+        {
+            if (processFlowRenderers != null && processFlowRenderers.Length == ProcessFlowNames.Length)
+            {
+                return;
+            }
+
+            processFlowRenderers = new Renderer[ProcessFlowNames.Length];
+            var startX = -2.35f;
+            const float spacing = 0.94f;
+
+            for (var index = 0; index < ProcessFlowNames.Length; index++)
+            {
+                processFlowRenderers[index] = CreatePrimitive(
+                    $"Process Step {ProcessFlowNames[index]}",
+                    PrimitiveType.Cube,
+                    new Vector3(startX + spacing * index, 0.22f, -1.45f),
+                    new Vector3(0.72f, 0.055f, 0.18f),
+                    InactiveStep);
+            }
+        }
+
+        private void SetStaticLabelText()
+        {
+            if (legendLabel != null)
+            {
+                legendLabel.text =
+                    "Color key\n" +
+                    "Yellow precursor\n" +
+                    "Cyan reactant\n" +
+                    "Green purge\n" +
+                    "Gray OFF";
+            }
+
+            if (processFlowLabel != null)
+            {
+                processFlowLabel.text = "Flow: Load | Pump | Precursor | Purge | Reactant | Complete";
+            }
         }
 
         private void UpdateFilm(float thicknessRatio)
@@ -365,13 +526,131 @@ namespace EquipmentTwin.Unity.Processes
         {
             if (stepLabel != null)
             {
-                stepLabel.text = visualState.StepLabel;
+                stepLabel.text = $"Current step: {SplitCamelCase(visualState.StepName)}";
             }
 
             if (valueLabel != null)
             {
-                valueLabel.text = visualState.ValueLabel;
+                valueLabel.text =
+                    $"cycle {CycleText(visualState)} | pressure {visualState.ChamberPressureMtorr:0.#} mTorr | temp {visualState.WaferTemperatureC:0.#} C\n" +
+                    $"film {visualState.ThicknessRatio:P0} | active valve: {ActiveValveText(visualState)}";
             }
+        }
+
+        private void UpdateStatusPanel(MolyAldVisualState visualState)
+        {
+            if (statusPanelLabel == null)
+            {
+                return;
+            }
+
+            statusPanelLabel.text =
+                "Status\n" +
+                $"Step {visualState.StepIndex}/{visualState.TotalSteps}\n" +
+                $"Cycle {CycleText(visualState)}\n" +
+                $"Film {visualState.ThicknessRatio:P0}\n" +
+                $"Valve {ActiveValveText(visualState)}";
+        }
+
+        private void UpdateProcessFlow(MolyAldVisualState visualState)
+        {
+            if (processFlowRenderers == null)
+            {
+                return;
+            }
+
+            var activeIndex = ProcessFlowIndex(visualState.StepName);
+            for (var index = 0; index < processFlowRenderers.Length; index++)
+            {
+                var isActive = index == activeIndex;
+                SetColor(processFlowRenderers[index], isActive ? ActiveStep : InactiveStep);
+                processFlowRenderers[index].transform.localScale = isActive
+                    ? new Vector3(0.78f, 0.075f, 0.2f)
+                    : new Vector3(0.72f, 0.055f, 0.18f);
+            }
+        }
+
+        private static int ProcessFlowIndex(string stepName)
+        {
+            if (string.IsNullOrWhiteSpace(stepName))
+            {
+                return -1;
+            }
+
+            if (stepName.IndexOf("Load", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 0;
+            }
+
+            if (stepName.IndexOf("Pump", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 1;
+            }
+
+            if (stepName.IndexOf("Precursor", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 2;
+            }
+
+            if (stepName.IndexOf("Purge", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 3;
+            }
+
+            if (stepName.IndexOf("Reactant", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 4;
+            }
+
+            if (stepName.IndexOf("Complete", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                stepName.IndexOf("Transfer", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return 5;
+            }
+
+            return -1;
+        }
+
+        private static string CycleText(MolyAldVisualState visualState)
+        {
+            if (!visualState.HasCycle)
+            {
+                return "-";
+            }
+
+            return visualState.CycleCount > 0
+                ? $"{visualState.Cycle}/{visualState.CycleCount}"
+                : visualState.Cycle.ToString();
+        }
+
+        private static string ActiveValveText(MolyAldVisualState visualState)
+        {
+            if (visualState.MetalPrecursorOpen)
+            {
+                return "Precursor";
+            }
+
+            if (visualState.ReactantOpen)
+            {
+                return "Reactant";
+            }
+
+            if (visualState.PurgeOpen)
+            {
+                return "Purge";
+            }
+
+            return "None";
+        }
+
+        private static string SplitCamelCase(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "-";
+            }
+
+            return System.Text.RegularExpressions.Regex.Replace(value, "([a-z])([A-Z])", "$1 $2");
         }
 
         private static void SetColor(Renderer renderer, Color color)
