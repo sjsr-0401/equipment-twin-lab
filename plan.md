@@ -3019,5 +3019,58 @@ MolyAldProcessPlayer.CurrentStep
 다음 권장 Goal:
 
 ```text
-Goal 042: Canvas Button Interaction and Fault Selector
+Goal 042: HMI Typography and Instrument Panel
+```
+
+## 64. 2026-07-02 Goal 042: HMI Typography and Instrument Panel
+
+Goal 042는 Canvas UI를 더 HMI답게 읽히도록 고도화하는 작업이다.
+
+핵심 판단:
+
+- 지금은 버튼 interaction보다 화면의 정보 위계가 먼저다.
+- 제조 HMI에서는 "예쁜 화면"보다 "0.5초 안에 상태를 읽는 화면"이 중요하다.
+- Pressure/Temp/Film은 단순 텍스트가 아니라 정상 범위 대비 현재값을 보여줘야 한다.
+
+구현한 것:
+
+- panel title을 `MOLY ALD HMI`로 바꿨다.
+- run/interlock state strip을 추가했다.
+- command button 색상 체계를 정리했다.
+  - START: green
+  - STOP: red
+  - FAULT: warning yellow
+  - RESET: neutral dark
+- Pressure/Temp/Film을 instrument row로 만들었다.
+  - label
+  - value/unit readout
+  - status
+  - normal range band
+  - actual value fill
+- alarm card에 priority와 synthetic fault code 영역을 추가했다.
+- valve 상태는 numeric card에서 빼고 event line에 남겼다.
+
+막혔던 점:
+
+- 처음 instrument row는 4개 row를 한 카드에 넣어서 너무 빽빽했다.
+  - 해결: Valve row를 제거하고 Pressure/Temp/Film 3개만 크게 표시했다.
+- 숫자 text가 Unity `Text` vertical truncation 때문에 screenshot에서 보이지 않았다.
+  - 해결: 숫자 font size와 RectTransform 영역을 줄여 안정적으로 보이게 했다.
+
+구조:
+
+```text
+MolyAldVisualState
+    -> UpdateInstruments()
+    -> InstrumentView
+       -> value/unit readout text
+       -> status text
+       -> normal range band
+       -> actual fill
+```
+
+다음 권장 Goal:
+
+```text
+Goal 043: Canvas Button Interaction and Fault Selector
 ```

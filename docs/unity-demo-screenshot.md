@@ -163,3 +163,23 @@ Canvas UI = operator controls, telemetry, alarm, timeline
 ```
 
 The buttons are still visual controls. Runtime click interaction is a later goal.
+
+## 2026-07-02 HMI typography and instrument panel update
+
+Goal 042 tightened the Canvas UI toward an industrial HMI reading model.
+
+What changed:
+
+- panel title changed from generic `Operator Interface` to `MOLY ALD HMI`;
+- run/interlock state is now a dedicated strip;
+- command colors now separate normal start, stop, fault, and reset intent;
+- pressure, temperature, and film are shown as instrument rows with:
+  - larger value/unit readout;
+  - status label;
+  - range track;
+  - normal-range band;
+  - actual-value fill;
+- alarm card now includes priority and synthetic fault code fields;
+- valve state remains in the event line so the instrument card stays focused on numeric process variables.
+
+This is still not a real vendor HMI. The purpose is to show HMI principles: readable state, alarm priority, and process variable context.

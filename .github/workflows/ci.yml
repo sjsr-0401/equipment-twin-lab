@@ -101,6 +101,7 @@ jobs:
           test -f goals/039-unity-operator-console-layout.md
           test -f goals/040-uiux-agent-review-system.md
           test -f goals/041-canvas-operator-panel.md
+          test -f goals/042-hmi-typography-instrument-panel.md
           grep -q "RunBatchScreenshotCapture" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
           grep -q "CreateProcessLine" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "Recipe And Step Card" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
@@ -113,6 +114,11 @@ jobs:
           grep -q "Gas / valve panel" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldOperatorCanvas" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "ScreenSpaceCamera" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "MOLY ALD HMI" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "PROCESS INSTRUMENTS" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "InstrumentView" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "Normal Range Band" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
+          grep -q "ALARM PRIORITY" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldOperatorCanvas.cs
           grep -q "com.unity.ugui" unity/EquipmentTwin.Unity/Packages/manifest.json
           grep -q "MolyAldVisualStateMapper.FromTimeline" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldPrimitiveVisualizer.cs
           grep -q "MolyAldImportedModelVisualBinding" unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Runtime/MolyAldImportedModelVisualBinding.cs

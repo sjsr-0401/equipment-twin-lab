@@ -85,16 +85,23 @@ Unity operator console을 “예쁘게 보이는 화면”이 아니라 유지�
 - Telemetry values
 - Command buttons
 
-### Telemetry Card
+### Instrument Card
 
-값은 label과 value를 분리한다.
+값은 label, value/unit readout, status, range track을 분리한다.
 
 ```text
-Pressure   850 mTorr
-Temp       250 C
-Film       2 A
-Valve      Reactant
+PRESSURE   850  mTorr   OK      normal 800-900
+TEMP       250  C       OK      normal 245-255
+FILM       2    A       TARGET  target 100%
 ```
+
+규칙:
+
+- 숫자는 우측 정렬한다.
+- 단위는 값 readout 안에 붙이되 status/range와는 분리한다.
+- 정상 범위는 track band로 보여준다.
+- 현재값은 fill로 보여준다.
+- valve state는 event line에 남기고 numeric instrument card를 과밀하게 만들지 않는다.
 
 ### Alarm Card
 
@@ -157,10 +164,22 @@ Unity Canvas
 - [x] 색상은 이 문서의 token 이름으로 설명 가능하다.
 - [x] screenshot 50% 축소 상태에서도 current step과 alarm state가 읽힌다.
 
-## Goal 042 Candidate
+## Goal 042 Acceptance Criteria
 
 ```text
-Goal 042: Canvas Button Interaction and Fault Selector
+Goal 042: HMI Typography and Instrument Panel
+```
+
+- [x] HMI title, run state strip, command buttons의 typography hierarchy가 분리된다.
+- [x] Pressure/Temp/Film 값은 value/unit readout, 상태, 정상범위, fill로 분리된다.
+- [x] 숫자는 작은 row에서도 읽히도록 우측 정렬하고 truncation 문제를 피한다.
+- [x] Alarm card는 priority와 synthetic fault code 영역을 가진다.
+- [x] screenshot에서 instrument value가 직접 읽힌다.
+
+## Goal 043 Candidate
+
+```text
+Goal 043: Canvas Button Interaction and Fault Selector
 ```
 
 Next acceptance criteria:

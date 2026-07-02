@@ -855,4 +855,38 @@ Local validation:
 Known limitation:
 
 - Buttons are not interactive yet.
-- Next recommended goal: `Goal 042: Canvas Button Interaction and Fault Selector`.
+- Next recommended goal: `Goal 042: HMI Typography and Instrument Panel`.
+
+## 2026-07-02 Update: Goal 042 in progress
+
+- Current branch: `goal/042-hmi-typography-instrument-panel`.
+- Goal 042 improves HMI readability before wiring button interaction.
+- Main runtime file:
+  - `MolyAldOperatorCanvas`
+
+Implementation notes:
+
+- Telemetry text was replaced with process instrument rows.
+- Pressure/Temp/Film now show:
+  - value/unit readout;
+  - status;
+  - normal range band;
+  - actual value fill.
+- Valve state stays in the event line to prevent instrument-card overcrowding.
+- Alarm card now has priority and synthetic fault code fields.
+
+Validation so far:
+
+- Release build passed.
+- Core console test passed: 81 tests.
+- Unity screenshot capture passed:
+  - `artifacts/unity-demo/moly-ald-demo-goal042.png`
+- Default Unity screenshot capture passed:
+  - `artifacts/unity-demo/moly-ald-demo.png`
+- `docs/demo/moly-ald-demo.png` was refreshed.
+- `git diff --check` passed.
+
+Known limitation:
+
+- Buttons are still visual only.
+- Next recommended goal: `Goal 043: Canvas Button Interaction and Fault Selector`.

@@ -93,3 +93,43 @@ docs/demo/moly-ald-demo.png
 - [ ] FAULT control can select at least one synthetic fault scenario.
 - [ ] Alarm screenshot shows red alarm card and matching equipment highlight.
 
+## 2026-07-02 Review 003: HMI Typography and Instrument Panel
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
+### Verdict
+
+- 상태: Improved, still not final design
+- 한 줄 판단: 숫자/단위/상태/범위가 분리되면서 "텍스트 나열"에서 "HMI 계기판"으로 한 단계 올라갔다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Typography | `MOLY ALD HMI`, run state, current step, instrument row의 hierarchy가 분리됐다 |
+| Numeric readability | Pressure 850, Temp 250, Film 2가 screenshot에서 직접 읽힌다 |
+| Instrument context | 정상 범위 band와 현재값 fill이 추가됐다 |
+| Alarm information | priority와 synthetic fault code 영역이 생겼다 |
+| Density control | Valve row를 제거해 numeric card 과밀도를 줄였다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | 버튼은 여전히 visual mock이다 | click handler와 process player control 연결 |
+| P1 | fault mode 화면이 없다 | fault selector + alarm screenshot capture 추가 |
+| P2 | 정상 범위가 synthetic fixed range다 | recipe 또는 timeline metadata에서 range를 읽는 구조 추가 |
+| P2 | 폰트는 아직 Unity built-in fallback이다 | public license font asset 추가 여부를 별도 결정 |
+| P3 | 3D 장비 blockout은 아직 primitive 수준이다 | imported model 또는 material polish 단계에서 개선 |
+
+### Next Acceptance Criteria
+
+- [ ] START/STOP/RESET button이 실제 player state를 바꾼다.
+- [ ] FAULT control이 synthetic fault scenario를 선택한다.
+- [ ] fault screenshot에서 alarm card가 red priority state를 보여준다.
+- [ ] 버튼 interaction 결과가 작업 로그와 smoke test에 남는다.
+
