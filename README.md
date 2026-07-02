@@ -8,7 +8,7 @@
 
 현재 Unity 데모는 공개/합성 molybdenum ALD timeline을 읽고, 왼쪽에는 ALD process schematic, 오른쪽에는 Canvas 기반 HMI operator interface, 아래에는 Canvas process timeline을 배치한 장비 콘솔 화면으로 재생한다.
 
-대표 screenshot에는 gas delivery, vacuum chamber, showerhead, wafer/film, susceptor heater, exhaust/pump path, recipe card, pressure/temp/film instrument card, alarm priority card, process timeline이 같이 표시된다. Pressure/Temp/Film은 값+단위 readout, 상태, 정상범위 band, 현재값 fill로 나눠 보여준다. 3D blockout은 메인 화면에서 내리고, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 2D HMI schematic으로 보여준다.
+대표 screenshot에는 gas delivery, vacuum chamber, showerhead, wafer/film, susceptor heater, exhaust/pump path, recipe card, pressure/temp/film instrument card, alarm priority card, process timeline이 같이 표시된다. Pressure/Temp/Film은 값+단위 readout, 상태, 정상범위 band, 현재값 fill로 나눠 보여준다. Active gas pulse와 flow label은 현재 step에서 어떤 gas path가 살아있는지 보여준다. 3D blockout은 메인 화면에서 내리고, Core/CLI가 만든 공정 timeline을 사용자가 이해하기 쉬운 2D HMI schematic으로 보여준다.
 
 검증된 실행 경로:
 

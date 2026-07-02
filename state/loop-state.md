@@ -929,3 +929,30 @@ Known limitation:
 
 - Flow animation is not implemented yet.
 - Button interaction and fault selector remain next.
+
+## 2026-07-02 Update: Goal 044 complete
+
+- Current branch: `goal/044-gas-flow-animation-fault-highlight`.
+- Goal 044 adds simple Canvas pulse animation to the process schematic.
+
+Implementation notes:
+
+- `UpdateGasFlowPulses()` moves gas pulse markers from active valve path toward chamber/showerhead.
+- `UpdateExhaustFlowPulses()` supports pump/exhaust path pulse for pump/purge/fault states.
+- Showerhead gas dots pulse with the active gas color.
+- Fault state can blink chamber/exhaust/gate/pump highlight.
+
+Validation so far:
+
+- Release build passed.
+- Core console test passed: 81 tests.
+- Unity screenshot capture passed after one retry.
+- Default Unity screenshot capture passed.
+- `docs/demo/moly-ald-demo.png` was refreshed.
+- `git diff --check` passed.
+- Local CI marker check passed.
+
+Known limitation:
+
+- Buttons are still visual only.
+- Fault selector remains next.

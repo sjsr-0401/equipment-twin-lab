@@ -2119,6 +2119,26 @@ Core/CLI timeline JSON
 - gas flow pulse animation
 - fault mode schematic highlight
 - START/STOP/RESET/FAULT interaction
+
+## 2026-07-02 이해 요약: Gas Flow Animation
+
+이번 Goal의 핵심은 schematic을 정적인 그림에서 현재 step에 반응하는 화면으로 만든 것이다.
+
+한 문장 설명:
+
+> `UpdateGasFlowPulses()`와 `UpdateExhaustFlowPulses()`는 `MolyAldVisualState`의 valve/fault/step 상태를 읽고, Canvas pulse element의 색과 위치를 갱신한다.
+
+중요한 점:
+
+- 이것은 유체 해석이 아니다.
+- operator가 현재 active path를 빠르게 읽기 위한 HMI animation이다.
+- active gas color는 기존 Precursor/Reactant/Purge token을 재사용한다.
+- fault 상태에서는 chamber/exhaust/gate/pump highlight를 blink할 수 있다.
+
+다음 구현:
+
+- START/STOP/RESET button click handler 연결
+- FAULT selector를 실제 configured fault scenario와 연결
 - fault screenshot에서 alarm card와 장비 highlight를 같이 보여주기
 
 ## 2026-07-02 이해 요약: HMI Typography and Instrument Panel

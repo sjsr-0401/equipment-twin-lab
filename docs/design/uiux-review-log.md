@@ -170,3 +170,40 @@ docs/demo/moly-ald-demo.png
 - [ ] fault mode에서 chamber/exhaust/alarm card가 같이 highlight된다.
 - [ ] START/STOP/RESET/FAULT가 실제 player/fault scenario와 연결된다.
 
+## 2026-07-02 Review 005: Gas Flow Animation
+
+리뷰 대상:
+
+```text
+docs/demo/moly-ald-demo.png
+```
+
+### Verdict
+
+- 상태: Improved
+- 한 줄 판단: schematic이 단순 도식에서 현재 공정 step에 반응하는 장비 SW 화면으로 한 단계 이동했다.
+
+### Improved
+
+| Area | Result |
+|---|---|
+| Flow state | Reactant valve ON 상태에서 gas pulse와 flow label이 보인다 |
+| Schematic liveliness | showerhead gas dots가 active gas color로 pulse된다 |
+| Fault readiness | chamber/exhaust/gate/pump highlight path가 fault 상태에 연결됐다 |
+| Demo clarity | `FLOW: Reactant pulse -> chamber`가 현재 step을 설명한다 |
+
+### Remaining Issues
+
+| Priority | Problem | Next Fix |
+|---|---|---|
+| P1 | 버튼은 아직 visual mock이다 | Start/Stop/Reset/Fault selector 연결 |
+| P1 | fault mode screenshot이 없다 | synthetic fault scenario를 UI에서 선택하고 capture |
+| P2 | flow pulse는 simple Canvas marker다 | 필요하면 pulse trail/arrow를 더 정교화 |
+| P2 | 3D cutaway 보조뷰는 아직 없다 | 작은 cutaway/debug view를 다음 시각화 goal로 분리 |
+
+### Next Acceptance Criteria
+
+- [ ] START/STOP/RESET이 실제 timeline player state를 바꾼다.
+- [ ] FAULT가 synthetic fault scenario를 선택한다.
+- [ ] fault screenshot에서 flow가 멈추고 alarm/fault highlight가 보인다.
+
