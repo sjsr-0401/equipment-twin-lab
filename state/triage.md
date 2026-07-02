@@ -433,3 +433,25 @@ Current validation boundary:
 Next priority:
 
 - Implement Canvas-based operator panel.
+
+## 2026-07-02 Triage Update: Goal 041
+
+Active focus moved from UI/UX review criteria to Canvas UI implementation.
+
+| Priority | Work | Reason | Status |
+|---|---|---|---|
+| P1 | Canvas operator panel | Replaces fragile 3D TextMesh UI with readable HMI-style UI | Done |
+| P1 | Unity UI package activation | Required for Canvas/Text/Image components | Done |
+| P1 | Screenshot refresh | README/demo image should show Canvas UI, not old TextMesh panel | Done |
+| P2 | Button interaction | Visual buttons exist but are not wired yet | Next |
+| P2 | Fault selector | Needed to show alarm mode interactively | Next |
+
+Current validation boundary:
+
+- Canvas displays state from the existing timeline.
+- Canvas does not calculate process logic.
+- Buttons are visual controls only in this goal.
+
+Next priority:
+
+- Add button click handling and fault scenario selection.

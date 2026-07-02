@@ -2981,3 +2981,43 @@ Goal 041 acceptance criteria:
 - current step, telemetry, alarm, timeline은 Canvas text로 표시된다.
 - TextMesh는 장비 label 수준으로만 남긴다.
 - screenshot 50% 축소 상태에서도 current step과 alarm state가 읽힌다.
+
+## 63. 2026-07-02 Goal 041: Canvas Operator Panel Implementation
+
+Goal 041은 Goal 040의 UI/UX 기준을 실제 Unity 코드로 반영한 작업이다.
+
+핵심 변경:
+
+- `MolyAldOperatorCanvas` 추가
+- Unity UI package `com.unity.ugui` 활성화
+- 오른쪽 operator panel을 Canvas로 생성
+- 하단 process timeline을 Canvas로 생성
+- `MolyAldDemoBootstrap`과 smoke test에 Canvas 검증 추가
+- 기존 3D TextMesh UI는 장비 label 수준으로 축소
+
+구조:
+
+```text
+MolyAldProcessPlayer.CurrentStep
+    -> MolyAldVisualStateMapper
+    -> MolyAldOperatorCanvas
+    -> Canvas operator panel
+```
+
+막혔던 점:
+
+- `UnityEngine.UI` namespace가 처음에는 compile되지 않았다.
+  - 해결: `unity/EquipmentTwin.Unity/Packages/manifest.json`에 `com.unity.ugui`를 추가했다.
+- Unity 6에서 `Arial.ttf`가 built-in font가 아니었다.
+  - 해결: `LegacyRuntime.ttf`를 사용하도록 수정했다.
+
+결과:
+
+- current step, telemetry, alarm, timeline이 Canvas UI로 표시된다.
+- screenshot에서 `Dose Reactant`, pressure/temp/film, NO ALARM이 명확히 읽힌다.
+
+다음 권장 Goal:
+
+```text
+Goal 042: Canvas Button Interaction and Fault Selector
+```

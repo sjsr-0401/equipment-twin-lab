@@ -116,6 +116,20 @@ namespace EquipmentTwin.Unity.EditorTools
                 throw new InvalidOperationException("MolyAldDemoBootstrap was not created.");
             }
 
+            var operatorCanvas = root.GetComponent<MolyAldOperatorCanvas>();
+            if (operatorCanvas == null)
+            {
+                throw new InvalidOperationException("MolyAldOperatorCanvas was not created.");
+            }
+
+            operatorCanvas.EnsureCanvas();
+            operatorCanvas.RefreshCanvas();
+
+            if (UnityEngine.Object.FindObjectOfType<Canvas>() == null)
+            {
+                throw new InvalidOperationException("Canvas operator panel was not created.");
+            }
+
             ValidateVisualStateMapper(root);
 
             Debug.Log(
@@ -165,6 +179,7 @@ namespace EquipmentTwin.Unity.EditorTools
             root.AddComponent<MolyAldProcessPlayer>();
             root.AddComponent<MolyAldProcessHud>();
             root.AddComponent<MolyAldPrimitiveVisualizer>();
+            root.AddComponent<MolyAldOperatorCanvas>();
             root.AddComponent<MolyAldDemoBootstrap>();
 
             CreateCamera();

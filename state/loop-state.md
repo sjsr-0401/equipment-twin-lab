@@ -825,3 +825,34 @@ Key decision:
 Next recommended goal:
 
 - `Goal 041: Canvas Operator Panel Implementation`
+
+## 2026-07-02 Update: Goal 041 complete
+
+- Current branch: `goal/041-canvas-operator-panel`.
+- Goal 041 implements the Canvas UI direction from Goal 040.
+- New runtime component:
+  - `MolyAldOperatorCanvas`
+- New Unity package dependency:
+  - `com.unity.ugui`
+
+Implementation notes:
+
+- `MolyAldPrimitiveVisualizer` keeps the 3D equipment body.
+- `MolyAldOperatorCanvas` owns the operator panel, telemetry, alarm card, and bottom timeline.
+- `MolyAldDemoBootstrap` auto-adds the Canvas component.
+- `MolyAldEditorSmokeTest` validates Canvas creation.
+
+Local validation:
+
+- Unity compile passed after enabling `com.unity.ugui`.
+- Unity screenshot generated:
+  - `artifacts/unity-demo/moly-ald-demo-goal041.png`
+- `docs/demo/moly-ald-demo.png` was refreshed from the Goal 041 screenshot.
+- `dotnet build EquipmentTwinLab.sln --no-restore --configuration Release` passed.
+- Core console test passed: 81 tests.
+- `git diff --check` passed.
+
+Known limitation:
+
+- Buttons are not interactive yet.
+- Next recommended goal: `Goal 042: Canvas Button Interaction and Fault Selector`.
