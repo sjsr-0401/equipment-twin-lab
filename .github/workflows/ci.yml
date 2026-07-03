@@ -220,7 +220,7 @@ jobs:
           grep -q "DataGridCell" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "BorderSoft" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "LOAD PORT" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
-          grep -q "NeutralSignal" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
-          grep -q "NO ACTIVE ALARM" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
-          grep -q "OPEN" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "Success" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "NO ALARM" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
+          grep -q "GROWING" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "WPF HMI Visual System" docs/design/wpf-hmi-visual-system.md
