@@ -97,6 +97,8 @@ jobs:
           test -f docs/design/public-ald-schematic-reference.md
           test -f docs/design/wpf-hmi-visual-system.md
           test -f docs/learning/README.md
+          test -f docs/learning/code-reading/README.md
+          test -f docs/learning/code-reading/001-core-state-machine.md
           test -f docs/learning/development-from-zero.md
           test -f docs/learning/project-development-complete-guide.md
           test -f docs/demo/moly-ald-demo.png
@@ -127,6 +129,7 @@ jobs:
           test -f goals/053-wpf-hmi-visual-system.md
           test -f goals/054-demo-color-restore-junior-notes.md
           test -f goals/055-complete-development-guide.md
+          test -f goals/056-code-reading-start.md
           test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
@@ -231,3 +234,5 @@ jobs:
           grep -q "WPF HMI Visual System" docs/design/wpf-hmi-visual-system.md
           grep -q "처음부터 다시 이해" docs/learning/development-from-zero.md
           grep -q "ETL-COMPLETE-DEVELOPMENT-GUIDE" docs/learning/project-development-complete-guide.md
+          grep -q "Visual Studio 코드 독해 순서" docs/learning/code-reading/README.md
+          grep -q "Core 상태머신 코드 독해" docs/learning/code-reading/001-core-state-machine.md

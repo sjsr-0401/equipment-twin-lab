@@ -689,3 +689,19 @@ Completed:
 - Added a complete guide explaining the project from the initial Core state-machine direction to the current WPF HMI.
 - Added a learning README so future explanation documents have a stable index.
 - Updated CI to keep the complete guide present.
+
+## 2026-07-03 Triage Update after Goal 056
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P0 | Visual Studio code-reading index | Done | Use as the stable reading path |
+| P0 | State-machine line-by-line note | Done | Read with `EquipmentStateMachine.cs` open in Visual Studio |
+| P1 | Clock/Timeout line-by-line note | Next | Explain `IClock`, `ManualClock`, `SystemClock`, `StateTimeoutPolicy`, `TimeoutCheckResult` |
+| P1 | Virtual IO line-by-line note | Waiting | Add after Clock/Timeout |
+| P1 | WPF line-by-line note | Waiting | Add after Core basics or when UI debugging is priority |
+
+Completed:
+
+- Started the code-reading documentation set.
+- Added the first detailed guide for the state-machine files.
+- Added Visual Studio reading instructions and breakpoint/watch guidance.

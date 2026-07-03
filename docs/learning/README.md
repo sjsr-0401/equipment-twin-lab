@@ -27,3 +27,13 @@
 - `MolyAldRunner` 공정 실행 흐름 해설
 - 테스트 코드 작성법 해설
 - Visual Studio 디버깅 실습 문서
+
+## 4. Visual Studio 코드 독해 문서
+
+- [code-reading/README.md](./code-reading/README.md)
+
+Visual Studio에서 실제 코드 파일을 열고 한 줄씩 읽기 위한 문서 묶음이다.
+
+현재 시작 문서:
+
+- [code-reading/001-core-state-machine.md](./code-reading/001-core-state-machine.md)
