@@ -1256,3 +1256,29 @@ Reason:
 
 - The complete guide explains the whole project story.
 - The next learning step should zoom into the first real Core file and connect the story to actual C# syntax.
+
+## 2026-07-03 Loop Update: Goal 056 complete
+
+Current completed goal:
+
+- `Goal 056: Visual Studio Code Reading Start`
+
+What triggered it:
+
+- The user clarified that they want to open code in Visual Studio and understand the flow and code line by line from the beginning.
+
+What changed:
+
+- Added `docs/learning/code-reading/README.md`.
+- Added `docs/learning/code-reading/001-core-state-machine.md`.
+- Linked the code-reading set from `docs/learning/README.md`.
+- Added CI checks for the first code-reading documents.
+
+Current next recommendation:
+
+- `Goal 057: Clock and timeout line-by-line reading note`
+
+Reason:
+
+- The first state-machine reading note explains `StateEnteredAtUtc` and `CheckTimeout()`.
+- The next natural step is understanding `IClock`, `ManualClock`, `SystemClock`, `StateTimeoutPolicy`, and `TimeoutCheckResult`.
