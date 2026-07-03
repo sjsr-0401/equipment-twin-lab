@@ -1282,3 +1282,28 @@ Reason:
 
 - The first state-machine reading note explains `StateEnteredAtUtc` and `CheckTimeout()`.
 - The next natural step is understanding `IClock`, `ManualClock`, `SystemClock`, `StateTimeoutPolicy`, and `TimeoutCheckResult`.
+
+## 2026-07-03 Loop Update: Goal 057 complete
+
+Current completed goal:
+
+- `Goal 057: Program Entry Reading Guide`
+
+What triggered it:
+
+- The user corrected the reading order: they wanted the real Visual Studio program entry point first, not the Core state-machine starting point.
+
+What changed:
+
+- Added `docs/learning/code-reading/000-program-entry.md`.
+- Updated the code-reading README so the sequence starts from WPF program entry.
+- Clarified that `001-core-state-machine.md` is the Core logic starting point, not the executable entry point.
+- Added Goal 057 and work-log records.
+
+Current next recommendation:
+
+- `Goal 058: OperatorConsoleViewModel line-by-line reading note`
+
+Reason:
+
+- After WPF `MainWindow` sets `DataContext = new OperatorConsoleViewModel()`, this ViewModel becomes the main execution/control hub for the visible program.

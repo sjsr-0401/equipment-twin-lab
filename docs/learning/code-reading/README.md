@@ -25,18 +25,20 @@
 읽는 순서:
 
 ```text
-1. Core 상태머신
-2. Clock/Timeout
-3. 가상 IO
-4. Cell Controller
-5. Scenario Runner
-6. Motion Axis
-7. Template/Recipe
-8. ALD Process Runner
-9. WPF ViewModel
-10. WPF XAML
-11. CLI
-12. Tests
+0. 프로그램 진입점
+1. WPF App/MainWindow/ViewModel 시작 흐름
+2. Core 상태머신
+3. Clock/Timeout
+4. 가상 IO
+5. Cell Controller
+6. Scenario Runner
+7. Motion Axis
+8. Template/Recipe
+9. ALD Process Runner
+10. WPF ViewModel 세부
+11. WPF XAML 세부
+12. CLI
+13. Tests
 ```
 
 ## Visual Studio에서 여는 방법
@@ -56,6 +58,7 @@
 
 | 순서 | 문서 | 읽을 코드 |
 |---:|---|---|
+| 0 | [000-program-entry.md](./000-program-entry.md) | WPF `App.xaml` -> generated `Main()` -> `MainWindow` -> `OperatorConsoleViewModel` |
 | 1 | [001-core-state-machine.md](./001-core-state-machine.md) | `EquipmentState`, `EquipmentEvent`, `TransitionResult`, `EquipmentTransition`, `EquipmentStateMachine` |
 
 ## 앞으로 추가할 문서

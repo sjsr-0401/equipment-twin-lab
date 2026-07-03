@@ -98,6 +98,7 @@ jobs:
           test -f docs/design/wpf-hmi-visual-system.md
           test -f docs/learning/README.md
           test -f docs/learning/code-reading/README.md
+          test -f docs/learning/code-reading/000-program-entry.md
           test -f docs/learning/code-reading/001-core-state-machine.md
           test -f docs/learning/development-from-zero.md
           test -f docs/learning/project-development-complete-guide.md
@@ -130,6 +131,7 @@ jobs:
           test -f goals/054-demo-color-restore-junior-notes.md
           test -f goals/055-complete-development-guide.md
           test -f goals/056-code-reading-start.md
+          test -f goals/057-program-entry-reading.md
           test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
@@ -235,4 +237,5 @@ jobs:
           grep -q "처음부터 다시 이해" docs/learning/development-from-zero.md
           grep -q "ETL-COMPLETE-DEVELOPMENT-GUIDE" docs/learning/project-development-complete-guide.md
           grep -q "Visual Studio 코드 독해 순서" docs/learning/code-reading/README.md
+          grep -q "프로그램 진입점부터 WPF 화면이 뜨기까지" docs/learning/code-reading/000-program-entry.md
           grep -q "Core 상태머신 코드 독해" docs/learning/code-reading/001-core-state-machine.md

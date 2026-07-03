@@ -705,3 +705,18 @@ Completed:
 - Started the code-reading documentation set.
 - Added the first detailed guide for the state-machine files.
 - Added Visual Studio reading instructions and breakpoint/watch guidance.
+
+## 2026-07-03 Triage Update after Goal 057
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P0 | Program-entry reading guide | Done | Start code reading from `000-program-entry.md` |
+| P0 | Code-reading order correction | Done | Treat state-machine guide as Core start, not execution start |
+| P1 | `OperatorConsoleViewModel.cs` line-by-line note | Next | Continue from `DataContext = new OperatorConsoleViewModel()` |
+| P1 | `MainWindow.xaml` binding walkthrough | Waiting | Add after ViewModel control flow |
+| P1 | Core state-machine review | Waiting | Revisit after WPF entry/control flow is clear |
+
+Completed:
+
+- Corrected the code-reading sequence after user feedback.
+- Added the WPF program entry guide from generated `Main()` through ViewModel initialization and button command flow.

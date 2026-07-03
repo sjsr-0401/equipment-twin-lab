@@ -12,9 +12,15 @@ src/EquipmentTwin.Core/EquipmentStateMachine.cs
 
 이 문서는 Visual Studio에서 위 파일들을 열어 놓고 같이 보는 문서다.
 
+주의: 이 문서는 프로그램 실행 진입점이 아니라 Core 내부 로직의 시작점이다.
+
+Visual Studio에서 F5를 눌렀을 때 실제로 어디서 시작하는지 먼저 보려면 아래 문서를 먼저 읽는다.
+
+- [000-program-entry.md](./000-program-entry.md)
+
 ## 0. 이 묶음의 역할
 
-이 다섯 파일은 프로젝트의 출발점이다.
+이 다섯 파일은 Core 로직의 출발점이다.
 
 장비 SW를 가장 단순하게 표현하면 다음 세 가지가 필요하다.
 
