@@ -673,3 +673,19 @@ Completed:
 - Kept readability fixes from the previous WPF pass.
 - Added `docs/learning/development-from-zero.md` so the project history can be studied from the beginning.
 - Updated CI markers to keep the learning note and demo color indicators present.
+
+## 2026-07-03 Triage Update after Goal 055
+
+| Priority | Item | Status | Next action |
+|---|---|---|---|
+| P0 | Complete development-process guide | Done | Use as the project-level learning spine |
+| P1 | `EquipmentStateMachine.cs` line-by-line note | Next | Explain the first Core file in junior-readable Korean |
+| P1 | `VirtualIoController.cs` line-by-line note | Waiting | Add after state-machine walkthrough |
+| P1 | WPF line-by-line learning note | Waiting | Add after Core basics or when UI debugging is the user's priority |
+| P1 | Instrument trend panel | Waiting | Resume feature work after learning debt is reduced |
+
+Completed:
+
+- Added a complete guide explaining the project from the initial Core state-machine direction to the current WPF HMI.
+- Added a learning README so future explanation documents have a stable index.
+- Updated CI to keep the complete guide present.

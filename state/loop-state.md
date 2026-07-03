@@ -1229,3 +1229,30 @@ Reason:
 
 - The user wants to make the code their own, not only receive generated changes.
 - The next best learning step is to explain the real WPF screen file block by block: layout, binding, styles, commands, and debug table.
+
+## 2026-07-03 Loop Update: Goal 055 complete
+
+Current completed goal:
+
+- `Goal 055: Complete Development Process Guide`
+
+What triggered it:
+
+- The user clarified that the previous learning note was still too shallow.
+- The desired output is a full project-history explanation from the first development step, detailed enough for a junior developer to understand the code-building process.
+
+What changed:
+
+- Added `docs/learning/README.md` as the learning-document index.
+- Added `docs/learning/project-development-complete-guide.md` as the full guide.
+- Updated `docs/learning/development-from-zero.md` to point to the complete guide.
+- Added CI checks for the learning index, complete guide, and Goal 055 record.
+
+Current next recommendation:
+
+- `Goal 056: EquipmentStateMachine.cs line-by-line learning note`
+
+Reason:
+
+- The complete guide explains the whole project story.
+- The next learning step should zoom into the first real Core file and connect the story to actual C# syntax.

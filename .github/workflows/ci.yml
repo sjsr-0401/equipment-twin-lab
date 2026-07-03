@@ -96,7 +96,9 @@ jobs:
           test -f docs/design/operator-console-design-system.md
           test -f docs/design/public-ald-schematic-reference.md
           test -f docs/design/wpf-hmi-visual-system.md
+          test -f docs/learning/README.md
           test -f docs/learning/development-from-zero.md
+          test -f docs/learning/project-development-complete-guide.md
           test -f docs/demo/moly-ald-demo.png
           test -f docs/demo/moly-ald-demo-fault.png
           test -f docs/demo/moly-ald-demo-recovery.png
@@ -124,6 +126,7 @@ jobs:
           test -f goals/052-wpf-ui-readability-fix.md
           test -f goals/053-wpf-hmi-visual-system.md
           test -f goals/054-demo-color-restore-junior-notes.md
+          test -f goals/055-complete-development-guide.md
           test -f src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           test -f src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           test -f src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
@@ -227,3 +230,4 @@ jobs:
           grep -q "GROWING" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "WPF HMI Visual System" docs/design/wpf-hmi-visual-system.md
           grep -q "처음부터 다시 이해" docs/learning/development-from-zero.md
+          grep -q "ETL-COMPLETE-DEVELOPMENT-GUIDE" docs/learning/project-development-complete-guide.md
