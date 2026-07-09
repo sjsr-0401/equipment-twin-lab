@@ -17,5 +17,9 @@
       <Link>processes\public-moly-ald-metallization.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\alarm-guides\moly-ald-alarm-guides.json">
+      <Link>alarm-guides\moly-ald-alarm-guides.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

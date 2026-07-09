@@ -1,4 +1,4 @@
-# Triage
+﻿# Triage
 
 이 파일은 “오늘 무엇을 할지”를 고르는 곳이다.
 
@@ -43,7 +43,7 @@
 | P1 | Fault Scenario Catalog | fault 종류별 기대 알람과 복구 조건을 정리해야 한다 | 대기 |
 | P1 | Inspection Scenario Batch Matrix | recipe와 inspection scenario 조합을 한 번에 비교해야 한다 | 대기 |
 | P2 | Core 검증 정리 문서 | 면접/포트폴리오에서 현재 구조를 설명할 수 있어야 한다 | 완료 |
-| P2 | RayWork 경험과 새 프로젝트 연결 문서 작성 | 면접에서 “실무 경험 → 사이드 프로젝트”로 설명 가능해진다 | 대기 |
+| P2 | 이전 장비 SW 경험과 새 프로젝트 연결 문서 작성 | 면접에서 “실무 경험 → 사이드 프로젝트”로 설명 가능해진다 | 대기 |
 | P2 | Visual Studio build/debug 가이드 | 사용자가 직접 breakpoint를 걸고 Core 흐름을 이해할 수 있어야 한다 | 완료 |
 | P2 | 매일 작업 로그 템플릿 정착 | 사용자가 나중에 복기하기 쉬워진다 | 진행 중 |
 
@@ -65,9 +65,9 @@
 위 항목들은 프로젝트 골격과 검증 루프가 생긴 뒤 진행한다.
 ## 2026-07-01 Triage Update
 
-Current P1 focus changed from vision-inspection expansion to process-equipment modeling.
+현재 P1 초점이 vision-inspection 확장에서 process-equipment modeling으로 이동했다.
 
-Reason:
+이유:
 
 - The user's work background is closer to equipment/deposition process SW than camera inspection.
 - Public/synthetic ALD metallization gives a stronger manufacturing-equipment portfolio story.
@@ -75,7 +75,7 @@ Reason:
 
 Active item:
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Public molybdenum ALD process model | Shows process sequence, recipe validation, fault stop, and Unity replay data | In progress |
 | P1 | Process timeline JSON export | Needed before Unity can replay the ALD sequence cleanly | Next |
@@ -84,27 +84,27 @@ Active item:
 
 Goal 026 changed the next Unity dependency from "concept" to "data contract".
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Process Timeline JSON Export | Unity needs structured replay data, not Markdown parsing | In progress |
 | P1 | Unity Process Player Skeleton | Next visible demo step | Next |
 | P1 | Unity Chamber/Wafer/Valve Visual | Needed for portfolio video | Next |
 
-Current blocker handled:
+현재 blocker 처리:
 
 - `EquipmentStateMachine.cs` typo `prev0ious` was fixed because it broke compilation.
 
 ## 2026-07-01 Triage Update: Goal 027
 
-Active focus moved from JSON data contract to the first Unity replay skeleton.
+작업 초점 이동 from JSON data contract to the first Unity replay skeleton.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity Process Player Skeleton | First visible Unity integration point | In progress |
 | P1 | Unity Chamber/Wafer/Valve Visual | Needed for portfolio demo video | Next |
 | P2 | Unity Editor compile/play validation guide | Needed because CI does not run Unity Editor yet | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - CI validates .NET and Unity file presence.
 - Unity Editor compile/play is still manual.
@@ -117,15 +117,15 @@ PR status:
 
 ## 2026-07-01 Triage Update: Goal 028
 
-Active focus moved from Unity timeline replay to visible primitive process visualization.
+작업 초점 이동 from Unity timeline replay to visible primitive process visualization.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity Chamber/Wafer/Valve Visual | Needed for visible portfolio demo | In progress |
 | P1 | Unity Editor local smoke test | Needed because CI does not compile Unity scripts | Next |
 | P2 | Imported CAD/Blender model swap points | Useful after primitives prove data flow | Later |
 
-Current blocker:
+현재 blocker:
 
 - Unity Editor is not available in the current automation environment.
 - Workaround: CI checks file presence and .NET regression; local Unity Play Mode remains manual.
@@ -134,20 +134,20 @@ PR status:
 
 - Goal 028 draft PR: <https://github.com/sjsr-0401/equipment-twin-lab/pull/26>
 - CI status: passed
-- Current blocker update: Unity Editor is installed, but batchmode compile is blocked by `No valid Unity Editor license found`.
+- 현재 blocker 업데이트: Unity Editor is installed, but batchmode compile is blocked by `No valid Unity Editor license found`.
 - Next work: activate/sign in through Unity Hub, then run Play Mode smoke test.
 
 ## 2026-07-01 Triage Update: Goal 029
 
-Active focus moved from primitive visual implementation to repeatable Unity validation.
+작업 초점 이동 from primitive visual implementation to repeatable Unity validation.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity smoke-test harness | Makes Unity validation repeatable after license activation | In progress |
 | P1 | Unity Hub license activation | Required before Unity batchmode/Play Mode can compile | User action |
 | P2 | Demo screenshot capture | Useful for portfolio README after smoke test passes | Next |
 
-Current blocker:
+현재 blocker:
 
 - Unity license activation cannot be completed from repository code.
 - The project can still add the harness, scripts, and documentation so the user can run validation immediately after signing in.
@@ -160,15 +160,15 @@ PR status:
 
 ## 2026-07-01 Triage Update: Goal 030
 
-Active focus moved from smoke-test execution to screenshot capture.
+작업 초점 이동 from smoke-test execution to screenshot capture.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Screenshot capture command | Needed for README/portfolio visual proof | In progress |
 | P1 | Unity license activation | Required before actual PNG can be generated | User action |
 | P2 | README demo image | Requires a generated screenshot first | Next |
 
-Current blocker:
+현재 blocker:
 
 - The repository can provide screenshot automation, but cannot activate the Unity license.
 - Actual screenshot generation remains blocked until Unity Hub login/license activation is completed.
@@ -181,15 +181,15 @@ PR status:
 
 ## 2026-07-01 Triage Update: Goal 031
 
-Active focus moved from screenshot execution to portfolio/demo explanation because Unity license activation requires user-side interaction.
+작업 초점 이동 from screenshot execution to portfolio/demo explanation because Unity license activation requires user-side interaction.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Portfolio demo package | Needed so the project is explainable before the first real screenshot | In progress |
 | P1 | Unity license activation | Required before actual PNG/video capture | User action |
 | P1 | README demo image | Requires generated screenshot first | Next |
 
-Current blocker:
+현재 blocker:
 
 - Unity Hub license activation cannot be completed while the user is outside.
 - The repository can still document the demo flow, honest boundaries, and next verification command.
@@ -205,9 +205,9 @@ Completion status:
 - CI: passed
 - Remaining blocker: Unity Hub license activation
 
-Next priority:
+다음 우선순위:
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity screenshot capture on licensed machine | Converts Unity visual code into visible portfolio proof | User/local action |
 | P1 | README demo image | Needed for first-impression GitHub portfolio page | Next |
@@ -215,16 +215,16 @@ Next priority:
 
 ## 2026-07-01 Triage Update: Goal 032
 
-Active focus moved from screenshot capture to demo polish.
+작업 초점 이동 from screenshot capture to demo polish.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity screenshot capture | First visible proof of Unity visual layer | Completed |
 | P1 | README demo image | First-impression GitHub portfolio page | Completed |
 | P1 | Unity demo polish | Current screenshot is functional but primitive | Next |
 | P2 | 3-minute recording checklist | Needed before portfolio video | Next |
 
-Current blocker resolved:
+현재 blocker 해결:
 
 - Unity Hub license activation is complete.
 - Unity batch screenshot generation is working.
@@ -242,15 +242,15 @@ PR status:
 
 ## 2026-07-01 Triage Update: Goal 033
 
-Active focus moved from first screenshot proof to portfolio recording readiness.
+작업 초점 이동 from first screenshot proof to portfolio recording readiness.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity demo polish | The screenshot exists, but it needs clearer process-state visuals for portfolio use | In progress |
 | P1 | 3-minute recording checklist | The user needs a repeatable script to explain the project without overclaiming | In progress |
 | P2 | CAD/Blender model swap design | Useful after the primitive visual story is clear | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Unity screenshot generation works locally with Unity Hub Personal license.
 - GitHub Actions still validates .NET and file-level Unity wiring only; it does not run Unity Editor.
@@ -260,22 +260,22 @@ Completion status:
 
 - Draft PR #31: <https://github.com/sjsr-0401/equipment-twin-lab/pull/31>
 - CI: passed
-- Next priority:
+- 다음 우선순위:
   - record the actual 3-minute demo video, or
   - design the CAD/Blender model swap boundary before importing assets.
 
 ## 2026-07-01 Triage Update: Goal 034
 
-Active focus moved to the CAD/Blender model swap boundary.
+작업 초점 이동 to the CAD/Blender model swap boundary.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity visual adapter boundary | Prevents process logic from being duplicated in every future model renderer | In progress |
 | P1 | Imported model binding component | Gives future CAD/Blender assets a concrete connection point | In progress |
 | P2 | Name-based auto-binding | Useful only after a real imported model exists | Later |
 | P2 | Actual 3-minute video recording | Still valuable, but code boundary was chosen first to reduce model-swap risk | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The project still has no real imported CAD/Blender asset.
 - Goal 034 proves the software boundary, not the final imported-model visual quality.
@@ -284,22 +284,22 @@ Completion status:
 
 - Draft PR #32: <https://github.com/sjsr-0401/equipment-twin-lab/pull/32>
 - CI: passed
-- Next priority:
+- 다음 우선순위:
   - record the actual 3-minute demo video and find explanation gaps;
   - add imported-model auto-binding only after a real asset naming convention exists.
 
 ## 2026-07-01 Triage Update: Goal 035
 
-Active focus moved to demo recording readiness.
+작업 초점 이동 to demo recording readiness.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Demo rehearsal runner | Reduces the chance of a broken demo during recording | In progress |
 | P1 | Expected fault handling in rehearsal | Prevents `pumpdown-timeout` exit code 1 from being mistaken for a script failure | Complete |
 | P1 | Full rehearsal with Unity screenshot | Confirms the recording material exists before screen recording | Complete |
 | P2 | Actual 3-minute video recording | Needs user screen/audio action | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The script prepares recording material but does not record the screen.
 - Unity screenshot requires a local Unity Editor license; use `-SkipUnity` without Unity.
@@ -308,27 +308,27 @@ Completion status:
 
 - Draft PR #33: <https://github.com/sjsr-0401/equipment-twin-lab/pull/33>
 - CI: passed
-- Next priority:
+- 다음 우선순위:
   - run the rehearsal once before recording;
   - record the actual 3-minute demo;
   - adjust docs/visuals based on where the explanation gets stuck.
 
 ## 2026-07-01 Triage Update: Goal 036
 
-Active focus moved from rehearsal verification to narration readiness.
+작업 초점 이동 from rehearsal verification to narration readiness.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Demo narration cue cards | The demo can pass technically, but the user needs a Korean script to explain it clearly | Complete |
 | P1 | Rehearsal-generated cue card | Reduces English-log confusion during recording | Complete |
 | P2 | Actual 3-minute video recording | Requires user screen/audio action | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The repository can generate Korean cue cards and validate demo material.
 - It still cannot press the screen-recording button or record the user's voice.
 
-Next priority:
+다음 우선순위:
 
 - Run `.\scripts\Invoke-PortfolioDemoRehearsal.ps1`.
 - Open `artifacts/demo-rehearsal/recording-cue-cards.md`.
@@ -341,25 +341,25 @@ Completion status:
 
 ## 2026-07-02 Triage Update: Goal 037
 
-Active focus moved from narration readiness to screenshot clarity.
+작업 초점 이동 from narration readiness to screenshot clarity.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Explanatory Unity screenshot | The previous image rendered correctly but was not self-explanatory | In progress |
 | P1 | README demo image update | Portfolio first impression depends on the screenshot | In progress |
 | P2 | Actual 3-minute recording | User will handle recording after image quality improves | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The screenshot can show labels, color key, status, and process flow.
 - It still does not claim real CAD, real vendor sequence, or real deposition physics.
 
-Next priority:
+다음 우선순위:
 
 - Open `docs/demo/moly-ald-demo.png` and decide if it is good enough for first recording.
 - If yes, record the 3-minute demo.
 
-Validation status:
+검증 상태:
 
 - Full rehearsal passed and updated `artifacts/demo-rehearsal/moly-ald-demo.png`.
 
@@ -367,25 +367,25 @@ Completion status:
 
 - Draft PR #35: <https://github.com/sjsr-0401/equipment-twin-lab/pull/35>
 - CI: passed
-- Next: user records the 3-minute demo using the improved screenshot.
+- 다음: user records the 3-minute demo using the improved screenshot.
 
 ## 2026-07-02 Triage Update: Goal 038
 
-Active focus moved from recording/demo visuals back to development validation.
+작업 초점 이동 from recording/demo visuals back to development validation.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | ALD fault matrix CLI | Batch validation proves normal and fault behavior without relying on a screen recording | In progress |
 | P1 | CI process batch check | Fault matrix should fail automatically if expectations drift | In progress |
 | P2 | Better visual/demo polish | User explicitly postponed recording for now | Deferred |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The ALD model is public/synthetic.
 - `process batch` verifies expected software behavior, not real vendor alarm tables.
 - Normal case should complete; configured fault cases should stop in `Alarmed`.
 
-Next priority:
+다음 우선순위:
 
 - Finish docs/logs for Goal 038.
 - Run Release build, Core tests, process batch CLI, and `git diff --check`.
@@ -393,21 +393,21 @@ Next priority:
 
 ## 2026-07-02 Triage Update: Goal 039
 
-Active focus moved from development validation back to Unity presentation quality.
+작업 초점 이동 from development validation back to Unity presentation quality.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Unity operator console layout | User wants a public-reference equipment style with a friendly control interface | In progress |
 | P1 | Screenshot refresh | README first impression depends on the visual quality | In progress |
 | P2 | Real interactive buttons | Current buttons are visual controls, not yet wired to runtime commands | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - The layout can look like a semiconductor equipment console.
 - It must not claim to be a real vendor CAD/UI/sequence.
 - Unity still replays Core/CLI timeline data instead of calculating process logic.
 
-Next priority:
+다음 우선순위:
 
 - Validate Unity screenshot capture.
 - Update docs and tracked screenshot.
@@ -415,30 +415,30 @@ Next priority:
 
 ## 2026-07-02 Triage Update: Goal 040
 
-Active focus moved from visual implementation to repeatable UI/UX review.
+작업 초점 이동 from visual implementation to repeatable UI/UX review.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | UI/UX agent brief | Gives Codex/Claude/another model a stable reviewer role | In progress |
 | P1 | Current screenshot review | Converts subjective “looks bad” feedback into actionable criteria | In progress |
 | P1 | Canvas operator panel plan | Prevents more 3D TextMesh UI debt | In progress |
 | P2 | Canvas implementation | Should happen after review criteria are fixed | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Goal 040 is documentation and process design only.
 - It does not implement the Canvas UI yet.
 - It sets acceptance criteria for Goal 041.
 
-Next priority:
+다음 우선순위:
 
 - Implement Canvas-based operator panel.
 
 ## 2026-07-02 Triage Update: Goal 041
 
-Active focus moved from UI/UX review criteria to Canvas UI implementation.
+작업 초점 이동 from UI/UX review criteria to Canvas UI implementation.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Canvas operator panel | Replaces fragile 3D TextMesh UI with readable HMI-style UI | Done |
 | P1 | Unity UI package activation | Required for Canvas/Text/Image components | Done |
@@ -446,21 +446,21 @@ Active focus moved from UI/UX review criteria to Canvas UI implementation.
 | P2 | Button interaction | Visual buttons exist but are not wired yet | Next |
 | P2 | Fault selector | Needed to show alarm mode interactively | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Canvas displays state from the existing timeline.
 - Canvas does not calculate process logic.
 - Buttons are visual controls only in this goal.
 
-Next priority:
+다음 우선순위:
 
 - Improve HMI typography/instrument readability before adding button behavior.
 
 ## 2026-07-02 Triage Update: Goal 042
 
-Active focus moved from basic Canvas UI to HMI readability.
+작업 초점 이동 from basic Canvas UI to HMI readability.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | HMI typography hierarchy | Current screen needs professional operator-console readability | Done |
 | P1 | Process instrument rows | Numeric process values need range/context, not just text | Done |
@@ -468,21 +468,21 @@ Active focus moved from basic Canvas UI to HMI readability.
 | P2 | Button interaction | Visual buttons exist but are not wired yet | Next |
 | P2 | Fault selector | Needed to show alarm mode interactively | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Instrument ranges are synthetic demo ranges.
 - Unity still replays timeline data; it does not simulate physical process dynamics.
 - Buttons are visual controls only.
 
-Next priority:
+다음 우선순위:
 
 - Add button click handling and fault scenario selection.
 
 ## 2026-07-02 Triage Update: Goal 043
 
-Active focus moved from HMI instrument readability to the left-side main visual direction.
+작업 초점 이동 from HMI instrument readability to the left-side main visual direction.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Process schematic main view | Avoids weak primitive 3D realism and better matches manufacturing HMI practice | Done |
 | P1 | Public reference boundary | Keeps the project honest and avoids vendor CAD/UI/process copying | Done |
@@ -490,21 +490,21 @@ Active focus moved from HMI instrument readability to the left-side main visual 
 | P2 | Gas flow animation | Makes schematic feel alive | Next |
 | P2 | 3D cutaway helper view | Keeps 3D differentiation without requiring CAD realism | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Schematic is public/synthetic.
 - It is not a real tool schematic.
 - It is not a vendor UI.
 
-Next priority:
+다음 우선순위:
 
 - Validate screenshot and then wire button/fault interaction.
 
 ## 2026-07-02 Triage Update: Goal 044
 
-Active focus moved from static process schematic to live flow indication.
+작업 초점 이동 from static process schematic to live flow indication.
 
-| Priority | Work | Reason | Status |
+| 우선순위 | 작업 | 이유 | 상태 |
 |---|---|---|---|
 | P1 | Gas flow pulse | Makes active process route visible | Done |
 | P1 | Showerhead dot pulse | Shows gas entering chamber | Done |
@@ -512,39 +512,39 @@ Active focus moved from static process schematic to live flow indication.
 | P2 | Button interaction | Needed for operator-controlled demo | Next |
 | P2 | Fault selector | Needed for fault screenshot/demo | Next |
 
-Current validation boundary:
+현재 검증 경계:
 
 - Pulse animation is HMI indication only.
 - It is not fluid simulation.
 - Buttons are still not wired.
 
-Next priority:
+다음 우선순위:
 
 - Add button click handling and fault scenario selection.
 ## 2026-07-02 Triage Update after Goal 045
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | Fault mode screenshot | Missing portfolio artifact | Capture red alarm/schematic fault state |
 | P1 | Operator action log | Missing on-screen action history | Add START/STOP/FAULT/RESET event list |
 | P2 | Process fault scenario selector | Current FAULT is synthetic override | Later connect to process fault matrix |
 | P2 | Manual Unity click checklist | Not fully documented | Add short Visual Studio/Unity Play Mode checklist |
 
-Completed:
+완료:
 
 - Button interaction is no longer the next blocker.
 - Unity smoke test now covers Button, EventSystem, and player state transitions.
 
 ## 2026-07-02 Triage Update after Goal 046
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | Reset recovery screenshot | Still missing | Capture or storyboard RESET -> READY state |
 | P1 | Process fault scenario selector | Still synthetic override | Connect FAULT to named fault matrix scenario |
 | P2 | Action log persistence | In-memory only | Later connect to run report/file log if useful |
 | P2 | Log panel readability | Acceptable but small | Expand if layout changes |
 
-Completed:
+완료:
 
 - Fault mode screenshot exists.
 - Operator action log exists in Canvas.
@@ -552,14 +552,14 @@ Completed:
 
 ## 2026-07-02 Triage Update after Goal 047
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | Fault timeline replay binding | Still missing | Drive Unity process state from selected process-runner fault timeline |
 | P1 | Scenario truth boundary | Improved but not complete | Keep synthetic HMI hold separate from replayed fault timeline |
 | P2 | User-facing fault scenario selector | Not exposed yet | Add cycle/select control if useful after replay binding |
 | P2 | Action log persistence | In-memory only | Later connect to report/file log if it helps demo explanation |
 
-Completed:
+완료:
 
 - Reset recovery screenshot exists.
 - FAULT now carries the selected public scenario name `precursor-dose-timeout`.
@@ -567,14 +567,14 @@ Completed:
 
 ## 2026-07-02 Triage Update after Goal 048
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | Fault scenario selector UI | Missing | Add a small HMI control to cycle selected scenario |
 | P1 | Replay truth boundary | Improved | Keep documenting that Core/CLI timeline is process truth |
 | P2 | Fault timeline regeneration script | Missing | Add script if static JSON upkeep becomes annoying |
 | P2 | Operator log persistence | In-memory only | Later export action log/run report |
 
-Completed:
+완료:
 
 - Unity fault replay now loads `StreamingAssets/faults/moly-ald-timeline.{scenario}.json`.
 - `precursor-dose-timeout` moves to the failed `DoseMetalPrecursor` step.
@@ -582,14 +582,14 @@ Completed:
 
 ## 2026-07-03 Triage Update after Goal 049
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | Fault recovery procedure panel | Next | Show operator-facing recovery checklist after a replay alarm |
 | P1 | Fault selector UI | Done | Keep selector locked while fault replay is active |
 | P2 | Fault timeline regeneration script | Waiting | Add only if static JSON maintenance becomes repetitive |
 | P2 | Operator log persistence | Waiting | Later export action log/run report if it improves the demo story |
 
-Completed:
+완료:
 
 - HMI now exposes four public fault scenarios as selectable chips.
 - Scenario selection flows through `MolyAldOperatorCanvas` into `MolyAldProcessPlayer`.
@@ -597,14 +597,14 @@ Completed:
 
 ## 2026-07-03 Triage Update after Goal 050
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P1 | WPF main HMI | Done | Use as daily debug surface |
 | P1 | WPF alarm recovery procedure | Next | Add operator recovery checklist by fault area |
 | P2 | Unity optional viewer launcher | Waiting | Later launch built Unity viewer executable from WPF |
 | P2 | WPF styling polish | Waiting | Improve visual density after recovery panel exists |
 
-Completed:
+완료:
 
 - Main HMI direction changed from Unity-first to WPF-first.
 - WPF project is in the solution and builds.
@@ -613,14 +613,14 @@ Completed:
 
 ## 2026-07-03 Triage Update after Goal 051
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
 | P0 | WPF startup binding exception | Done | Keep progress indicators one-way bound |
 | P1 | WPF alarm recovery procedure | Next | Add operator recovery checklist by fault area |
 | P2 | WPF styling polish | Waiting | Improve visual density after recovery panel exists |
 | P2 | Unity optional viewer launcher | Waiting | Later launch built Unity viewer executable from WPF |
 
-Completed:
+완료:
 
 - Fixed the WPF `ProgressBar.Value` binding exception caused by read-only calculated ViewModel properties.
 - Added a goal record and work log explaining the MVVM binding rule.
@@ -628,31 +628,173 @@ Completed:
 
 ## 2026-07-03 Triage Update after Goal 052
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
-| P0 | WPF unreadable DataGrid header | Done | Keep explicit DataGrid styles |
-| P0 | WPF clipped load-port label | Done | Keep schematic labels inside visible bounds |
-| P1 | WPF HMI visual system R&D | Next | Define professional HMI typography, spacing, and color rules |
-| P1 | WPF alarm recovery procedure | Waiting | Add after visual system direction is agreed |
+| P0 | WPF DataGrid header 가독성 문제 | 완료 | 명시적인 DataGrid style 유지 |
+| P0 | WPF load-port label 잘림 | 완료 | schematic label을 visible bounds 안에 유지 |
+| P1 | WPF HMI visual system R&D | 다음 | 전문적인 HMI typography, spacing, color rule 정의 |
+| P1 | WPF alarm recovery procedure | 대기 | visual system 방향이 정리된 뒤 추가 |
 
-Completed:
+완료:
 
-- Fixed the immediate WPF UI readability defects found from the screenshot.
-- Added a work log explaining why default WPF control styles leaked into the dark HMI.
-- Reprioritized the next work from recovery-panel implementation to visual-system R&D.
+- Screenshot에서 확인된 WPF UI 가독성 문제를 즉시 수정했다.
+- 기본 WPF control style이 dark HMI에 섞여 들어온 이유를 작업 로그에 설명했다.
+- 다음 작업 우선순위를 recovery panel 구현에서 visual-system R&D로 조정했다.
 
 ## 2026-07-03 Triage Update after Goal 053
 
-| Priority | Item | Status | Next action |
+| 우선순위 | 항목 | 상태 | 다음 조치 |
 |---|---|---|---|
-| P1 | WPF HMI visual system | Done | Keep gray-base/color-reserved rules |
-| P1 | Instrument trend panel | Next | Add pressure/temp/film trend visibility |
-| P1 | WPF alarm recovery procedure | Waiting | Add after trend/overview hierarchy is cleaner |
-| P2 | Chart/gauge dependency decision | Waiting | Evaluate LiveCharts2 only when trend scope is concrete |
+| P1 | WPF HMI visual system | 완료 | gray-base/color-reserved rule 유지 |
+| P1 | Instrument trend panel | 다음 | pressure/temp/film trend 표시 추가 |
+| P1 | WPF alarm recovery procedure | 대기 | trend/overview hierarchy가 더 정리된 뒤 추가 |
+| P2 | Chart/gauge dependency decision | 대기 | trend scope가 구체화된 뒤 LiveCharts2 평가 |
 
-Completed:
+완료:
 
-- Applied gray-base HMI visual direction to WPF.
-- Reduced normal-operation color noise.
-- Added text/shape state encoding for valves, measurements, and alarm card.
-- Added R&D/design note for custom WPF tokens versus chart/gauge libraries.
+- WPF에 gray-base HMI visual direction을 적용했다.
+- 정상 운전 상태에서 불필요한 색상 노이즈를 줄였다.
+- 밸브, 계측값, 알람 카드에 text/shape 기반 상태 표현을 추가했다.
+- Custom WPF token과 chart/gauge library 선택 기준을 R&D/design note로 남겼다.
+
+## 2026-07-04 Triage Update after Goal 054
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P0 | WPF 리포트 / mock server demo 경로 | 완료 | 커밋 전 build/test/mock-server 검증 유지 |
+| P0 | 추적되지 않은 Unity PackageManagerSettings asset | 확인 필요 | 커밋 포함/무시/삭제 여부를 나중에 결정. 이번 goal에서는 건드리지 않음 |
+| P1 | WPF HMI 계측값 trend panel | 다음 | pressure/temp/film trend 표시 추가 |
+| P1 | WPF 버튼 클릭 자동화 | 대기 | 수동 WPF regression 위험이 커질 때만 추가 |
+| P2 | LiveCharts2 또는 chart dependency | 대기 | 단순 custom trend 범위가 구체화된 뒤 평가 |
+
+완료:
+
+- 전체 solution build 통과.
+- Core tests 통과.
+- WPF project build 통과.
+- Mock Server project build 통과.
+- Mock Server `GET /health` 통과.
+- Mock Server `POST /alarm-issue-report` 통과 및 수신 payload 파일 생성.
+- README가 WPF HMI + alarm guide + server outbox + mock server를 대표 공개 demo 흐름으로 보여주도록 정리됨.
+
+다음:
+
+- `목표 055: WPF HMI 계측값 Trend Panel` 진행.
+
+## 2026-07-04 Triage Update after Goal 055
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF HMI 계측값 trend panel | 완료 | 화면 밀도와 가독성을 직접 확인 |
+| P0 | 추적되지 않은 Unity PackageManagerSettings asset | 확인 필요 | 커밋 전 결정 |
+| P1 | WPF 수동 화면 검수 | 다음 | WPF를 전체화면으로 실행해 잘림/간격/trend 가독성 확인 |
+| P1 | 커밋 정리 | 다음 | 커밋 전 공개/비공개 파일 확인 |
+| P2 | Chart library 의존성 | 대기 | custom Polyline trend가 부족해질 때까지 보류 |
+
+완료:
+
+- Pressure, Temp, Film을 위한 WPF `RECENT TREND` panel 추가.
+- 단순 WPF `Polyline` sparkline 사용.
+- Trend 구현은 WPF에만 둠.
+- WPF build, Core tests, 전체 solution build, WPF startup smoke 통과.
+
+다음:
+
+- `목표 056: WPF HMI 수동 화면 검수와 커밋 정리` 진행.
+
+## 2026-07-05 Triage Update after Goal 056
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P0 | private-notes 공개 차단 | 완료 | `.gitignore`에 유지 |
+| P0 | Unity local 생성 folder ignore | 완료 | `Library/Temp/Obj/Logs/UserSettings` 유지 |
+| P0 | Unity PackageManagerSettings asset | 포함 후보 | 커밋 직전 파일 목록에서 한 번 더 확인 |
+| P1 | WPF 자동 screenshot visual QA | 막힘 | 사용자가 직접 WPF 화면 screenshot 제공 |
+| P1 | WPF trend panel spacing 조정 | 다음 | 실제 screenshot 기준으로 수정 |
+
+완료:
+
+- `.gitignore`에 개인 기록 폴더와 Unity local 생성 폴더를 추가했다.
+- `private-notes/`가 repo ignore 규칙으로 보호되는지 확인했다.
+- `PackageManagerSettings.asset`를 확인했고 project setting 성격으로 판단했다.
+- 전체 solution build, Core tests, `git diff --check`가 통과했다.
+
+다음:
+
+- `목표 057: WPF 실제 화면 확인 후 trend panel spacing 조정` 진행.
+
+## 2026-07-08 Triage Update after Goal 057
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P0 | WPF 읽기 전용 TextBox 바인딩 예외 | 완료 | 표시 전용 `TextBox.Text`는 `Mode=OneWay` 유지 |
+| P1 | WPF 하단 영역 잘림 | 다음 | 실제 screenshot 기준으로 row height/scroll/spacing 조정 |
+| P1 | WPF ComboBox dark theme | 다음 | selector와 dropdown 배경/글자색을 dark theme에 맞춤 |
+| P1 | WPF 한영 라벨 혼합 | 다음 | demo 용어는 판단해서 한국어/영어 기준 정리 |
+
+완료:
+
+- `LatestServerPayloadPreviewText` 바인딩 예외를 수정했다.
+- WPF build, 전체 solution build, Core tests가 통과했다.
+- 자세한 학습 메모는 공개 repo가 아닌 `private-notes/` 아래에 작성했다.
+
+다음:
+
+- `목표 058: WPF 실제 화면 기준 레이아웃/가독성 조정` 진행.
+
+## 2026-07-10 Triage Update after Goal 058
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF 오른쪽 패널 탭 구조 | 완료 | 조작/알람/로그 탭 구조 유지 |
+| P1 | 왼쪽 장비 schematic 고도화 | 다음 | cabinet, gas box, chamber, pump 연결 구조로 개선 |
+| P1 | 서버 전송 흐름 stepper UI | 대기 | report/server flow를 단계형 카드로 정리 |
+| P2 | 하단 table/trace console 밀도 조정 | 대기 | 왼쪽 schematic 개선 후 전체 균형 확인 |
+
+완료:
+
+- WPF 오른쪽 패널에 `TabControl`을 적용했다.
+- 운전 Overview, 알람/리포트, 작업 로그를 탭으로 분리했다.
+- WPF build, 전체 solution build, Core tests가 통과했다.
+
+다음:
+
+- `목표 059: 왼쪽 장비 schematic 고도화` 진행.
+
+## 2026-07-10 Triage Update after Goal 059
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 왼쪽 장비 schematic 고도화 | 완료 | 실제 화면 screenshot 기준으로 미세 조정 |
+| P1 | 알람/리포트/서버 stepper UI | 다음 | 알람 대응 흐름을 단계형 카드로 정리 |
+| P1 | fault별 line 강조 | 대기 | GAS-301 등 fault code별 문제 라인을 강조 |
+| P2 | active flow animation | 대기 | WPF shape animation은 필요성이 확인된 뒤 진행 |
+
+완료:
+
+- 왼쪽 장비 schematic을 module layout으로 재구성했다.
+- chamber 전체 red fill을 줄이고 flow/outline 중심 알람 표현으로 바꿨다.
+- WPF Release build, 전체 solution Release build, Core tests가 통과했다.
+
+다음:
+
+- `목표 060: 알람/리포트/서버 전송 stepper UI` 진행.
+
+## 2026-07-10 Triage Update after Goal 060
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 알람/리포트/서버 stepper UI | 완료 | 실제 화면 screenshot 기준으로 크기/간격 조정 |
+| P1 | Stepper와 schematic visual QA | 다음 | 글자 잘림, scroll 위치, 좌우 균형 확인 |
+| P1 | Mock Server online/offline 표시 | 대기 | health check 필요성이 확인되면 추가 |
+| P2 | fault별 workflow 강조 | 대기 | fault code별 문제 단계 강조 |
+
+완료:
+
+- 알람/리포트 탭에 6단계 workflow stepper를 추가했다.
+- 기존 report/server 기능은 유지했다.
+- WPF Release build, 전체 solution Release build, Core tests가 통과했다.
+
+다음:
+
+- `목표 061: 실제 화면 기준 stepper와 schematic 시각 QA` 진행.

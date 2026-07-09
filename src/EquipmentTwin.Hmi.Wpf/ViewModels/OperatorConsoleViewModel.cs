@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using EquipmentTwin.Core;
+using EquipmentTwin.Core.Alarms;
 using EquipmentTwin.Core.Processes;
 using EquipmentTwin.Hmi.Wpf.Models;
 using EquipmentTwin.Hmi.Wpf.Services;
@@ -13,6 +15,11 @@ namespace EquipmentTwin.Hmi.Wpf.ViewModels;
 
 public sealed class OperatorConsoleViewModel : ObservableObject
 {
+    private const int MaxTraceEntries = 80;
+    private const int MaxServerPayloadPreviewLength = 1800;
+    private const double TrendWidth = 170;
+    private const double TrendHeight = 30;
+
     private static readonly Brush BackgroundBrush = Brush("#0B0F14");
     private static readonly Brush SurfaceBrush = Brush("#151C24");
     private static readonly Brush SurfaceRaisedBrush = Brush("#1D2733");
@@ -27,14 +34,28 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     private static readonly Brush PurgeBrush = Brush("#31D86B");
 
     private readonly MolyAldRecipeService recipeService = new();
+    private readonly AlarmResponseGuideService alarmGuideService = new();
+    private readonly AlarmIssueReportExportService issueReportExportService = new();
+    private readonly AlarmIssueReportOutboxService issueReportOutboxService = new();
+    private readonly MockServerPayloadSender mockServerPayloadSender = new();
     private readonly MolyAldRunner runner = new(new ManualClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero)));
     private readonly DispatcherTimer playbackTimer;
+    private AlarmResponseGuideCatalog? alarmGuideCatalog;
+    private AlarmResponseGuide? activeAlarmGuide;
+    private AlarmGuideChoiceRowViewModel? selectedAlarmGuideChoice;
     private MolyAldRecipe? recipe;
     private MolyAldTimelineDocument? timeline;
     private int currentStepIndex;
     private bool isRunning;
     private bool isAlarmActive;
+    private bool useKorean;
     private string selectedFaultScenario = string.Empty;
+    private string? lastIssueReportPath;
+    private string? lastServerOutboxPath;
+    private string? lastServerPayloadPreview;
+    private string? lastMockServerSendStatus;
+    private bool lastMockServerSendSucceeded;
+    private bool isSendingServerPayload;
 
     public OperatorConsoleViewModel()
     {
@@ -44,6 +65,14 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         FaultReplayCommand = new RelayCommand(FaultReplay);
         StepForwardCommand = new RelayCommand(StepForward);
         OpenUnityViewerCommand = new RelayCommand(OpenUnityViewer);
+        ExportIssueReportCommand = new RelayCommand(ExportIssueReport);
+        QueueIssueReportCommand = new RelayCommand(QueueIssueReport);
+        OpenReportFolderCommand = new RelayCommand(OpenReportFolder);
+        OpenLatestReportCommand = new RelayCommand(OpenLatestReport);
+        OpenServerOutboxFolderCommand = new RelayCommand(OpenServerOutboxFolder);
+        OpenLatestServerPayloadCommand = new RelayCommand(OpenLatestServerPayload);
+        SendLatestServerPayloadCommand = new RelayCommand(SendLatestServerPayload);
+        ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
 
         playbackTimer = new DispatcherTimer
         {
@@ -51,6 +80,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         };
         playbackTimer.Tick += (_, _) => StepForwardFromTimer();
 
+        Trace("VM", "OperatorConsoleViewModel.ctor()");
         LoadRecipeAndTimeline();
     }
 
@@ -58,7 +88,17 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public ObservableCollection<StepRowViewModel> Steps { get; } = new();
 
+    public ObservableCollection<InstrumentTrendRowViewModel> InstrumentTrends { get; } = new();
+
     public ObservableCollection<OperatorLogEntry> OperatorLog { get; } = new();
+
+    public ObservableCollection<EngineeringTraceEntry> EngineeringTrace { get; } = new();
+
+    public ObservableCollection<AlarmGuideCheckRowViewModel> AlarmGuideChecks { get; } = new();
+
+    public ObservableCollection<AlarmGuideChoiceRowViewModel> AlarmGuideChoices { get; } = new();
+
+    public ObservableCollection<string> AlarmGuideEscalationConditions { get; } = new();
 
     public ICommand StartCommand { get; }
 
@@ -71,6 +111,22 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     public ICommand StepForwardCommand { get; }
 
     public ICommand OpenUnityViewerCommand { get; }
+
+    public ICommand ExportIssueReportCommand { get; }
+
+    public ICommand QueueIssueReportCommand { get; }
+
+    public ICommand OpenReportFolderCommand { get; }
+
+    public ICommand OpenLatestReportCommand { get; }
+
+    public ICommand OpenServerOutboxFolderCommand { get; }
+
+    public ICommand OpenLatestServerPayloadCommand { get; }
+
+    public ICommand SendLatestServerPayloadCommand { get; }
+
+    public ICommand ToggleLanguageCommand { get; }
 
     public string SelectedFaultScenario
     {
@@ -102,7 +158,113 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public string Title => "MOLY ALD WPF HMI";
 
-    public string Subtitle => "Main operator console | Core-driven synthetic public-reference process";
+    public string Subtitle => L(
+        "Main operator console | Core-driven synthetic public-reference process",
+        "메인 오퍼레이터 콘솔 | Core 기반 synthetic public-reference process");
+
+    public string LanguageToggleText => useKorean ? "EN" : "한국어";
+
+    public string OperationsTabHeader => L("OPERATE", "공정 운전");
+
+    public string AlarmReportTabHeader => L("ALARM / REPORT", "알람/리포트");
+
+    public string OperatorLogTabHeader => L("LOG", "작업 로그");
+
+    public string SchematicTitle => L(
+        "Synthetic Moly ALD — Process Schematic",
+        "Synthetic Moly ALD — 공정 Schematic");
+
+    public string SchematicSubtitle => L(
+        "public-reference HMI | not vendor CAD or process copy",
+        "공개 자료 기반 HMI | vendor CAD/process copy 아님");
+
+    public string ProcessTimelineLabel => L("PROCESS TIMELINE", "공정 Timeline");
+
+    public string StartButtonText => "START";
+
+    public string StopButtonText => "STOP";
+
+    public string StepButtonText => "STEP";
+
+    public string FaultReplayButtonText => L("FAULT REPLAY", "FAULT 재현");
+
+    public string ResetButtonText => "RESET";
+
+    public string FaultScenarioSelectorLabel => L("FAULT SCENARIO SELECTOR", "FAULT 시나리오 선택");
+
+    public string CurrentStepLabel => L("CURRENT STEP", "현재 STEP");
+
+    public string RecipeCycleLabel => "RECIPE / CYCLE";
+
+    public string ProcessInstrumentsLabel => L("PROCESS INSTRUMENTS", "공정 계측값");
+
+    public string InstrumentTrendLabel => L("RECENT TREND", "최근 Trend");
+
+    public string PressureLabel => "Pressure";
+
+    public string TempLabel => "Temp";
+
+    public string FilmLabel => "Film";
+
+    public string AlarmPriorityLabel => L("ALARM PRIORITY", "알람 우선순위");
+
+    public string AlarmResponseGuideLabel => L("ALARM RESPONSE GUIDE", "알람 대응 가이드");
+
+    public string ResponseChoicesLabel => L("RESPONSE CHOICES", "대응 선택지");
+
+    public string ExportIssueReportButtonText => L("EXPORT ISSUE REPORT", "이슈 리포트 저장");
+
+    public string QueueReportButtonText => L("QUEUE REPORT TO SERVER", "서버 전송 대기열 저장");
+
+    public string LatestIssueReportLabel => L("LATEST ISSUE REPORT", "최신 이슈 리포트");
+
+    public string LatestIssueReportPathText => string.IsNullOrWhiteSpace(lastIssueReportPath)
+        ? L("No exported issue report yet", "아직 저장된 이슈 리포트 없음")
+        : lastIssueReportPath;
+
+    public string OpenReportFolderButtonText => L("OPEN REPORT FOLDER", "리포트 폴더 열기");
+
+    public string OpenLatestReportButtonText => L("OPEN LATEST REPORT", "최신 리포트 열기");
+
+    public string LatestServerPayloadLabel => L("LATEST SERVER OUTBOX PAYLOAD", "최신 서버 대기열 payload");
+
+    public string LatestServerPayloadPathText => string.IsNullOrWhiteSpace(lastServerOutboxPath)
+        ? L("No queued server payload yet", "아직 서버 대기열 payload 없음")
+        : lastServerOutboxPath;
+
+    public string ServerPayloadPreviewLabel => L("PAYLOAD PREVIEW", "payload 미리보기");
+
+    public string LatestServerPayloadPreviewText => string.IsNullOrWhiteSpace(lastServerPayloadPreview)
+        ? L(
+            "Queue a server payload to preview the JSON envelope here.",
+            "서버 payload를 저장하면 여기에 JSON envelope 미리보기가 표시됩니다.")
+        : lastServerPayloadPreview;
+
+    public string OpenServerOutboxFolderButtonText => L("OPEN OUTBOX FOLDER", "대기열 폴더 열기");
+
+    public string OpenLatestServerPayloadButtonText => L("OPEN LATEST PAYLOAD", "최신 payload 열기");
+
+    public string SendLatestServerPayloadButtonText => isSendingServerPayload
+        ? L("SENDING...", "전송 중...")
+        : L("SEND TO MOCK SERVER", "Mock Server로 전송");
+
+    public string LatestMockServerSendStatus => string.IsNullOrWhiteSpace(lastMockServerSendStatus)
+        ? L(
+            "Latest mock-server send: not sent yet",
+            "최근 mock server 전송: 아직 없음")
+        : lastMockServerSendStatus;
+
+    public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "Escalation 조건");
+
+    public string OperatorActionLogLabel => L("OPERATOR ACTION LOG", "Operator Action Log");
+
+    public string OpenUnityViewerButtonText => L("Open optional Unity viewer folder", "Unity viewer 폴더 열기");
+
+    public string TimelineDebugTableLabel => L(
+        "TIMELINE DEBUG TABLE — Core-generated process steps",
+        "Timeline Debug Table — Core 생성 공정 Step");
+
+    public string EngineeringTraceConsoleLabel => "ENGINEERING TRACE CONSOLE";
 
     public string RunStateText
     {
@@ -110,16 +272,20 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             if (isAlarmActive)
             {
-                return "HELD | OPERATOR ACTION REQUIRED";
+                return L("HELD | OPERATOR ACTION REQUIRED", "HELD | 오퍼레이터 조치 필요");
             }
 
-            return isRunning ? "RUNNING | INTERLOCK OK" : "PAUSED | READY";
+            return isRunning
+                ? L("RUNNING | INTERLOCK OK", "RUNNING | Interlock OK")
+                : L("PAUSED | READY", "PAUSED | 준비");
         }
     }
 
     public Brush RunStateBrush => isAlarmActive ? AlarmBrush : isRunning ? SuccessBrush : WarningBrush;
 
-    public string CurrentStepName => CurrentStep == null ? "-" : StepRowViewModel.DisplayStepName(CurrentStep.Step);
+    public string CurrentStepName => CurrentStep == null
+        ? "-"
+        : LocalizeStepName(StepRowViewModel.DisplayStepName(CurrentStep.Step));
 
     public string RecipeCycleText
     {
@@ -165,21 +331,25 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public Brush AlarmIconBrush => isAlarmActive ? WarningBrush : SuccessBrush;
 
-    public string AlarmTitle => isAlarmActive ? "ALARM ACTIVE" : "NO ALARM";
+    public string AlarmTitle => isAlarmActive
+        ? L("ALARM ACTIVE", "ALARM 발생")
+        : L("NO ALARM", "알람 없음");
 
     public string AlarmDetail => isAlarmActive && CurrentStep != null
-        ? $"{SelectedFaultScenario} | {FaultArea(CurrentStep.Step)} replay"
-        : "Interlocks nominal";
+        ? L(
+            $"{SelectedFaultScenario} | {FaultArea(CurrentStep.Step)} replay",
+            $"{SelectedFaultScenario} | {FaultArea(CurrentStep.Step)} 재현")
+        : L("Interlocks nominal", "Interlock 정상");
 
     public string AlarmCode => isAlarmActive && CurrentStep != null
-        ? $"PRI 1 | CODE {FaultCode(CurrentStep.Step)}"
+        ? $"PRI 1 | CODE {ActiveAlarmCode}"
         : "PRI 0 | CODE ----";
 
     public Brush AlarmCodeBrush => WarningBrush;
 
     public Brush AlarmCardBrush => isAlarmActive ? AlarmBrush : Brush("#173D34");
 
-    public Brush ChamberBrush => isAlarmActive ? Brush("#9A3036") : Brush("#12212C");
+    public Brush ChamberBrush => isAlarmActive ? Brush("#172430") : Brush("#12212C");
 
     public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? PrecursorBrush : SurfaceRaisedBrush;
 
@@ -199,25 +369,25 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             if (isAlarmActive)
             {
-                return "FLOW: held by alarm";
+                return L("FLOW: held by alarm", "FLOW: 알람으로 Hold");
             }
 
             if (CurrentStep?.Valves.MetalPrecursor == true)
             {
-                return "FLOW: precursor pulse -> chamber";
+                return L("FLOW: precursor pulse -> chamber", "FLOW: Precursor 주입 -> Chamber");
             }
 
             if (CurrentStep?.Valves.Reactant == true)
             {
-                return "FLOW: reactant pulse -> chamber";
+                return L("FLOW: reactant pulse -> chamber", "FLOW: Reactant 주입 -> Chamber");
             }
 
             if (CurrentStep?.Valves.Purge == true)
             {
-                return "FLOW: purge N2 -> exhaust";
+                return L("FLOW: purge N2 -> exhaust", "FLOW: Purge N2 -> Exhaust");
             }
 
-            return "FLOW: idle / closed";
+            return L("FLOW: idle / closed", "FLOW: 대기 / 닫힘");
         }
     }
 
@@ -254,12 +424,188 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         : ClampPercent((currentStepIndex + 1.0) / timeline.Steps.Count * 100.0);
 
     public string SelectorStatus => isAlarmActive
-        ? "locked during alarm | press RESET before changing scenario"
-        : "choose scenario, then press FAULT REPLAY";
+        ? L(
+            "locked during alarm | press RESET before changing scenario",
+            "알람 중에는 잠김 | RESET 후 시나리오 변경 가능")
+        : L(
+            "choose scenario, then press FAULT REPLAY",
+            "시나리오 선택 후 FAULT 재현 실행");
 
     public string TimelineSource => isAlarmActive
-        ? $"fault replay JSON: {SelectedFaultScenario}"
-        : "normal process timeline";
+        ? L($"fault replay JSON: {SelectedFaultScenario}", $"fault replay JSON: {SelectedFaultScenario}")
+        : L("normal process timeline", "정상 공정 Timeline");
+
+    public string EngineeringTraceStatus => L(
+        $"{EngineeringTrace.Count}/{MaxTraceEntries} trace entries | latest first",
+        $"{EngineeringTrace.Count}/{MaxTraceEntries} trace | 최신순");
+
+    public string AlarmGuideTitle => activeAlarmGuide == null
+        ? L("TROUBLESHOOTING GUIDE", "트러블슈팅 가이드")
+        : $"{activeAlarmGuide.AlarmCode} | {LocalizeGuideText(activeAlarmGuide.Title)}";
+
+    public string AlarmGuideSeverity => activeAlarmGuide?.Severity.ToString().ToUpperInvariant() ?? "STANDBY";
+
+    public Brush AlarmGuideSeverityBrush => activeAlarmGuide?.Severity switch
+    {
+        EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Critical => AlarmBrush,
+        EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Warning => WarningBrush,
+        EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Info => PrimaryBrush,
+        _ => TextMutedBrush
+    };
+
+    public string AlarmGuideSummary => activeAlarmGuide == null
+        ? L(
+            "Run FAULT REPLAY to load the operator troubleshooting guide for the active alarm.",
+            "FAULT 재현을 실행하면 현재 알람에 맞는 오퍼레이터 대응 가이드가 로드됩니다.")
+        : LocalizeGuideText(activeAlarmGuide.Summary);
+
+    public string AlarmGuideStatus => activeAlarmGuide == null
+        ? L("No active alarm guide", "활성 알람 가이드 없음")
+        : L(
+            $"{AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count} checks complete | {AlarmGuideChoices.Count} response choices",
+            $"{AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count} checks 완료 | 대응 선택지 {AlarmGuideChoices.Count}개");
+
+    public string SelectedAlarmGuideChoiceText => selectedAlarmGuideChoice == null
+        ? L("Selected response: none", "선택한 대응: 없음")
+        : L(
+            $"Selected response: {selectedAlarmGuideChoice.Id} | {selectedAlarmGuideChoice.Label}",
+            $"선택한 대응: {selectedAlarmGuideChoice.Id} | {selectedAlarmGuideChoice.Label}");
+
+    public string IssueReportStatus => activeAlarmGuide == null
+        ? L(
+            "Run FAULT REPLAY before exporting an issue report",
+            "이슈 리포트 저장 전 FAULT 재현을 먼저 실행하세요")
+        : L(
+            "Exports alarm, checklist, selected response, step snapshot, and engineering trace",
+            "알람, 체크리스트, 선택 대응, step snapshot, engineering trace를 저장합니다");
+
+    public string ServerOutboxStatus => activeAlarmGuide == null
+        ? L(
+            "Run FAULT REPLAY before queueing a server payload",
+            "서버 payload 저장 전 FAULT 재현을 먼저 실행하세요")
+        : L(
+            "Queues the same issue report payload to the local server outbox",
+            "같은 이슈 리포트 payload를 local server outbox에 저장합니다");
+
+    public string WorkflowStepperLabel => L("ALARM WORKFLOW", "알람 처리 흐름");
+
+    public string WorkflowAlarmStepTitle => L("1 ALARM", "1 알람");
+
+    public string WorkflowChecklistStepTitle => L("2 CHECK", "2 체크");
+
+    public string WorkflowResponseStepTitle => L("3 RESPONSE", "3 대응");
+
+    public string WorkflowReportStepTitle => L("4 REPORT", "4 리포트");
+
+    public string WorkflowQueueStepTitle => L("5 QUEUE", "5 대기열");
+
+    public string WorkflowSendStepTitle => L("6 SEND", "6 전송");
+
+    public string WorkflowAlarmStepStatus => activeAlarmGuide == null
+        ? L("WAIT", "대기")
+        : L("LOADED", "로드됨");
+
+    public string WorkflowAlarmStepDetail => activeAlarmGuide == null
+        ? L("Run FAULT REPLAY", "FAULT 재현 실행")
+        : ActiveAlarmCode;
+
+    public Brush WorkflowAlarmStepBrush => activeAlarmGuide == null ? TextMutedBrush : AlarmBrush;
+
+    public string WorkflowChecklistStepStatus
+    {
+        get
+        {
+            if (activeAlarmGuide == null)
+            {
+                return L("WAIT", "대기");
+            }
+
+            return IsWorkflowChecklistComplete
+                ? L("DONE", "완료")
+                : L("ACTIVE", "진행");
+        }
+    }
+
+    public string WorkflowChecklistStepDetail => activeAlarmGuide == null
+        ? L("No checklist", "체크리스트 없음")
+        : $"{AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count}";
+
+    public Brush WorkflowChecklistStepBrush => WorkflowStepBrush(IsWorkflowChecklistComplete, activeAlarmGuide != null);
+
+    public string WorkflowResponseStepStatus => selectedAlarmGuideChoice == null
+        ? L("WAIT", "대기")
+        : L("SELECTED", "선택됨");
+
+    public string WorkflowResponseStepDetail => selectedAlarmGuideChoice == null
+        ? L("Choose response", "대응 선택")
+        : selectedAlarmGuideChoice.Id;
+
+    public Brush WorkflowResponseStepBrush => WorkflowStepBrush(selectedAlarmGuideChoice != null, IsWorkflowChecklistComplete);
+
+    public string WorkflowReportStepStatus => string.IsNullOrWhiteSpace(lastIssueReportPath)
+        ? L("WAIT", "대기")
+        : L("SAVED", "저장됨");
+
+    public string WorkflowReportStepDetail => string.IsNullOrWhiteSpace(lastIssueReportPath)
+        ? L("Export issue report", "이슈 리포트 저장")
+        : Path.GetFileName(lastIssueReportPath);
+
+    public Brush WorkflowReportStepBrush => WorkflowStepBrush(!string.IsNullOrWhiteSpace(lastIssueReportPath), selectedAlarmGuideChoice != null);
+
+    public string WorkflowQueueStepStatus => string.IsNullOrWhiteSpace(lastServerOutboxPath)
+        ? L("WAIT", "대기")
+        : L("QUEUED", "저장됨");
+
+    public string WorkflowQueueStepDetail => string.IsNullOrWhiteSpace(lastServerOutboxPath)
+        ? L("Queue server payload", "서버 대기열 저장")
+        : Path.GetFileName(lastServerOutboxPath);
+
+    public Brush WorkflowQueueStepBrush => WorkflowStepBrush(!string.IsNullOrWhiteSpace(lastServerOutboxPath), !string.IsNullOrWhiteSpace(lastIssueReportPath));
+
+    public string WorkflowSendStepStatus
+    {
+        get
+        {
+            if (lastMockServerSendSucceeded)
+            {
+                return L("HTTP OK", "전송 성공");
+            }
+
+            if (isSendingServerPayload)
+            {
+                return L("SENDING", "전송 중");
+            }
+
+            if (!string.IsNullOrWhiteSpace(lastMockServerSendStatus))
+            {
+                return L("CHECK", "확인 필요");
+            }
+
+            return L("WAIT", "대기");
+        }
+    }
+
+    public string WorkflowSendStepDetail => lastMockServerSendSucceeded
+        ? L("Mock server received", "Mock Server 수신")
+        : string.IsNullOrWhiteSpace(lastServerOutboxPath)
+            ? L("Queue payload first", "payload 먼저 저장")
+            : L("Send to mock server", "Mock Server로 전송");
+
+    public Brush WorkflowSendStepBrush => lastMockServerSendSucceeded
+        ? SuccessBrush
+        : isSendingServerPayload || !string.IsNullOrWhiteSpace(lastMockServerSendStatus)
+            ? WarningBrush
+            : TextMutedBrush;
+
+    public Brush AlarmGuideCardBrush => activeAlarmGuide == null ? SurfaceBrush : SurfaceRaisedBrush;
+
+    private bool IsWorkflowChecklistComplete =>
+        activeAlarmGuide != null &&
+        AlarmGuideChecks.Count > 0 &&
+        AlarmGuideChecks.All(check => !check.Required || check.IsChecked);
+
+    private string ActiveAlarmCode => activeAlarmGuide?.AlarmCode
+        ?? (CurrentStep == null ? "----" : FaultCode(CurrentStep.Step));
 
     private MolyAldTimelineStep? CurrentStep
     {
@@ -278,7 +624,11 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         try
         {
+            Trace("LOAD", "LoadRecipeAndTimeline()");
             recipe = recipeService.LoadRecipe();
+            Trace("LOAD", $"MolyAldRecipeService.LoadRecipe() recipe={recipe.Name} faults={recipe.FaultScenarios.Count}");
+            alarmGuideCatalog = alarmGuideService.LoadCatalog();
+            Trace("LOAD", $"AlarmResponseGuideService.LoadCatalog() guides={alarmGuideCatalog.Guides.Count}");
             FaultScenarios.Clear();
             foreach (var fault in recipe.FaultScenarios)
             {
@@ -293,6 +643,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
             LoadNormalTimeline();
             AddLog("SYSTEM", "WPF HMI ready");
+            AddLog("GUIDE", $"{alarmGuideCatalog.Guides.Count} alarm response guides loaded");
         }
         catch (Exception ex)
         {
@@ -302,9 +653,11 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     private void Start()
     {
+        Trace("CALL", "Start()");
         if (recipe == null)
         {
             AddLog("START BLOCKED", "recipe not loaded");
+            Trace("BLOCK", "Start() blocked: recipe not loaded");
             return;
         }
 
@@ -313,59 +666,76 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         isRunning = true;
         playbackTimer.Start();
         AddLog("START", "normal process running");
+        Trace("STATE", "normal playback started");
         RefreshComputedProperties();
     }
 
     private void Pause()
     {
+        Trace("CALL", "Pause()");
         isRunning = false;
         playbackTimer.Stop();
         AddLog("STOP", "timeline held by operator");
+        Trace("STATE", $"playback paused at index={currentStepIndex}");
         RefreshComputedProperties();
     }
 
     private void Reset()
     {
+        Trace("CALL", "Reset()");
         LoadNormalTimeline();
         currentStepIndex = 0;
         isAlarmActive = false;
         isRunning = false;
         playbackTimer.Stop();
         AddLog("RESET", "fault cleared, returned to first step");
+        Trace("STATE", "alarm guide and playback state reset");
         RefreshComputedProperties();
     }
 
     private void FaultReplay()
     {
+        Trace("CALL", $"FaultReplay() scenario={selectedFaultScenario}");
         if (recipe == null)
         {
             AddLog("FAULT BLOCKED", "recipe not loaded");
+            Trace("BLOCK", "FaultReplay() blocked: recipe not loaded");
             return;
         }
 
         try
         {
+            ClearReportWorkflowState();
+            RefreshIssueReportProperties();
+            RefreshServerOutboxProperties();
             var result = runner.Run(recipe, selectedFaultScenario);
+            Trace("CORE", $"MolyAldRunner.Run(recipe, fault={selectedFaultScenario}) success={result.Success} final={result.FinalStep}");
             timeline = MolyAldTimelineDocument.FromRunResult(result);
+            Trace("CORE", $"MolyAldTimelineDocument.FromRunResult() steps={timeline.Steps.Count}");
             currentStepIndex = FindFirstFailedStepIndex(timeline);
+            TraceCurrentStep("FAULT STEP");
             isAlarmActive = true;
             isRunning = false;
             playbackTimer.Stop();
             RefreshStepRows();
+            LoadActiveAlarmGuide(result);
             AddLog("FAULT REPLAY", $"{selectedFaultScenario} replay {CurrentStepName}");
             RefreshComputedProperties();
         }
         catch (Exception ex)
         {
             AddLog("FAULT ERROR", ex.Message);
+            Trace("ERROR", $"FaultReplay() {ex.GetType().Name}: {ex.Message}");
         }
     }
 
     private void StepForward()
     {
+        Trace("CALL", "StepForward()");
         if (isAlarmActive)
         {
             AddLog("STEP BLOCKED", "reset required during active alarm");
+            Trace("BLOCK", "StepForward() blocked: active alarm requires reset");
             return;
         }
 
@@ -376,18 +746,21 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         if (timeline == null || timeline.Steps.Count == 0)
         {
+            Trace("BLOCK", "StepForwardFromTimer() ignored: no timeline");
             return;
         }
 
         if (currentStepIndex < timeline.Steps.Count - 1)
         {
             currentStepIndex++;
+            TraceCurrentStep("STEP");
         }
         else
         {
             isRunning = false;
             playbackTimer.Stop();
             AddLog("COMPLETE", "normal process sequence complete");
+            Trace("STATE", "timeline complete; playback stopped");
         }
 
         RefreshComputedProperties();
@@ -399,6 +772,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         if (unityProjectPath == null)
         {
             AddLog("UNITY", "optional viewer folder not found");
+            Trace("UNITY", "optional viewer folder not found");
             return;
         }
 
@@ -408,6 +782,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             UseShellExecute = true
         });
         AddLog("UNITY", "optional 3D viewer folder opened");
+        Trace("UNITY", $"Process.Start(folder={unityProjectPath})");
     }
 
     private void LoadNormalTimeline()
@@ -418,9 +793,16 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
 
         var result = runner.Run(recipe);
+        Trace("CORE", $"MolyAldRunner.Run(recipe) success={result.Success} steps={result.Steps.Count}");
         timeline = MolyAldTimelineDocument.FromRunResult(result);
+        Trace("CORE", $"MolyAldTimelineDocument.FromRunResult() source={timeline.Source}");
         currentStepIndex = 0;
+        ClearActiveAlarmGuide();
+        ClearReportWorkflowState();
         RefreshStepRows();
+        RefreshIssueReportProperties();
+        RefreshServerOutboxProperties();
+        TraceCurrentStep("LOAD STEP");
         RefreshComputedProperties();
     }
 
@@ -438,6 +820,98 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
     }
 
+    private void RefreshInstrumentTrends()
+    {
+        InstrumentTrends.Clear();
+        if (timeline == null || timeline.Steps.Count == 0)
+        {
+            return;
+        }
+
+        var stepCount = Math.Clamp(currentStepIndex + 1, 1, timeline.Steps.Count);
+        var visibleSteps = timeline.Steps.Take(stepCount).ToArray();
+
+        InstrumentTrends.Add(CreateInstrumentTrendRow(
+            "Pressure",
+            PressureValue,
+            visibleSteps.Select(step => step.ChamberPressureMtorr),
+            value => $"{value:0} mTorr",
+            PrimaryBrush));
+
+        InstrumentTrends.Add(CreateInstrumentTrendRow(
+            "Temp",
+            TemperatureValue,
+            visibleSteps.Select(step => step.WaferTemperatureC),
+            value => $"{value:0} C",
+            WarningBrush));
+
+        InstrumentTrends.Add(CreateInstrumentTrendRow(
+            "Film",
+            FilmValue,
+            visibleSteps.Select(step => step.EstimatedThicknessAngstrom),
+            value => $"{value:0.0} A",
+            SuccessBrush));
+    }
+
+    private static InstrumentTrendRowViewModel CreateInstrumentTrendRow(
+        string label,
+        string currentValue,
+        IEnumerable<double> values,
+        Func<double, string> formatValue,
+        Brush trendBrush)
+    {
+        var valueList = values.ToArray();
+        var rangeText = valueList.Length == 0
+            ? "-"
+            : $"{formatValue(valueList.Min())} - {formatValue(valueList.Max())}";
+
+        return new InstrumentTrendRowViewModel(
+            label,
+            currentValue,
+            rangeText,
+            CreateTrendPoints(valueList),
+            trendBrush);
+    }
+
+    private static PointCollection CreateTrendPoints(IReadOnlyList<double> values)
+    {
+        var points = new PointCollection();
+        if (values.Count == 0)
+        {
+            return points;
+        }
+
+        var min = values.Min();
+        var max = values.Max();
+        if (Math.Abs(max - min) < 0.0001)
+        {
+            min -= 1;
+            max += 1;
+        }
+
+        if (values.Count == 1)
+        {
+            var y = TrendY(values[0], min, max);
+            points.Add(new Point(0, y));
+            points.Add(new Point(TrendWidth, y));
+            return points;
+        }
+
+        for (var index = 0; index < values.Count; index++)
+        {
+            var x = index / (values.Count - 1.0) * TrendWidth;
+            points.Add(new Point(x, TrendY(values[index], min, max)));
+        }
+
+        return points;
+    }
+
+    private static double TrendY(double value, double min, double max)
+    {
+        var normalized = (value - min) / (max - min);
+        return TrendHeight - Math.Clamp(normalized, 0, 1) * TrendHeight;
+    }
+
     private void AddLog(string action, string detail)
     {
         OperatorLog.Insert(0, new OperatorLogEntry(action, detail));
@@ -445,6 +919,592 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             OperatorLog.RemoveAt(OperatorLog.Count - 1);
         }
+    }
+
+    private void LoadActiveAlarmGuide(MolyAldRunResult result)
+    {
+        ClearActiveAlarmGuide();
+
+        if (result.FaultScenario == null)
+        {
+            Trace("GUIDE", "LoadActiveAlarmGuide() skipped: no fault scenario");
+            return;
+        }
+
+        if (alarmGuideCatalog == null)
+        {
+            AddLog("GUIDE ERROR", "alarm guide catalog not loaded");
+            Trace("GUIDE", "LoadActiveAlarmGuide() failed: catalog not loaded");
+            return;
+        }
+
+        var guideCode = MolyAldAlarmGuideCodes.FromFaultKind(result.FaultScenario.Kind);
+        Trace("GUIDE", $"MolyAldAlarmGuideCodes.FromFaultKind({result.FaultScenario.Kind}) => {guideCode}");
+        activeAlarmGuide = alarmGuideCatalog.FindGuide(guideCode);
+        Trace("GUIDE", $"AlarmResponseGuideCatalog.FindGuide({guideCode}) title={activeAlarmGuide.Title}");
+
+        PopulateActiveAlarmGuideRows(Array.Empty<string>(), null);
+        AddLog("GUIDE", $"{activeAlarmGuide.AlarmCode} guide loaded");
+    }
+
+    private void PopulateActiveAlarmGuideRows(IReadOnlyCollection<string> checkedIds, string? selectedChoiceId)
+    {
+        AlarmGuideChecks.Clear();
+        AlarmGuideChoices.Clear();
+        AlarmGuideEscalationConditions.Clear();
+        selectedAlarmGuideChoice = null;
+
+        if (activeAlarmGuide == null)
+        {
+            return;
+        }
+
+        foreach (var check in activeAlarmGuide.Checks)
+        {
+            AlarmGuideChecks.Add(new AlarmGuideCheckRowViewModel(
+                check,
+                OnAlarmGuideCheckChanged,
+                LocalizeGuideText(check.Label),
+                useKorean ? (check.Required ? "필수" : "선택") : null,
+                checkedIds.Contains(check.Id)));
+        }
+
+        foreach (var choice in activeAlarmGuide.Choices)
+        {
+            var row = new AlarmGuideChoiceRowViewModel(
+                choice,
+                OnAlarmGuideChoiceSelected,
+                LocalizeGuideText(choice.Label),
+                LocalizeGuideText(choice.NextAction),
+                useKorean ? (choice.RequiresEngineer ? "엔지니어" : "작업자") : null);
+            AlarmGuideChoices.Add(row);
+
+            if (string.Equals(choice.Id, selectedChoiceId, StringComparison.OrdinalIgnoreCase))
+            {
+                selectedAlarmGuideChoice = row;
+            }
+        }
+
+        foreach (var condition in activeAlarmGuide.EscalationConditions)
+        {
+            AlarmGuideEscalationConditions.Add(LocalizeGuideText(condition));
+        }
+    }
+
+    private void ClearActiveAlarmGuide()
+    {
+        activeAlarmGuide = null;
+        selectedAlarmGuideChoice = null;
+        AlarmGuideChecks.Clear();
+        AlarmGuideChoices.Clear();
+        AlarmGuideEscalationConditions.Clear();
+    }
+
+    private void ClearReportWorkflowState()
+    {
+        lastIssueReportPath = null;
+        lastServerOutboxPath = null;
+        lastServerPayloadPreview = null;
+        lastMockServerSendStatus = null;
+        lastMockServerSendSucceeded = false;
+    }
+
+    private void OnAlarmGuideCheckChanged(AlarmGuideCheckRowViewModel check, bool isChecked)
+    {
+        var state = isChecked ? "confirmed" : "cleared";
+        AddLog("CHECK", $"{check.Id} {state}");
+        Trace("CHECK", $"{check.Id} {state} required={check.Required}");
+        RefreshAlarmGuideProperties();
+    }
+
+    private void OnAlarmGuideChoiceSelected(AlarmGuideChoiceRowViewModel choice)
+    {
+        selectedAlarmGuideChoice = choice;
+        AddLog(choice.RequiresEngineer ? "ESCALATE" : "ACTION", $"{choice.Id}: {choice.NextAction}");
+        Trace(choice.RequiresEngineer ? "ESCALATE" : "ACTION", $"{choice.Id} next={choice.NextAction}");
+        RefreshAlarmGuideProperties();
+    }
+
+    private void ExportIssueReport()
+    {
+        Trace("CALL", "ExportIssueReport()");
+        var request = BuildIssueReportRequest();
+        if (request == null)
+        {
+            AddLog("EXPORT BLOCKED", "run FAULT REPLAY first");
+            Trace("BLOCK", "ExportIssueReport() blocked: no active alarm guide");
+            RefreshAlarmGuideProperties();
+            return;
+        }
+
+        try
+        {
+            var result = issueReportExportService.Export(request);
+            lastIssueReportPath = result.MarkdownPath;
+            AddLog("EXPORT", Path.GetFileName(result.MarkdownPath));
+            Trace("EXPORT", $"Issue report exported json={result.JsonPath} md={result.MarkdownPath}");
+            RefreshIssueReportProperties();
+        }
+        catch (Exception ex)
+        {
+            AddLog("EXPORT ERROR", ex.Message);
+            Trace("ERROR", $"ExportIssueReport() {ex.GetType().Name}: {ex.Message}");
+        }
+
+        RefreshAlarmGuideProperties();
+    }
+
+    private void OpenReportFolder()
+    {
+        Trace("CALL", "OpenReportFolder()");
+
+        var reportFolderPath = ResolveReportFolderPath();
+        Directory.CreateDirectory(reportFolderPath);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = reportFolderPath,
+            UseShellExecute = true
+        });
+
+        AddLog("REPORT FOLDER", "opened");
+        Trace("REPORT", $"Opened report folder path={reportFolderPath}");
+    }
+
+    private void OpenLatestReport()
+    {
+        Trace("CALL", "OpenLatestReport()");
+
+        if (string.IsNullOrWhiteSpace(lastIssueReportPath) || !File.Exists(lastIssueReportPath))
+        {
+            AddLog("OPEN BLOCKED", "export report first");
+            Trace("BLOCK", "OpenLatestReport() blocked: no exported report");
+            RefreshIssueReportProperties();
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = lastIssueReportPath,
+            UseShellExecute = true
+        });
+
+        AddLog("REPORT OPEN", Path.GetFileName(lastIssueReportPath));
+        Trace("REPORT", $"Opened latest issue report path={lastIssueReportPath}");
+    }
+
+    private void QueueIssueReport()
+    {
+        Trace("CALL", "QueueIssueReport()");
+        var request = BuildIssueReportRequest();
+        if (request == null)
+        {
+            AddLog("QUEUE BLOCKED", "run FAULT REPLAY first");
+            Trace("BLOCK", "QueueIssueReport() blocked: no active alarm guide");
+            RefreshAlarmGuideProperties();
+            return;
+        }
+
+        try
+        {
+            var result = issueReportOutboxService.QueueAlarmIssueReport(request);
+            lastServerOutboxPath = result.Path;
+            lastServerPayloadPreview = ReadServerPayloadPreview(result.Path);
+            lastMockServerSendSucceeded = false;
+            lastMockServerSendStatus = null;
+            AddLog("SERVER QUEUE", $"{result.Status} {result.EnvelopeId[..8]}");
+            Trace("SERVER", $"Queued issue report envelope={result.EnvelopeId} path={result.Path}");
+            RefreshServerOutboxProperties();
+        }
+        catch (Exception ex)
+        {
+            AddLog("QUEUE ERROR", ex.Message);
+            Trace("ERROR", $"QueueIssueReport() {ex.GetType().Name}: {ex.Message}");
+        }
+
+        RefreshAlarmGuideProperties();
+    }
+
+    private void OpenServerOutboxFolder()
+    {
+        Trace("CALL", "OpenServerOutboxFolder()");
+
+        var outboxFolderPath = ResolveServerOutboxFolderPath();
+        Directory.CreateDirectory(outboxFolderPath);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = outboxFolderPath,
+            UseShellExecute = true
+        });
+
+        AddLog("OUTBOX FOLDER", "opened");
+        Trace("SERVER", $"Opened server outbox folder path={outboxFolderPath}");
+    }
+
+    private void OpenLatestServerPayload()
+    {
+        Trace("CALL", "OpenLatestServerPayload()");
+
+        if (string.IsNullOrWhiteSpace(lastServerOutboxPath) || !File.Exists(lastServerOutboxPath))
+        {
+            AddLog("OPEN BLOCKED", "queue server payload first");
+            Trace("BLOCK", "OpenLatestServerPayload() blocked: no queued payload");
+            RefreshServerOutboxProperties();
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = lastServerOutboxPath,
+            UseShellExecute = true
+        });
+
+        AddLog("PAYLOAD OPEN", Path.GetFileName(lastServerOutboxPath));
+        Trace("SERVER", $"Opened latest server payload path={lastServerOutboxPath}");
+    }
+
+    private async void SendLatestServerPayload()
+    {
+        Trace("CALL", "SendLatestServerPayload()");
+
+        if (isSendingServerPayload)
+        {
+            Trace("BLOCK", "SendLatestServerPayload() blocked: already sending");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(lastServerOutboxPath) || !File.Exists(lastServerOutboxPath))
+        {
+            lastMockServerSendSucceeded = false;
+            lastMockServerSendStatus = L(
+                "Send blocked: queue a server payload first.",
+                "전송 차단: 서버 payload를 먼저 대기열에 저장하세요.");
+            AddLog("SEND BLOCKED", "queue server payload first");
+            Trace("BLOCK", "SendLatestServerPayload() blocked: no queued payload");
+            RefreshServerOutboxProperties();
+            return;
+        }
+
+        isSendingServerPayload = true;
+        lastMockServerSendSucceeded = false;
+        lastMockServerSendStatus = L(
+            "Sending latest payload to mock server...",
+            "최신 payload를 mock server로 전송 중...");
+        RefreshServerOutboxProperties();
+
+        try
+        {
+            var result = await mockServerPayloadSender.SendAlarmIssueReportAsync(lastServerOutboxPath);
+            lastMockServerSendSucceeded = result.Success;
+            lastMockServerSendStatus = result.Success
+                ? L(
+                    $"Send success: HTTP {result.StatusCode} -> {result.Endpoint}",
+                    $"전송 성공: HTTP {result.StatusCode} -> {result.Endpoint}")
+                : L(
+                    $"Send failed: HTTP {result.StatusCode} -> {result.Endpoint}",
+                    $"전송 실패: HTTP {result.StatusCode} -> {result.Endpoint}");
+
+            AddLog(result.Success ? "SEND OK" : "SEND FAIL", $"HTTP {result.StatusCode}");
+            Trace("SERVER", $"SendLatestServerPayload() status={result.StatusCode} endpoint={result.Endpoint} response={result.ResponseBody}");
+        }
+        catch (Exception ex)
+        {
+            lastMockServerSendSucceeded = false;
+            lastMockServerSendStatus = L(
+                $"Send failed: {ex.Message}. Start EquipmentTwin.MockServer first.",
+                $"전송 실패: {ex.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
+            AddLog("SEND ERROR", ex.Message);
+            Trace("ERROR", $"SendLatestServerPayload() {ex.GetType().Name}: {ex.Message}");
+        }
+        finally
+        {
+            isSendingServerPayload = false;
+            RefreshServerOutboxProperties();
+        }
+    }
+
+    private AlarmIssueReportExportRequest? BuildIssueReportRequest()
+    {
+        if (activeAlarmGuide == null || timeline == null || CurrentStep == null)
+        {
+            return null;
+        }
+
+        var currentStep = CurrentStep;
+        var selectedChoice = selectedAlarmGuideChoice == null
+            ? null
+            : new AlarmIssueReportChoice(
+                selectedAlarmGuideChoice.Id,
+                selectedAlarmGuideChoice.Label,
+                selectedAlarmGuideChoice.NextAction,
+                selectedAlarmGuideChoice.RequiresEngineer);
+
+        return new AlarmIssueReportExportRequest(
+            timeline.RecipeName,
+            SelectedFaultScenario,
+            activeAlarmGuide.AlarmCode,
+            activeAlarmGuide.Title,
+            activeAlarmGuide.Severity.ToString(),
+            activeAlarmGuide.Summary,
+            CurrentStepName,
+            currentStep.Index,
+            timeline.Steps.Count,
+            currentStep.Cycle?.ToString() ?? "-",
+            currentStep.ChamberPressureMtorr,
+            currentStep.WaferTemperatureC,
+            currentStep.EstimatedThicknessAngstrom,
+            currentStep.Valves.MetalPrecursor,
+            currentStep.Valves.Reactant,
+            currentStep.Valves.Purge,
+            AlarmGuideChecks
+                .Select(check => new AlarmIssueReportCheck(check.Id, check.Label, check.Required, check.IsChecked))
+                .ToArray(),
+            selectedChoice,
+            AlarmGuideEscalationConditions.ToArray(),
+            EngineeringTrace
+                .Select(entry => new AlarmIssueReportTraceEntry(entry.Time, entry.Source, entry.Message))
+                .ToArray());
+    }
+
+    private void ToggleLanguage()
+    {
+        var checkedIds = AlarmGuideChecks
+            .Where(check => check.IsChecked)
+            .Select(check => check.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var selectedChoiceId = selectedAlarmGuideChoice?.Id;
+
+        useKorean = !useKorean;
+        if (activeAlarmGuide != null)
+        {
+            PopulateActiveAlarmGuideRows(checkedIds, selectedChoiceId);
+        }
+
+        AddLog("LANG", useKorean ? "한국어 UI" : "English UI");
+        Trace("UI", useKorean ? "language switched to Korean" : "language switched to English");
+        OnPropertyChanged(string.Empty);
+    }
+
+    private string L(string english, string korean)
+    {
+        return useKorean ? korean : english;
+    }
+
+    private string LocalizeStepName(string stepName)
+    {
+        if (!useKorean)
+        {
+            return stepName;
+        }
+
+        return stepName switch
+        {
+            "Load Wafer" => "Wafer 로드",
+            "Pump Down" => "Pump Down",
+            "Stabilize Temp" => "Temp 안정화",
+            "Dose Precursor" => "Precursor 주입",
+            "Dose Reactant" => "Reactant 주입",
+            "Post Purge" => "Post Purge",
+            "Transfer Out" => "반출",
+            "Complete" => "완료",
+            _ => stepName
+        };
+    }
+
+    private string LocalizeGuideText(string text)
+    {
+        if (!useKorean)
+        {
+            return text;
+        }
+
+        return text switch
+        {
+            "Pumpdown Timeout" => "Pumpdown 시간 초과",
+            "The synthetic chamber pressure did not reach the demo process setpoint before the pumpdown step timed out." =>
+                "Pumpdown step 제한 시간 안에 chamber pressure가 demo process setpoint에 도달하지 못했습니다.",
+            "Confirm the chamber door/interlock state is closed before retrying pumpdown." =>
+                "Pumpdown 재시도 전 chamber door/interlock 상태가 닫혀 있는지 확인합니다.",
+            "Confirm the vacuum pump command is ON in the HMI or trace log." =>
+                "HMI 또는 trace log에서 vacuum pump command가 ON인지 확인합니다.",
+            "Compare the current pressure reading with the expected pumpdown trend." =>
+                "현재 pressure reading이 기대 pumpdown trend와 맞는지 비교합니다.",
+            "Check whether the synthetic exhaust path or gate valve state is blocking pumpdown." =>
+                "synthetic exhaust path 또는 gate valve 상태가 pumpdown을 막고 있는지 확인합니다.",
+            "Door/interlock was not ready" => "Door/interlock 준비 안 됨",
+            "Secure the chamber/interlock, reset the demo alarm, and retry pumpdown." =>
+                "Chamber/interlock을 확보한 뒤 demo alarm을 reset하고 pumpdown을 재시도합니다.",
+            "Pump command is ON but pressure remains high" => "Pump command ON인데 pressure 높음",
+            "Export the issue report with pressure snapshot and escalate to engineering review." =>
+                "Pressure snapshot이 포함된 issue report를 저장하고 engineering review로 escalate합니다.",
+            "Pressure reading looks inconsistent" => "Pressure reading이 일관되지 않음",
+            "Capture the issue report and flag the pressure signal for sensor/IO path review." =>
+                "Issue report를 저장하고 pressure signal을 sensor/IO path review 대상으로 표시합니다.",
+            "Pump command is ON but chamber pressure does not trend downward." =>
+                "Pump command는 ON이지만 chamber pressure가 내려가는 trend를 보이지 않습니다.",
+            "Pressure value is frozen, out of range, or inconsistent with the expected pumpdown step." =>
+                "Pressure 값이 고정되어 있거나 범위 밖이거나 기대 pumpdown step과 맞지 않습니다.",
+            "The same pumpdown timeout repeats after interlock reset." =>
+                "Interlock reset 후에도 같은 pumpdown timeout이 반복됩니다.",
+
+            "Temperature Not Stable" => "온도 안정화 실패",
+            "The synthetic wafer temperature did not reach the demo stabilization band before ALD cycles started." =>
+                "ALD cycle 시작 전 synthetic wafer temperature가 demo stabilization band에 도달하지 못했습니다.",
+            "Confirm the recipe temperature setpoint shown on the HMI." =>
+                "HMI에 표시된 recipe temperature setpoint를 확인합니다.",
+            "Confirm the current wafer temperature reading and whether it is trending toward setpoint." =>
+                "현재 wafer temperature reading과 setpoint 방향으로 이동 중인지 확인합니다.",
+            "Confirm the alarm occurred during the temperature stabilization step." =>
+                "알람이 temperature stabilization step에서 발생했는지 확인합니다.",
+            "Temperature is still ramping" => "Temperature ramping 중",
+            "Hold the process and review whether the stabilization timeout is too short for this demo recipe." =>
+                "Process를 hold하고 이 demo recipe의 stabilization timeout이 너무 짧은지 검토합니다.",
+            "Temperature value is flat or unrealistic" => "Temperature 값이 flat이거나 비현실적",
+            "Export the issue report and review the synthetic sensor or trace generation path." =>
+                "Issue report를 저장하고 synthetic sensor 또는 trace 생성 경로를 검토합니다.",
+            "Setpoint and reading look normal after reset" => "Reset 후 setpoint와 reading 정상",
+            "Reset the demo alarm and retry the normal process timeline." =>
+                "Demo alarm을 reset하고 normal process timeline을 재시도합니다.",
+            "Temperature does not move toward the setpoint during stabilization." =>
+                "Stabilization 중 temperature가 setpoint 방향으로 움직이지 않습니다.",
+            "Temperature jumps abruptly without a matching process state change." =>
+                "Process state 변화 없이 temperature가 갑자기 점프합니다.",
+            "The same stabilization alarm repeats after a retry." =>
+                "Retry 후에도 같은 stabilization alarm이 반복됩니다.",
+
+            "Gas Delivery Step Timeout" => "Gas Delivery Step 시간 초과",
+            "A synthetic precursor, reactant, or purge step failed to complete within the demo process timing rule." =>
+                "Synthetic precursor/reactant/purge step이 demo process timing rule 안에 완료되지 못했습니다.",
+            "Confirm which valve or gas delivery step was active when the alarm occurred." =>
+                "알람 발생 시 어떤 valve 또는 gas delivery step이 active였는지 확인합니다.",
+            "Confirm the ALD cycle number shown in the HMI and report." =>
+                "HMI와 report에 표시된 ALD cycle number를 확인합니다.",
+            "Check whether chamber pressure changed as expected during the gas delivery step." =>
+                "Gas delivery step 중 chamber pressure가 기대대로 변했는지 확인합니다.",
+            "Confirm the active recipe step matches the expected ALD dose/purge sequence." =>
+                "Active recipe step이 기대 ALD dose/purge sequence와 맞는지 확인합니다.",
+            "Expected valve was not active" => "기대 valve가 active 아님",
+            "Capture the issue report and review command-to-valve mapping in the sequence logic." =>
+                "Issue report를 저장하고 sequence logic의 command-to-valve mapping을 검토합니다.",
+            "Valve active but process response missing" => "Valve active지만 process response 없음",
+            "Escalate with the process snapshot, active valve state, and trace log." =>
+                "Process snapshot, active valve state, trace log와 함께 escalate합니다.",
+            "State looks normal after reset" => "Reset 후 state 정상",
+            "Reset the demo alarm and rerun the fault scenario or normal timeline for comparison." =>
+                "Demo alarm을 reset하고 비교를 위해 fault scenario 또는 normal timeline을 다시 실행합니다.",
+            "Valve state does not match the active ALD step." =>
+                "Valve state가 active ALD step과 맞지 않습니다.",
+            "Gas delivery step fails repeatedly on the same cycle." =>
+                "같은 cycle에서 gas delivery step이 반복 실패합니다.",
+            "Pressure or film trend is inconsistent with the active dose/purge step." =>
+                "Pressure 또는 film trend가 active dose/purge step과 맞지 않습니다.",
+
+            "Sequence State Mismatch" => "Sequence 상태 불일치",
+            "The synthetic process reached an unexpected sequence state or a generic step-level fault without a more specific guide." =>
+                "Synthetic process가 예상하지 못한 sequence state에 도달했거나 더 구체적인 guide가 없는 step-level fault가 발생했습니다.",
+            "Confirm the current process state and the last accepted operator command." =>
+                "현재 process state와 마지막으로 accepted된 operator command를 확인합니다.",
+            "Confirm the previous successful step before the mismatch." =>
+                "Mismatch 이전에 성공한 마지막 step을 확인합니다.",
+            "Review the engineering trace for the first rejected or failed transition." =>
+                "Engineering trace에서 처음 rejected/failed된 transition을 확인합니다.",
+            "Mismatch followed an operator command" => "Operator command 이후 mismatch 발생",
+            "Record the command and state snapshot, then review whether the command should be blocked earlier in the HMI." =>
+                "Command와 state snapshot을 기록하고, 해당 command를 HMI에서 더 일찍 block해야 하는지 검토합니다.",
+            "Cause is not clear from the HMI" => "HMI만으로 원인 불명확",
+            "Export the issue report and escalate with trace, current state, and previous step." =>
+                "Issue report를 저장하고 trace/current state/previous step과 함께 escalate합니다.",
+            "The same sequence mismatch is reproducible." =>
+                "같은 sequence mismatch가 재현됩니다.",
+            "The HMI allows an operation that should be blocked by the current state." =>
+                "현재 state에서 block되어야 할 operation을 HMI가 허용합니다.",
+            "The engineering trace shows a rejected transition that is not explained by the guide." =>
+                "Engineering trace에 guide로 설명되지 않는 rejected transition이 보입니다.",
+
+            _ => text
+        };
+    }
+
+    private void TraceCurrentStep(string source)
+    {
+        if (CurrentStep == null)
+        {
+            Trace(source, "currentStep=null");
+            return;
+        }
+
+        var valves = CurrentStep.Valves;
+        Trace(
+            source,
+            $"idx={CurrentStep.Index} step={CurrentStep.Step} cycle={CurrentStep.Cycle?.ToString() ?? "-"} " +
+            $"ok={CurrentStep.Success} p={CurrentStep.ChamberPressureMtorr:0}mTorr " +
+            $"t={CurrentStep.WaferTemperatureC:0}C film={CurrentStep.EstimatedThicknessAngstrom:0.0}A " +
+            $"valves(P={valves.MetalPrecursor},R={valves.Reactant},G={valves.Purge})");
+    }
+
+    private void Trace(string source, string message)
+    {
+        EngineeringTrace.Insert(0, new EngineeringTraceEntry(source, message));
+        while (EngineeringTrace.Count > MaxTraceEntries)
+        {
+            EngineeringTrace.RemoveAt(EngineeringTrace.Count - 1);
+        }
+
+        OnPropertyChanged(nameof(EngineeringTraceStatus));
+    }
+
+    private void RefreshAlarmGuideProperties()
+    {
+        OnPropertyChanged(nameof(AlarmGuideTitle));
+        OnPropertyChanged(nameof(AlarmGuideSeverity));
+        OnPropertyChanged(nameof(AlarmGuideSeverityBrush));
+        OnPropertyChanged(nameof(AlarmGuideSummary));
+        OnPropertyChanged(nameof(AlarmGuideStatus));
+        OnPropertyChanged(nameof(SelectedAlarmGuideChoiceText));
+        OnPropertyChanged(nameof(IssueReportStatus));
+        OnPropertyChanged(nameof(ServerOutboxStatus));
+        OnPropertyChanged(nameof(AlarmGuideCardBrush));
+        OnPropertyChanged(nameof(AlarmCode));
+        RefreshWorkflowProperties();
+    }
+
+    private void RefreshIssueReportProperties()
+    {
+        OnPropertyChanged(nameof(LatestIssueReportPathText));
+        RefreshWorkflowProperties();
+    }
+
+    private void RefreshServerOutboxProperties()
+    {
+        OnPropertyChanged(nameof(LatestServerPayloadPathText));
+        OnPropertyChanged(nameof(LatestServerPayloadPreviewText));
+        OnPropertyChanged(nameof(SendLatestServerPayloadButtonText));
+        OnPropertyChanged(nameof(LatestMockServerSendStatus));
+        RefreshWorkflowProperties();
+    }
+
+    private void RefreshWorkflowProperties()
+    {
+        OnPropertyChanged(nameof(WorkflowStepperLabel));
+        OnPropertyChanged(nameof(WorkflowAlarmStepStatus));
+        OnPropertyChanged(nameof(WorkflowAlarmStepDetail));
+        OnPropertyChanged(nameof(WorkflowAlarmStepBrush));
+        OnPropertyChanged(nameof(WorkflowChecklistStepStatus));
+        OnPropertyChanged(nameof(WorkflowChecklistStepDetail));
+        OnPropertyChanged(nameof(WorkflowChecklistStepBrush));
+        OnPropertyChanged(nameof(WorkflowResponseStepStatus));
+        OnPropertyChanged(nameof(WorkflowResponseStepDetail));
+        OnPropertyChanged(nameof(WorkflowResponseStepBrush));
+        OnPropertyChanged(nameof(WorkflowReportStepStatus));
+        OnPropertyChanged(nameof(WorkflowReportStepDetail));
+        OnPropertyChanged(nameof(WorkflowReportStepBrush));
+        OnPropertyChanged(nameof(WorkflowQueueStepStatus));
+        OnPropertyChanged(nameof(WorkflowQueueStepDetail));
+        OnPropertyChanged(nameof(WorkflowQueueStepBrush));
+        OnPropertyChanged(nameof(WorkflowSendStepStatus));
+        OnPropertyChanged(nameof(WorkflowSendStepDetail));
+        OnPropertyChanged(nameof(WorkflowSendStepBrush));
     }
 
     private void RefreshComputedProperties()
@@ -465,6 +1525,8 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(PressureStatusBrush));
         OnPropertyChanged(nameof(TemperatureStatusBrush));
         OnPropertyChanged(nameof(FilmStatusBrush));
+        OnPropertyChanged(nameof(InstrumentTrendLabel));
+        RefreshInstrumentTrends();
         OnPropertyChanged(nameof(AlarmIcon));
         OnPropertyChanged(nameof(AlarmIconBrush));
         OnPropertyChanged(nameof(AlarmTitle));
@@ -484,6 +1546,8 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(TimelineProgress));
         OnPropertyChanged(nameof(SelectorStatus));
         OnPropertyChanged(nameof(TimelineSource));
+        OnPropertyChanged(nameof(EngineeringTraceStatus));
+        RefreshAlarmGuideProperties();
     }
 
     private static int FindFirstFailedStepIndex(MolyAldTimelineDocument document)
@@ -497,6 +1561,51 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
 
         return document.Steps.Count == 0 ? 0 : document.Steps.Count - 1;
+    }
+
+    private static string ResolveReportFolderPath()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current != null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "EquipmentTwinLab.sln")))
+            {
+                return Path.Combine(current.FullName, "artifacts", "alarm-reports");
+            }
+
+            current = current.Parent;
+        }
+
+        return Path.Combine(AppContext.BaseDirectory, "artifacts", "alarm-reports");
+    }
+
+    private static string ReadServerPayloadPreview(string path)
+    {
+        var text = File.ReadAllText(path);
+        if (text.Length <= MaxServerPayloadPreviewLength)
+        {
+            return text;
+        }
+
+        return text[..MaxServerPayloadPreviewLength] +
+            Environment.NewLine +
+            "... preview truncated";
+    }
+
+    private static string ResolveServerOutboxFolderPath()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current != null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "EquipmentTwinLab.sln")))
+            {
+                return Path.Combine(current.FullName, "artifacts", "server-outbox");
+            }
+
+            current = current.Parent;
+        }
+
+        return Path.Combine(AppContext.BaseDirectory, "artifacts", "server-outbox");
     }
 
     private static string? ResolveUnityProjectPath()
@@ -545,6 +1654,16 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             status is "GROWING" or "WAIT" ? PrimaryBrush :
             status is "LOW" or "COOL" ? WarningBrush :
             AlarmBrush;
+    }
+
+    private static Brush WorkflowStepBrush(bool complete, bool active)
+    {
+        if (complete)
+        {
+            return SuccessBrush;
+        }
+
+        return active ? WarningBrush : TextMutedBrush;
     }
 
     private static string FaultCode(string stepName)

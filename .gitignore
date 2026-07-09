@@ -8,3 +8,14 @@ obj/
 *.log
 TestResults/
 artifacts/
+
+# 개인 학습/유지보수 메모는 공개 저장소에 올리지 않는다.
+private/
+private-notes/
+
+# Unity가 로컬에서 재생성하는 폴더/파일.
+unity/**/Library/
+unity/**/Temp/
+unity/**/Obj/
+unity/**/Logs/
+unity/**/UserSettings/
