@@ -24,4 +24,3 @@
 - `dotnet build .\EquipmentTwinLab.sln -c Release`
 - `dotnet run --project .\tests\EquipmentTwin.Core.Tests\EquipmentTwin.Core.Tests.csproj -c Release`
 - `git diff --check`
-

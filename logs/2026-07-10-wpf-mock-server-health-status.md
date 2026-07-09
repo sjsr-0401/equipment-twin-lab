@@ -58,4 +58,3 @@
 
 - 실제 화면 기준으로 Mock Server 상태 카드의 크기와 간격을 확인한다.
 - 필요하면 서버 상태를 상단 title bar나 workflow stepper에도 연결한다.
-
