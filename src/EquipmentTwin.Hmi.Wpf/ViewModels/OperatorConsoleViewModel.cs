@@ -56,6 +56,9 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     private string? lastMockServerSendStatus;
     private bool lastMockServerSendSucceeded;
     private bool isSendingServerPayload;
+    private string? mockServerHealthStatus;
+    private bool mockServerHealthOnline;
+    private bool isCheckingMockServerHealth;
 
     public OperatorConsoleViewModel()
     {
@@ -71,6 +74,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OpenLatestReportCommand = new RelayCommand(OpenLatestReport);
         OpenServerOutboxFolderCommand = new RelayCommand(OpenServerOutboxFolder);
         OpenLatestServerPayloadCommand = new RelayCommand(OpenLatestServerPayload);
+        CheckMockServerHealthCommand = new RelayCommand(CheckMockServerHealth);
         SendLatestServerPayloadCommand = new RelayCommand(SendLatestServerPayload);
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
 
@@ -123,6 +127,8 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     public ICommand OpenServerOutboxFolderCommand { get; }
 
     public ICommand OpenLatestServerPayloadCommand { get; }
+
+    public ICommand CheckMockServerHealthCommand { get; }
 
     public ICommand SendLatestServerPayloadCommand { get; }
 
@@ -253,6 +259,56 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             "Latest mock-server send: not sent yet",
             "최근 mock server 전송: 아직 없음")
         : lastMockServerSendStatus;
+
+    public string MockServerConnectionLabel => L("MOCK SERVER CONNECTION", "Mock Server 연결 상태");
+
+    public string CheckMockServerHealthButtonText => isCheckingMockServerHealth
+        ? L("CHECKING...", "확인 중...")
+        : L("CHECK SERVER", "서버 확인");
+
+    public string MockServerHealthBadgeText
+    {
+        get
+        {
+            if (isCheckingMockServerHealth)
+            {
+                return L("CHECKING", "확인 중");
+            }
+
+            if (mockServerHealthOnline)
+            {
+                return L("ONLINE", "연결 가능");
+            }
+
+            return string.IsNullOrWhiteSpace(mockServerHealthStatus)
+                ? L("NOT CHECKED", "미확인")
+                : L("OFFLINE", "연결 실패");
+        }
+    }
+
+    public string MockServerHealthStatusText => string.IsNullOrWhiteSpace(mockServerHealthStatus)
+        ? L(
+            "Press check before sending, or start EquipmentTwin.MockServer and send a payload.",
+            "전송 전 서버 확인을 누르거나 EquipmentTwin.MockServer를 실행한 뒤 payload를 전송하세요.")
+        : mockServerHealthStatus;
+
+    public Brush MockServerHealthBrush
+    {
+        get
+        {
+            if (isCheckingMockServerHealth)
+            {
+                return WarningBrush;
+            }
+
+            if (mockServerHealthOnline)
+            {
+                return SuccessBrush;
+            }
+
+            return string.IsNullOrWhiteSpace(mockServerHealthStatus) ? TextMutedBrush : AlarmBrush;
+        }
+    }
 
     public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "Escalation 조건");
 
@@ -1164,6 +1220,38 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         Trace("SERVER", $"Opened latest server payload path={lastServerOutboxPath}");
     }
 
+    private async void CheckMockServerHealth()
+    {
+        Trace("CALL", "CheckMockServerHealth()");
+
+        if (isCheckingMockServerHealth)
+        {
+            Trace("BLOCK", "CheckMockServerHealth() blocked: already checking");
+            return;
+        }
+
+        isCheckingMockServerHealth = true;
+        mockServerHealthStatus = L(
+            "Checking mock server health...",
+            "Mock Server 상태 확인 중...");
+        RefreshServerOutboxProperties();
+
+        var result = await mockServerPayloadSender.CheckHealthAsync();
+        mockServerHealthOnline = result.Online;
+        mockServerHealthStatus = result.Online
+            ? L(
+                $"Online: HTTP {result.StatusCode} -> {result.Endpoint}",
+                $"연결 가능: HTTP {result.StatusCode} -> {result.Endpoint}")
+            : L(
+                $"Offline: {result.Message}. Start EquipmentTwin.MockServer first.",
+                $"연결 실패: {result.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
+        isCheckingMockServerHealth = false;
+
+        AddLog(result.Online ? "SERVER ONLINE" : "SERVER OFFLINE", result.StatusCode?.ToString() ?? "no response");
+        Trace("SERVER", $"CheckMockServerHealth() online={result.Online} status={result.StatusCode} endpoint={result.Endpoint}");
+        RefreshServerOutboxProperties();
+    }
+
     private async void SendLatestServerPayload()
     {
         Trace("CALL", "SendLatestServerPayload()");
@@ -1197,6 +1285,14 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             var result = await mockServerPayloadSender.SendAlarmIssueReportAsync(lastServerOutboxPath);
             lastMockServerSendSucceeded = result.Success;
+            mockServerHealthOnline = result.Success;
+            mockServerHealthStatus = result.Success
+                ? L(
+                    $"Online: latest send returned HTTP {result.StatusCode}",
+                    $"연결 가능: 최근 전송 HTTP {result.StatusCode}")
+                : L(
+                    $"Server responded with HTTP {result.StatusCode}",
+                    $"서버 응답: HTTP {result.StatusCode}");
             lastMockServerSendStatus = result.Success
                 ? L(
                     $"Send success: HTTP {result.StatusCode} -> {result.Endpoint}",
@@ -1211,6 +1307,10 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         catch (Exception ex)
         {
             lastMockServerSendSucceeded = false;
+            mockServerHealthOnline = false;
+            mockServerHealthStatus = L(
+                $"Offline: {ex.Message}. Start EquipmentTwin.MockServer first.",
+                $"연결 실패: {ex.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
             lastMockServerSendStatus = L(
                 $"Send failed: {ex.Message}. Start EquipmentTwin.MockServer first.",
                 $"전송 실패: {ex.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
@@ -1479,6 +1579,10 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(LatestServerPayloadPathText));
         OnPropertyChanged(nameof(LatestServerPayloadPreviewText));
+        OnPropertyChanged(nameof(CheckMockServerHealthButtonText));
+        OnPropertyChanged(nameof(MockServerHealthBadgeText));
+        OnPropertyChanged(nameof(MockServerHealthStatusText));
+        OnPropertyChanged(nameof(MockServerHealthBrush));
         OnPropertyChanged(nameof(SendLatestServerPayloadButtonText));
         OnPropertyChanged(nameof(LatestMockServerSendStatus));
         RefreshWorkflowProperties();

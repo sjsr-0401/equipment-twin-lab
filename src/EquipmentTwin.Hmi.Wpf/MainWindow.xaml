@@ -1244,6 +1244,51 @@
                                                            FontSize="10"
                                                            TextWrapping="Wrap"
                                                            Margin="0,4,0,0"/>
+                                                <Border Background="{StaticResource SurfaceInset}"
+                                                        BorderBrush="{Binding MockServerHealthBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="4"
+                                                        Padding="8"
+                                                        Margin="0,8,0,0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0">
+                                                            <TextBlock Text="{Binding MockServerConnectionLabel}"
+                                                                       Foreground="{StaticResource TextMuted}"
+                                                                       FontSize="10"
+                                                                       FontWeight="Bold"/>
+                                                            <Grid Margin="0,4,0,0">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding MockServerHealthBadgeText}"
+                                                                           Foreground="{Binding MockServerHealthBrush}"
+                                                                           FontSize="12"
+                                                                           FontWeight="Bold"/>
+                                                                <TextBlock Grid.Column="1"
+                                                                           Text="{Binding MockServerHealthStatusText}"
+                                                                           Foreground="{StaticResource TextMuted}"
+                                                                           FontSize="10"
+                                                                           TextWrapping="Wrap"
+                                                                           Margin="10,1,0,0"/>
+                                                            </Grid>
+                                                        </StackPanel>
+                                                        <Button Grid.Column="1"
+                                                                Content="{Binding CheckMockServerHealthButtonText}"
+                                                                Command="{Binding CheckMockServerHealthCommand}"
+                                                                Style="{StaticResource CommandButton}"
+                                                                Width="108"
+                                                                Height="30"
+                                                                Margin="8,0,0,0"
+                                                                FontSize="10"
+                                                                Background="{StaticResource SurfaceRaised}"/>
+                                                    </Grid>
+                                                </Border>
                                                 <UniformGrid Columns="2" Margin="0,6,0,0">
                                                     <Button Content="{Binding OpenServerOutboxFolderButtonText}"
                                                             Command="{Binding OpenServerOutboxFolderCommand}"

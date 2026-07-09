@@ -1428,3 +1428,36 @@ Direction change:
 
 - 최근 작업은 UI 구조 변경이 많다.
 - 실제 화면 screenshot을 기준으로 글자 잘림, scroll 위치, 카드 밀도, schematic 균형을 조정해야 한다.
+
+## 2026-07-10 Loop Update: Goal 061 완료
+
+완료한 goal:
+
+- `목표 061: WPF Mock Server 연결 상태 표시`
+
+변경 내용:
+
+- WPF 알람/리포트 탭의 server payload 영역에 Mock Server 연결 상태 카드를 추가했다.
+- `서버 확인` 버튼으로 `http://127.0.0.1:5088/health`를 확인할 수 있게 했다.
+- payload 전송 성공/실패 결과가 Mock Server 연결 상태에도 반영되도록 했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- `git diff --check` 통과.
+
+보류한 판단:
+
+- 자동 polling은 넣지 않았다.
+- 지금 단계에서는 사용자가 명시적으로 누르는 health check가 더 단순하고 설명하기 쉽다.
+
+현재 다음 추천 작업:
+
+- `목표 062: 실제 화면 기준 stepper/server card/schematic 시각 QA`
+
+이유:
+
+- 서버 상태 카드를 추가하면서 오른쪽 알람/리포트 탭 밀도가 다시 높아졌다.
+- 다음은 기능 추가보다 실제 화면에서 잘림, 간격, scroll 위치를 조정하는 작업이 맞다.

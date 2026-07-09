@@ -13,6 +13,29 @@ public sealed class MockServerPayloadSender
     };
 
     private readonly Uri endpoint = new("http://127.0.0.1:5088/alarm-issue-report");
+    private readonly Uri healthEndpoint = new("http://127.0.0.1:5088/health");
+
+    public async Task<MockServerHealthResult> CheckHealthAsync()
+    {
+        try
+        {
+            using var response = await Client.GetAsync(healthEndpoint);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            return new MockServerHealthResult(
+                response.IsSuccessStatusCode,
+                (int)response.StatusCode,
+                healthEndpoint.ToString(),
+                responseBody);
+        }
+        catch (Exception ex)
+        {
+            return new MockServerHealthResult(
+                false,
+                null,
+                healthEndpoint.ToString(),
+                ex.Message);
+        }
+    }
 
     public async Task<MockServerSendResult> SendAlarmIssueReportAsync(string payloadPath)
     {
@@ -37,3 +60,9 @@ public sealed record MockServerSendResult(
     int StatusCode,
     string Endpoint,
     string ResponseBody);
+
+public sealed record MockServerHealthResult(
+    bool Online,
+    int? StatusCode,
+    string Endpoint,
+    string Message);

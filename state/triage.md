@@ -798,3 +798,22 @@ Completion status:
 다음:
 
 - `목표 061: 실제 화면 기준 stepper와 schematic 시각 QA` 진행.
+
+## 2026-07-10 Triage Update after Goal 061
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | Mock Server online/offline 표시 | 완료 | 실제 화면에서 상태 카드 크기 확인 |
+| P1 | Stepper와 schematic visual QA | 다음 | 글자 잘림, scroll 위치, 좌우 균형 확인 |
+| P1 | 서버 상태를 workflow stepper와 연결 | 대기 | health check 카드 사용성이 충분한지 본 뒤 결정 |
+| P2 | 자동 health polling | 보류 | 데모 단계에서는 수동 확인 유지 |
+
+완료:
+
+- WPF 알람/리포트 탭에 Mock Server 연결 상태 카드를 추가했다.
+- `서버 확인` 버튼으로 Mock Server `/health` endpoint를 확인한다.
+- payload 전송 성공/실패가 서버 연결 상태 표시에도 반영된다.
+
+다음:
+
+- `목표 062: 실제 화면 기준 stepper/server card/schematic 시각 QA` 진행.
