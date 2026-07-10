@@ -1719,3 +1719,41 @@ Direction change:
 
 - UI chrome과 상태 라벨은 정리됐다.
 - 다음에는 작업자가 실제로 읽는 알람 요약/체크리스트/대응 선택지의 혼합 문장을 자연스럽게 만들어야 한다.
+
+## 2026-07-10 Loop Update: Goal 069 완료
+
+완료한 goal:
+
+- `목표 069: WPF 장비 Schematic 시각 깊이 고도화`
+
+우선순위 변경:
+
+- 기존 추천은 알람 작업지시서 문장 정리였다.
+- 사용자의 직접 피드백에 따라 포트폴리오 첫인상에 더 큰 영향을 주는 장비 화면 고도화를 먼저 수행했다.
+
+변경 내용:
+
+- Load Port/FOUP/Slit Valve를 모듈 형태로 개선했다.
+- Gas Box를 MFC/Isolation Valve 3채널 manifold로 개선했다.
+- Chamber 단면에 showerhead/process zone/wafer/susceptor/heater/plenum을 추가했다.
+- 실제 Pressure/Temperature 값을 chamber에 표시했다.
+- Exhaust path에 throttle valve와 vacuum pump 형상을 추가했다.
+- 기존 동적 상태 Binding은 모두 유지했다.
+
+검증:
+
+- 한국어/영어 각각 5개 Screenshot: 1600×900, 검정 표본 0/1200, anchor 4/4 통과.
+- Load/Process/GAS-301/Transfer Out 화면 직접 확인.
+- 전체 solution Release build 통과, 경고 0, 오류 0.
+- Core tests 전체 통과.
+- 일반 WPF 3초 smoke test 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 070: 알람 작업지시서 한국어 문장 품질 정리`
+
+이유:
+
+- 장비 외형은 구성요소와 연결이 읽히는 수준으로 개선됐다.
+- 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 개선한다.

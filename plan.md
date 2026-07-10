@@ -3463,3 +3463,31 @@ Goal 068: WPF 한국어 일반 UI 라벨 일관성 정리
 ```text
 Goal 069: 알람 작업지시서 한국어 문장 품질 정리
 ```
+
+## 2026-07-10 Goal 069 우선순위 변경: WPF 장비 Schematic 시각 깊이 고도화 완료
+
+사용자 피드백:
+
+- 기존 왼쪽 화면은 장비라기보다 큰 빈 사각형과 단순 도형으로 보였다.
+- 포트폴리오 대표 화면으로 사용하려면 부품의 역할과 연결이 더 명확해야 했다.
+
+구현:
+
+- Load Port/FOUP/Slit Valve 형상 고도화.
+- Gas Box를 3채널 MFC + isolation valve manifold로 변경.
+- Chamber에 showerhead, process zone, pressure/temperature callout, wafer, susceptor, heater, bottom plenum 추가.
+- Exhaust path에 throttle valve와 vacuum pump 형상 추가.
+- metal gradient와 shadow로 모듈 깊이감 추가.
+- 기존 Valve/Gas/Vacuum/Wafer/Gate/Fault Binding 유지.
+
+설계 판단:
+
+- 실제 vendor CAD가 아닌 public-reference synthetic schematic을 유지한다.
+- Core에 없는 공정값은 화면에도 만들지 않는다.
+- 정적 외형은 XAML, 동적 상태는 ViewModel로 분리한다.
+
+다음 권장 Goal:
+
+```text
+Goal 070: 알람 작업지시서 한국어 문장 품질 정리
+```

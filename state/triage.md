@@ -960,3 +960,23 @@ Completion status:
 다음:
 
 - `목표 069: 알람 작업지시서 한국어 문장 품질 정리` 진행.
+
+## 2026-07-10 Triage Update after Goal 069
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF 장비 schematic 시각 깊이 | 완료 | 기존 Core/ViewModel binding 유지 |
+| P1 | 알람 작업지시서 한국어 문장 품질 | 다음 | Goal 070으로 이동 |
+| P2 | 장비 process animation | 보류 | 정적 가독성 유지 후 필요성 판단 |
+| P2 | 실제 CAD/Blender model | 선택 | Unity viewer 또는 향후 별도 surface에서 연결 |
+
+완료:
+
+- FOUP/Gas Box/Chamber/Exhaust module 외형 고도화.
+- MFC/Valve/Showerhead/Wafer/Susceptor/Heater/Throttle/Pump 구성 표시.
+- 상태별 flow/fault/wafer/gate 시각 연동 유지.
+- build/tests/Screenshot/smoke test 통과.
+
+다음:
+
+- `목표 070: 알람 작업지시서 한국어 문장 품질 정리` 진행.

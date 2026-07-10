@@ -430,8 +430,6 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public Brush AlarmCardBrush => isAlarmActive ? AlarmBrush : Brush("#173D34");
 
-    public Brush ChamberBrush => isAlarmActive ? Brush("#172430") : Brush("#12212C");
-
     public string SchematicDiagnosticText
     {
         get
@@ -1852,7 +1850,6 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(AlarmCode));
         OnPropertyChanged(nameof(AlarmCodeBrush));
         OnPropertyChanged(nameof(AlarmCardBrush));
-        OnPropertyChanged(nameof(ChamberBrush));
         OnPropertyChanged(nameof(SchematicDiagnosticText));
         OnPropertyChanged(nameof(SchematicDiagnosticBrush));
         OnPropertyChanged(nameof(GasModuleBorderBrush));
