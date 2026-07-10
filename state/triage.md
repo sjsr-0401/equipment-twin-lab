@@ -1019,3 +1019,22 @@ Completion status:
 다음:
 
 - `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트` 진행.
+
+## 2026-07-10 Triage Update after Goal 072
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 리포트/Payload 계약 자동 테스트 | 완료 | CI gate 유지 |
+| P1 | 서버 전송 실패 Retry/상태 관리 | 다음 | Goal 073 진행 |
+| P2 | Mock Server 통합 테스트 | 보류 | Retry 구현 뒤 판단 |
+| P2 | 외부 테스트 프레임워크 | 제외 | 현재 콘솔 테스트로 충분 |
+
+완료:
+
+- WPF 계약 테스트 프로젝트와 CI 단계 추가.
+- 한국어/영어 Markdown, JSON, Outbox 계약 검증.
+- build, Core tests, WPF contract tests 통과.
+
+다음:
+
+- `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리` 진행.

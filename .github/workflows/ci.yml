@@ -35,6 +35,9 @@ jobs:
       - name: Run console tests
         run: dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
 
+      - name: Run WPF report contract tests
+        run: dotnet run --project tests/EquipmentTwin.Hmi.Wpf.Tests/EquipmentTwin.Hmi.Wpf.Tests.csproj --no-restore --configuration Release
+
       - name: Run normal scenario through CLI
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/normal-cycle.json
 

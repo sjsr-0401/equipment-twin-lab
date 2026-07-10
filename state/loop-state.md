@@ -1825,3 +1825,33 @@ Direction change:
 
 - 이번에는 임시 smoke 프로그램으로 문서와 Payload를 확인했다.
 - 다음에는 같은 검증을 CI에서 반복 가능하게 만들어 계약 회귀를 막는다.
+
+## 2026-07-10 Loop Update: Goal 072 완료
+
+완료한 goal:
+
+- `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트`
+
+변경 내용:
+
+- WPF 계약 테스트 프로젝트 추가.
+- 한국어/영어 Markdown 계약 테스트 추가.
+- JSON/Outbox Envelope/Payload 계약 테스트 추가.
+- Solution과 GitHub Actions에 테스트 연결.
+
+검증:
+
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF 계약 테스트 3개 통과.
+- 생성 파일 자동 정리.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리`
+
+이유:
+
+- Payload 구조를 자동으로 보호할 수 있게 됐다.
+- 다음에는 실제 전송 실패 후 재시도와 상태 전이를 구현할 차례다.

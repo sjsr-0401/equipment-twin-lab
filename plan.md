@@ -3548,3 +3548,29 @@ Goal 071: 알람 작업지시서 한국어 문장 품질 정리
 ```text
 Goal 072: 알람 리포트와 서버 Payload 계약 자동 테스트
 ```
+
+## 2026-07-10 Goal 072: 알람 리포트와 서버 Payload 계약 자동 테스트 완료
+
+목표:
+
+- Goal 071에서 수동 smoke로 확인한 Markdown/JSON 계약을 CI 품질 관문으로 만든다.
+
+구현:
+
+- `EquipmentTwin.Hmi.Wpf.Tests` 콘솔 테스트 프로젝트 추가.
+- 한국어 Markdown + canonical JSON 계약 테스트.
+- 영어 Markdown 회귀 테스트.
+- Server Outbox Envelope/Payload 계약 테스트.
+- Solution과 GitHub Actions에 새 테스트 연결.
+
+설계 판단:
+
+- 외부 테스트 패키지를 추가하지 않고 기존 Core 테스트와 같은 실행 방식을 사용한다.
+- Core tests는 `net8.0`, WPF tests는 `net8.0-windows`로 분리한다.
+- 테스트가 만든 파일은 각 테스트가 직접 정리한다.
+
+다음 권장 Goal:
+
+```text
+Goal 073: 서버 전송 실패 Retry와 Outbox 상태 관리
+```
