@@ -526,6 +526,47 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public double TransferOutWaferOpacity => CurrentProcessStep == MolyAldProcessStep.TransferOut ? 1.0 : 0.0;
 
+    public bool IsGasFlowActive =>
+        !isAlarmActive &&
+        (CurrentStep?.Valves.MetalPrecursor == true ||
+         CurrentStep?.Valves.Reactant == true ||
+         CurrentStep?.Valves.Purge == true);
+
+    public bool IsVacuumFlowActive =>
+        !isAlarmActive &&
+        CurrentProcessStep is
+            MolyAldProcessStep.PumpDown or
+            MolyAldProcessStep.StabilizeTemperature or
+            MolyAldProcessStep.DoseMetalPrecursor or
+            MolyAldProcessStep.PurgeAfterPrecursor or
+            MolyAldProcessStep.DoseReactant or
+            MolyAldProcessStep.PurgeAfterReactant or
+            MolyAldProcessStep.PostPurge;
+
+    public bool IsHeaterActive =>
+        !isAlarmActive &&
+        CurrentProcessStep is
+            MolyAldProcessStep.StabilizeTemperature or
+            MolyAldProcessStep.DoseMetalPrecursor or
+            MolyAldProcessStep.PurgeAfterPrecursor or
+            MolyAldProcessStep.DoseReactant or
+            MolyAldProcessStep.PurgeAfterReactant or
+            MolyAldProcessStep.PostPurge;
+
+    public bool IsWaferTransferInActive =>
+        !isAlarmActive && CurrentProcessStep == MolyAldProcessStep.LoadWafer;
+
+    public bool IsWaferTransferOutActive =>
+        !isAlarmActive && CurrentProcessStep == MolyAldProcessStep.TransferOut;
+
+    public bool IsTransferGateOpenVisual => IsTransferGateOpen;
+
+    public bool IsPrecursorValveOpen => !isAlarmActive && CurrentStep?.Valves.MetalPrecursor == true;
+
+    public bool IsReactantValveOpen => !isAlarmActive && CurrentStep?.Valves.Reactant == true;
+
+    public bool IsPurgeValveOpen => !isAlarmActive && CurrentStep?.Valves.Purge == true;
+
     public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? PrecursorBrush : SurfaceRaisedBrush;
 
     public Brush ReactantValveBrush => CurrentStep?.Valves.Reactant == true ? ReactantBrush : SurfaceRaisedBrush;
@@ -1865,6 +1906,15 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(TransferInWaferOpacity));
         OnPropertyChanged(nameof(ChamberWaferOpacity));
         OnPropertyChanged(nameof(TransferOutWaferOpacity));
+        OnPropertyChanged(nameof(IsGasFlowActive));
+        OnPropertyChanged(nameof(IsVacuumFlowActive));
+        OnPropertyChanged(nameof(IsHeaterActive));
+        OnPropertyChanged(nameof(IsWaferTransferInActive));
+        OnPropertyChanged(nameof(IsWaferTransferOutActive));
+        OnPropertyChanged(nameof(IsTransferGateOpenVisual));
+        OnPropertyChanged(nameof(IsPrecursorValveOpen));
+        OnPropertyChanged(nameof(IsReactantValveOpen));
+        OnPropertyChanged(nameof(IsPurgeValveOpen));
         OnPropertyChanged(nameof(PrecursorValveBrush));
         OnPropertyChanged(nameof(ReactantValveBrush));
         OnPropertyChanged(nameof(PurgeValveBrush));

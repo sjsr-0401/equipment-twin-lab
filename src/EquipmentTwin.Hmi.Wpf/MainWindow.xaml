@@ -90,6 +90,146 @@
             <GradientStop Color="#9E561A" Offset="1"/>
         </LinearGradientBrush>
 
+        <Style x:Key="GasFlowStream" TargetType="Line">
+            <Setter Property="Stroke" Value="{Binding GasDeliveryLineBrush}"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="StrokeDashArray" Value="2 5"/>
+            <Setter Property="StrokeStartLineCap" Value="Round"/>
+            <Setter Property="StrokeEndLineCap" Value="Round"/>
+            <Setter Property="Opacity" Value="0.14"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsGasFlowActive}" Value="True">
+                    <Setter Property="Opacity" Value="0.86"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="GasFlowMotion">
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetProperty="StrokeDashOffset"
+                                                 From="0"
+                                                 To="-28"
+                                                 Duration="0:0:0.85"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="GasFlowMotion"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="VacuumFlowStream" TargetType="Line">
+            <Setter Property="Stroke" Value="{Binding VacuumPathBrush}"/>
+            <Setter Property="StrokeThickness" Value="3"/>
+            <Setter Property="StrokeDashArray" Value="3 4"/>
+            <Setter Property="StrokeStartLineCap" Value="Round"/>
+            <Setter Property="StrokeEndLineCap" Value="Round"/>
+            <Setter Property="Opacity" Value="0.16"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVacuumFlowActive}" Value="True">
+                    <Setter Property="Opacity" Value="0.92"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="VacuumFlowMotion">
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetProperty="StrokeDashOffset"
+                                                 From="0"
+                                                 To="24"
+                                                 Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="VacuumFlowMotion"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ValveActuatorMotion" TargetType="Border">
+            <Setter Property="Opacity" Value="0.82"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="ValvePulseMotion">
+                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                 From="0.97"
+                                                 To="1.04"
+                                                 Duration="0:0:0.55"/>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                 From="0.97"
+                                                 To="1.04"
+                                                 Duration="0:0:0.55"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="ValvePulseMotion"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="HeaterGlowMotion" TargetType="Ellipse">
+            <Setter Property="Stroke" Value="{Binding HeaterDiagnosticBrush}"/>
+            <Setter Property="StrokeThickness" Value="10"/>
+            <Setter Property="Opacity" Value="0.12"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#FF9D32" BlurRadius="22" ShadowDepth="0" Opacity="0.8"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHeaterActive}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="HeaterPulseMotion">
+                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                 From="0.26"
+                                                 To="0.72"
+                                                 Duration="0:0:0.9"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="HeaterPulseMotion"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="PumpRotorMotion" TargetType="Canvas">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <RotateTransform Angle="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVacuumFlowActive}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="PumpSpinMotion">
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                 From="0"
+                                                 To="360"
+                                                 Duration="0:0:1.35"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <RemoveStoryboard BeginStoryboardName="PumpSpinMotion"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
@@ -668,14 +808,72 @@
                                  Opacity="{Binding TransferInWaferOpacity}"
                                  HorizontalAlignment="Right"
                                  VerticalAlignment="Center"
-                                 Margin="0,0,12,0"/>
+                                 Margin="0,0,12,0">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="0"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWaferTransferInActive}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard x:Name="WaferTransferInMotion">
+                                                    <Storyboard RepeatBehavior="Forever">
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                         From="-68"
+                                                                         To="0"
+                                                                         Duration="0:0:1.15">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <RemoveStoryboard BeginStoryboardName="WaferTransferInMotion"/>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
                         <Ellipse Width="20"
                                  Height="8"
                                  Fill="{StaticResource Primary}"
                                  Opacity="{Binding TransferOutWaferOpacity}"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
-                                 Margin="12,0,0,0"/>
+                                 Margin="12,0,0,0">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="0"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWaferTransferOutActive}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard x:Name="WaferTransferOutMotion">
+                                                    <Storyboard RepeatBehavior="Forever">
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                         From="68"
+                                                                         To="0"
+                                                                         Duration="0:0:1.15">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <RemoveStoryboard BeginStoryboardName="WaferTransferOutMotion"/>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
                         <Border Width="7"
                                 Height="34"
                                 Background="{Binding TransferGateBrush}"
@@ -684,7 +882,39 @@
                                 CornerRadius="2"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
-                                Margin="0,0,4,0"/>
+                                Margin="0,0,4,0">
+                            <Border.RenderTransform>
+                                <TranslateTransform Y="0"/>
+                            </Border.RenderTransform>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTransferGateOpenVisual}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard x:Name="GateOpenMotion">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                         From="0"
+                                                                         To="-20"
+                                                                         Duration="0:0:0.28"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <RemoveStoryboard BeginStoryboardName="GateOpenMotion"/>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                         To="0"
+                                                                         Duration="0:0:0.28"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
                         <Border Background="{StaticResource SurfaceInset}"
                                 BorderBrush="{Binding TransferGateBrush}"
                                 BorderThickness="1"
@@ -758,7 +988,13 @@
                                                 <TextBlock Text="MFC" Foreground="{StaticResource TextMuted}" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                             <Rectangle Grid.Column="1" Height="3" Fill="{StaticResource Precursor}" VerticalAlignment="Center"/>
-                                            <Border Grid.Column="2" Background="{Binding PrecursorValveBrush}" BorderBrush="#506174" BorderThickness="1" CornerRadius="3">
+                                            <Border Grid.Column="2"
+                                                    Style="{StaticResource ValveActuatorMotion}"
+                                                    Tag="{Binding IsPrecursorValveOpen}"
+                                                    Background="{Binding PrecursorValveBrush}"
+                                                    BorderBrush="#506174"
+                                                    BorderThickness="1"
+                                                    CornerRadius="3">
                                                 <TextBlock Text="{Binding PrecursorValveText}" FontSize="8" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="10"/>
                                             </Border>
                                         </Grid>
@@ -784,7 +1020,13 @@
                                                 <TextBlock Text="MFC" Foreground="{StaticResource TextMuted}" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                             <Rectangle Grid.Column="1" Height="3" Fill="{StaticResource Reactant}" VerticalAlignment="Center"/>
-                                            <Border Grid.Column="2" Background="{Binding ReactantValveBrush}" BorderBrush="#506174" BorderThickness="1" CornerRadius="3">
+                                            <Border Grid.Column="2"
+                                                    Style="{StaticResource ValveActuatorMotion}"
+                                                    Tag="{Binding IsReactantValveOpen}"
+                                                    Background="{Binding ReactantValveBrush}"
+                                                    BorderBrush="#506174"
+                                                    BorderThickness="1"
+                                                    CornerRadius="3">
                                                 <TextBlock Text="{Binding ReactantValveText}" FontSize="8" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="10"/>
                                             </Border>
                                         </Grid>
@@ -810,7 +1052,13 @@
                                                 <TextBlock Text="MFC" Foreground="{StaticResource TextMuted}" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                             <Rectangle Grid.Column="1" Height="3" Fill="{StaticResource Purge}" VerticalAlignment="Center"/>
-                                            <Border Grid.Column="2" Background="{Binding PurgeValveBrush}" BorderBrush="#506174" BorderThickness="1" CornerRadius="3">
+                                            <Border Grid.Column="2"
+                                                    Style="{StaticResource ValveActuatorMotion}"
+                                                    Tag="{Binding IsPurgeValveOpen}"
+                                                    Background="{Binding PurgeValveBrush}"
+                                                    BorderBrush="#506174"
+                                                    BorderThickness="1"
+                                                    CornerRadius="3">
                                                 <TextBlock Text="{Binding PurgeValveText}" FontSize="8" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" LineHeight="10"/>
                                             </Border>
                                         </Grid>
@@ -839,6 +1087,18 @@
                                VerticalAlignment="Top"
                                Height="32"
                                Opacity="0.9"/>
+                    <Line Grid.Column="1"
+                          Grid.Row="1"
+                          Style="{StaticResource GasFlowStream}"
+                          X1="1"
+                          Y1="0"
+                          X2="1"
+                          Y2="32"
+                          Stretch="Fill"
+                          Width="3"
+                          Height="32"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Top"/>
 
                     <Border Grid.Column="1"
                             Grid.Row="1"
@@ -929,15 +1189,15 @@
                                             Opacity="0.09"
                                             CornerRadius="8"/>
                                     <UniformGrid Columns="9" Margin="32,10,32,22">
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.48" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.25" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.48" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.25" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.58" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.25" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.48" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.25" RadiusX="1" RadiusY="1"/>
-                                        <Rectangle Width="2" Fill="{Binding GasDeliveryLineBrush}" Opacity="0.48" RadiusX="1" RadiusY="1"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
+                                        <Line Style="{StaticResource GasFlowStream}" X1="1" Y1="0" X2="1" Y2="100" Stretch="Fill" HorizontalAlignment="Center"/>
                                     </UniformGrid>
                                     <TextBlock Text="PROCESS ZONE"
                                                Foreground="{Binding GasDeliveryLineBrush}"
@@ -1003,6 +1263,13 @@
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Bottom"/>
                                     <Ellipse Grid.Row="1"
+                                             Width="424"
+                                             Height="44"
+                                             Fill="Transparent"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Top"
+                                             Style="{StaticResource HeaterGlowMotion}"/>
+                                    <Ellipse Grid.Row="1"
                                              Width="400"
                                              Height="38"
                                              Fill="{StaticResource HeaterMetal}"
@@ -1033,6 +1300,15 @@
                                 <Grid Grid.Row="3" Margin="34,2,34,0">
                                     <Rectangle Height="6" Fill="#35495A" VerticalAlignment="Top" RadiusX="3" RadiusY="3"/>
                                     <Rectangle Width="70" Height="18" Fill="{Binding VacuumPathBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-5,54,0" RadiusX="3" RadiusY="3"/>
+                                    <Line Style="{StaticResource VacuumFlowStream}"
+                                          X1="0"
+                                          Y1="1"
+                                          X2="100"
+                                          Y2="1"
+                                          Stretch="Fill"
+                                          Height="4"
+                                          Margin="0,1,56,0"
+                                          VerticalAlignment="Top"/>
                                     <TextBlock Text="BOTTOM PLENUM"
                                                Foreground="{StaticResource TextMuted}"
                                                FontSize="8"
@@ -1065,6 +1341,14 @@
                         <Rectangle Height="8"
                                    Fill="{Binding VacuumPathBrush}"
                                    VerticalAlignment="Center"/>
+                        <Line Style="{StaticResource VacuumFlowStream}"
+                              X1="0"
+                              Y1="1"
+                              X2="100"
+                              Y2="1"
+                              Stretch="Fill"
+                              Height="5"
+                              VerticalAlignment="Center"/>
                         <Ellipse Width="34"
                                  Height="34"
                                  Fill="{StaticResource SurfaceInset}"
@@ -1130,6 +1414,15 @@
                                            HorizontalAlignment="Left"
                                            Width="54"
                                            Margin="0,0,0,0"/>
+                                <Line Style="{StaticResource VacuumFlowStream}"
+                                      X1="0"
+                                      Y1="1"
+                                      X2="100"
+                                      Y2="1"
+                                      Stretch="Fill"
+                                      Width="54"
+                                      Height="5"
+                                      HorizontalAlignment="Left"/>
                                 <Border Width="116"
                                         Height="128"
                                         Background="#0A1118"
@@ -1150,7 +1443,11 @@
                                                  Fill="{Binding VacuumPathBrush}"
                                                  HorizontalAlignment="Center"
                                                  VerticalAlignment="Center"/>
-                                        <Canvas Width="62" Height="62" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Canvas Width="62"
+                                                Height="62"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Style="{StaticResource PumpRotorMotion}">
                                             <Line X1="31" Y1="5" X2="31" Y2="57" Stroke="#8090A0" StrokeThickness="3"/>
                                             <Line X1="5" Y1="31" X2="57" Y2="31" Stroke="#8090A0" StrokeThickness="3"/>
                                             <Line X1="12" Y1="12" X2="50" Y2="50" Stroke="#8090A0" StrokeThickness="2"/>

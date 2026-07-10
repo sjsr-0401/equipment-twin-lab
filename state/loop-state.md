@@ -1757,3 +1757,39 @@ Direction change:
 
 - 장비 외형은 구성요소와 연결이 읽히는 수준으로 개선됐다.
 - 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 개선한다.
+
+## 2026-07-10 Loop Update: Goal 070 완료
+
+완료한 goal:
+
+- `목표 070: WPF 장비 공정 동작 시각화`
+
+우선순위 변경:
+
+- 기존 추천은 알람 작업지시서 문장 정리였다.
+- 사용자가 대표 화면을 최종 품질까지 높이도록 요청해 장비 animation을 먼저 수행했다.
+
+변경 내용:
+
+- Gas/Vacuum flow animation 추가.
+- Valve pulse, Heater glow, Pump rotor rotation 추가.
+- Wafer transfer와 Gate motion 추가.
+- Alarm 중 정상 공정 animation 정지.
+- Core 상태를 ViewModel 의미 속성으로 변환하고 XAML Storyboard에 연결했다.
+
+검증:
+
+- 한국어/영어 각각 5개 Screenshot 검증 통과.
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF smoke test 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 071: 알람 작업지시서 한국어 문장 품질 정리`
+
+이유:
+
+- 장비 외형과 공정 동작 시각화가 연결됐다.
+- 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 높인다.

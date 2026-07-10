@@ -980,3 +980,22 @@ Completion status:
 다음:
 
 - `목표 070: 알람 작업지시서 한국어 문장 품질 정리` 진행.
+
+## 2026-07-10 Triage Update after Goal 070
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF 장비 process animation | 완료 | Core/ViewModel/XAML 분리 유지 |
+| P1 | 알람 작업지시서 한국어 문장 품질 | 다음 | Goal 071로 이동 |
+| P2 | 실제 gas particle 물리 모델 | 제외 | schematic animation으로 충분 |
+| P2 | Reduce Motion 사용자 설정 | 보류 | 실제 사용자 요구 발생 시 검토 |
+
+완료:
+
+- Gas/Vacuum/Valve/Heater/Pump/Wafer/Gate animation 추가.
+- Alarm 중 정상 animation 정지.
+- 한영 Screenshot, build, tests, smoke test 통과.
+
+다음:
+
+- `목표 071: 알람 작업지시서 한국어 문장 품질 정리` 진행.

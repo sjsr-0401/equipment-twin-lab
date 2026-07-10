@@ -3491,3 +3491,32 @@ Goal 069: 알람 작업지시서 한국어 문장 품질 정리
 ```text
 Goal 070: 알람 작업지시서 한국어 문장 품질 정리
 ```
+
+## 2026-07-10 Goal 070 우선순위 변경: WPF 장비 공정 동작 시각화 완료
+
+사용자 피드백:
+
+- 정적 schematic 개선만으로는 대표 포트폴리오 최종 품질에 부족했다.
+- 공정이 실제로 동작하는 장비처럼 보이는 시각 피드백이 필요했다.
+
+구현:
+
+- Gas flow와 Vacuum path에 이동 점선 animation 추가.
+- 활성 Valve의 절제된 pulse 추가.
+- Heater glow와 Vacuum Pump rotor 회전 추가.
+- Wafer transfer와 Gate open motion 추가.
+- Alarm 상태에서는 정상 공정 animation 정지.
+
+설계 판단:
+
+- Core timeline과 recipe는 수정하지 않았다.
+- ViewModel은 공정 상태를 animation 의미 상태로 변환한다.
+- XAML Storyboard가 실제 시각 동작을 담당한다.
+- 별도 timer, worker thread, animation engine은 추가하지 않았다.
+- Core에 없는 MFC/Pump 수치는 만들지 않았다.
+
+다음 권장 Goal:
+
+```text
+Goal 071: 알람 작업지시서 한국어 문장 품질 정리
+```
