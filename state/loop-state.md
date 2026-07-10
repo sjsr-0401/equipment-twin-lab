@@ -1607,3 +1607,43 @@ Direction change:
 
 - 왼쪽 schematic의 정적 fault 위치와 Wafer/Gate 상태가 모두 연결됐다.
 - 다음에는 정상/알람/이송 상태를 반복 가능한 PNG로 생성해 실제 화면 품질을 자동 검수할 필요가 있다.
+
+## 2026-07-10 Loop Update: Goal 066 완료
+
+완료한 goal:
+
+- `목표 066: WPF Demo 상태 자동 Screenshot Capture`
+
+변경 내용:
+
+- load/process/alarm/transfer-out/complete 5개 WPF 상태를 자동 PNG로 저장한다.
+- 기존 Reset/Step/Fault Replay 명령으로 상태를 재현한다.
+- 한국어/영어 캡처를 지원한다.
+- 알람 캡처는 알람/리포트 탭을 열어 작업지시서를 보여준다.
+- 5개 PNG의 1600×900 해상도를 PowerShell에서 자동 검증한다.
+- 산출 이미지는 Git에서 제외된 `artifacts/wpf-demo-screenshots/`에 저장한다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- 5개 한국어 PNG 자동 생성과 1600×900 검증 통과.
+- Load/Alarm/Transfer Out 이미지 직접 확인 통과.
+- 일반 WPF 실행 smoke test 통과.
+- `git diff --check` 통과.
+
+막힌 점과 해결:
+
+- 첫 알람 캡처는 상태 변경 직후 일부 Visual이 비어 저장됐다.
+- 단순 250ms 대기만으로는 탭 전환 캡처가 안정화되지 않았다.
+- 첫 렌더 전에 상태/탭을 준비하고 캡처 모드에서만 소프트웨어 렌더링을 적용해 해결했다.
+
+현재 다음 추천 작업:
+
+- `목표 067: 자동 Screenshot 기반 WPF Visual QA 2차`
+
+이유:
+
+- 최신 대표 화면을 반복 가능한 파일로 확보했다.
+- 이제 감으로 UI를 수정하지 않고 같은 1600×900 기준에서 상태별 잘림, 번역, 강조를 비교할 수 있다.

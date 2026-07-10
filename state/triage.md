@@ -900,3 +900,24 @@ Completion status:
 다음:
 
 - `목표 066: WPF Demo 상태 자동 Screenshot Capture` 진행.
+
+## 2026-07-10 Triage Update after Goal 066
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF demo 상태 자동 screenshot | 완료 | 5개 상태 캡처 스크립트 유지 |
+| P1 | 최신 WPF 화면 visual QA | 다음 | 1600×900 PNG끼리 상태별 비교 |
+| P2 | screenshot pixel regression | 보류 | UI 기준 이미지가 안정된 뒤 검토 |
+| P2 | 전체 fault screenshot matrix | 보류 | 대표 GAS-301 외 추가 필요성 판단 |
+
+완료:
+
+- Load/Process/Alarm/TransferOut/Complete 자동 PNG 생성.
+- 한국어/영어 선택 지원.
+- Alarm은 알람/리포트 탭으로 자동 전환.
+- 5개 파일과 1600×900 해상도 자동 검증.
+- 캡처 전용 software rendering으로 부분 렌더 문제 해결.
+
+다음:
+
+- `목표 067: 자동 Screenshot 기반 WPF Visual QA 2차` 진행.

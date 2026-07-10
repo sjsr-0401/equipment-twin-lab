@@ -331,7 +331,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid x:Name="RootLayout">
         <Grid.RowDefinitions>
             <RowDefinition Height="44"/>
             <RowDefinition Height="*"/>
@@ -833,7 +833,7 @@
         </Border>
 
         <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
-            <TabControl>
+            <TabControl x:Name="WorkspaceTabs">
                 <TabItem Header="{Binding OperationsTabHeader}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
