@@ -879,3 +879,24 @@ Completion status:
 다음:
 
 - `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화` 진행.
+
+## 2026-07-10 Triage Update after Goal 065
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | ALD wafer transfer 상태 시각화 | 완료 | step mapping 유지 |
+| P1 | WPF demo 상태 자동 screenshot | 다음 | 정상/알람/이송 PNG 생성 경로 검토 |
+| P1 | 최신 WPF 화면 visual QA | 대기 | 자동 screenshot 결과로 확인 |
+| P2 | 연속 transfer animation | 보류 | 상태 기반 표시 품질 확인 후 판단 |
+| P2 | 실제 transfer robot/load lock 모델 | 제외 | 별도 Core 범위 결정 전 구현하지 않음 |
+
+완료:
+
+- LoadWafer/Process/TransferOut/Complete Wafer 위치 표시.
+- Gate OPEN/CLOSED와 alarm hold 표시.
+- Exhaust 배기와 Wafer 이송 경로 분리.
+- MotionAxis 미사용 검증.
+
+다음:
+
+- `목표 066: WPF Demo 상태 자동 Screenshot Capture` 진행.

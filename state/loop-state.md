@@ -1570,3 +1570,40 @@ Direction change:
 
 - fault 위치는 이제 schematic에서 찾을 수 있다.
 - 다음에는 Load/Process/Unload step에 따라 wafer 위치와 gate 상태가 변해야 왼쪽 화면이 공정 흐름을 더 직접적으로 보여줄 수 있다.
+
+## 2026-07-10 Loop Update: Goal 065 완료
+
+완료한 goal:
+
+- `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화`
+
+변경 내용:
+
+- Load Port, transfer track, Process Chamber에 Wafer 상태 표시를 추가했다.
+- LoadWafer/공정 중/TransferOut/Complete를 서로 다른 Wafer 위치로 표현한다.
+- transfer gate OPEN/CLOSED를 색과 텍스트로 표시한다.
+- 알람 중 Wafer Chamber Hold와 Gate CLOSED를 표시한다.
+- Wafer 이송 경로를 Exhaust/Pump 배기 경로와 분리했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- Load/PumpDown/TransferOut/Complete/Alarm/한글 상태 검증 통과.
+- WPF 구현의 MotionAxis 참조 없음 확인.
+- `git diff --check` 통과.
+
+보류:
+
+- 연속 좌표나 WPF animation은 추가하지 않았다.
+- 실제 transfer robot/load lock 제어 모델은 아니다.
+
+현재 다음 추천 작업:
+
+- `목표 066: WPF Demo 상태 자동 Screenshot Capture`
+
+이유:
+
+- 왼쪽 schematic의 정적 fault 위치와 Wafer/Gate 상태가 모두 연결됐다.
+- 다음에는 정상/알람/이송 상태를 반복 가능한 PNG로 생성해 실제 화면 품질을 자동 검수할 필요가 있다.

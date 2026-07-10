@@ -456,6 +456,54 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         ? AlarmBrush
         : isAlarmActive ? TextMutedBrush : FlowBrush;
 
+    public string WaferTransferStatusText
+    {
+        get
+        {
+            if (isAlarmActive && IsWaferInChamber)
+            {
+                return L(
+                    "WAFER · HELD IN CHAMBER BY ALARM",
+                    "WAFER · 알람으로 CHAMBER 내부 Hold");
+            }
+
+            return CurrentProcessStep switch
+            {
+                MolyAldProcessStep.LoadWafer => L(
+                    "WAFER · TRANSFER IN TO CHAMBER",
+                    "WAFER · CHAMBER로 이송 중"),
+                MolyAldProcessStep.TransferOut => L(
+                    "WAFER · TRANSFER OUT TO LOAD PORT",
+                    "WAFER · LOAD PORT로 복귀 중"),
+                MolyAldProcessStep.Complete => L(
+                    "WAFER · RETURNED TO LOAD PORT",
+                    "WAFER · LOAD PORT 복귀 완료"),
+                _ when IsWaferInChamber => L(
+                    "WAFER · IN PROCESS CHAMBER",
+                    "WAFER · PROCESS CHAMBER 내부"),
+                _ => L(
+                    "WAFER · POSITION NOT ACTIVE",
+                    "WAFER · 활성 위치 없음")
+            };
+        }
+    }
+
+    public string TransferGateText => IsTransferGateOpen
+        ? L("GATE OPEN", "GATE 열림")
+        : L("GATE CLOSED", "GATE 닫힘");
+
+    public Brush TransferGateBrush => IsTransferGateOpen ? PrimaryBrush : TextMutedBrush;
+
+    public double LoadPortWaferOpacity => CurrentProcessStep is MolyAldProcessStep.Idle or MolyAldProcessStep.Complete
+        ? 1.0
+        : 0.12;
+
+    public double TransferInWaferOpacity => CurrentProcessStep == MolyAldProcessStep.LoadWafer ? 1.0 : 0.0;
+
+    public double ChamberWaferOpacity => IsWaferInChamber ? 1.0 : 0.12;
+
+    public double TransferOutWaferOpacity => CurrentProcessStep == MolyAldProcessStep.TransferOut ? 1.0 : 0.0;
+
     public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? PrecursorBrush : SurfaceRaisedBrush;
 
     public Brush ReactantValveBrush => CurrentStep?.Valves.Reactant == true ? ReactantBrush : SurfaceRaisedBrush;
@@ -786,6 +834,24 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     private bool IsActiveAlarmCode(string alarmCode) =>
         isAlarmActive && string.Equals(ActiveAlarmCode, alarmCode, StringComparison.OrdinalIgnoreCase);
+
+    private MolyAldProcessStep CurrentProcessStep =>
+        Enum.TryParse<MolyAldProcessStep>(CurrentStep?.Step, ignoreCase: true, out var step)
+            ? step
+            : MolyAldProcessStep.Idle;
+
+    private bool IsTransferGateOpen =>
+        !isAlarmActive &&
+        (CurrentProcessStep is MolyAldProcessStep.LoadWafer or MolyAldProcessStep.TransferOut);
+
+    private bool IsWaferInChamber => CurrentProcessStep is
+        MolyAldProcessStep.PumpDown or
+        MolyAldProcessStep.StabilizeTemperature or
+        MolyAldProcessStep.DoseMetalPrecursor or
+        MolyAldProcessStep.PurgeAfterPrecursor or
+        MolyAldProcessStep.DoseReactant or
+        MolyAldProcessStep.PurgeAfterReactant or
+        MolyAldProcessStep.PostPurge;
 
     private MolyAldTimelineStep? CurrentStep
     {
@@ -1771,6 +1837,13 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(HeaterDiagnosticBrush));
         OnPropertyChanged(nameof(ExhaustModuleBorderBrush));
         OnPropertyChanged(nameof(VacuumPathBrush));
+        OnPropertyChanged(nameof(WaferTransferStatusText));
+        OnPropertyChanged(nameof(TransferGateText));
+        OnPropertyChanged(nameof(TransferGateBrush));
+        OnPropertyChanged(nameof(LoadPortWaferOpacity));
+        OnPropertyChanged(nameof(TransferInWaferOpacity));
+        OnPropertyChanged(nameof(ChamberWaferOpacity));
+        OnPropertyChanged(nameof(TransferOutWaferOpacity));
         OnPropertyChanged(nameof(PrecursorValveBrush));
         OnPropertyChanged(nameof(ReactantValveBrush));
         OnPropertyChanged(nameof(PurgeValveBrush));
