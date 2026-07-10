@@ -1461,3 +1461,39 @@ Direction change:
 
 - 서버 상태 카드를 추가하면서 오른쪽 알람/리포트 탭 밀도가 다시 높아졌다.
 - 다음은 기능 추가보다 실제 화면에서 잘림, 간격, scroll 위치를 조정하는 작업이 맞다.
+
+## 2026-07-10 Loop Update: Goal 062 완료
+
+완료한 goal:
+
+- `목표 062: WPF stepper/server card/schematic 시각 QA`
+
+변경 내용:
+
+- WPF가 최대화 상태로 시작하도록 했다.
+- 하단 debug 영역을 최소/최대 높이를 가진 비율 행으로 바꿨다.
+- 왼쪽 schematic의 고정 행 높이와 chamber 여백을 줄였다.
+- 알람/리포트 탭의 중첩 ScrollViewer를 제거했다.
+- 긴 workflow detail과 파일 경로는 말줄임+ToolTip으로 표시한다.
+- Mock Server 상태 메시지가 카드 전체 폭을 사용하도록 재배치했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- `git diff --check` 통과.
+
+막힌 점:
+
+- Windows 화면 캡처 계층 오류로 최신 WPF screenshot 자동 캡처는 실패했다.
+- 첫 build는 화면 확인용 WPF 프로세스가 DLL을 잠가 실패했고, 해당 프로세스를 종료한 뒤 재실행해 통과했다.
+
+현재 다음 추천 작업:
+
+- `목표 063: Mock Server 상태와 workflow 전송 단계 연결`
+
+이유:
+
+- 화면 밀도와 스크롤 구조는 1차 정리됐다.
+- 다음에는 서버가 꺼져 있을 때 stepper 6단계가 단순 대기가 아니라 `OFFLINE` 원인을 직접 보여주도록 연결하는 것이 좋다.

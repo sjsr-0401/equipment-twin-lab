@@ -817,3 +817,24 @@ Completion status:
 다음:
 
 - `목표 062: 실제 화면 기준 stepper/server card/schematic 시각 QA` 진행.
+
+## 2026-07-10 Triage Update after Goal 062
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | Stepper/server card/schematic 구조 QA | 완료 | 최신 실행 화면에서 pixel 단위 최종 확인 |
+| P1 | 서버 상태와 workflow 전송 단계 연결 | 다음 | Offline/Online/전송 성공을 6단계 card에 반영 |
+| P1 | 최신 WPF screenshot 확인 | 확인 필요 | 자동 캡처 오류 때문에 사용자 실행 화면으로 확인 |
+| P2 | 자동 health polling | 보류 | 수동 health check 유지 |
+
+완료:
+
+- WPF 시작 시 최대화 적용.
+- 하단 debug row를 반응형 높이로 변경.
+- 알람 탭 중첩 ScrollViewer 제거.
+- 긴 detail/path를 말줄임과 ToolTip으로 정리.
+- Mock Server 상태 카드 폭 사용 개선.
+
+다음:
+
+- `목표 063: Mock Server 상태와 workflow 전송 단계 연결` 진행.
