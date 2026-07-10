@@ -313,7 +313,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
     }
 
-    public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "에스컬레이션 조건");
+    public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "엔지니어 검토 요청 조건");
 
     public string OperatorActionLogLabel => L("OPERATOR ACTION LOG", "오퍼레이터 작업 로그");
 
@@ -659,7 +659,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         ? L("TROUBLESHOOTING GUIDE", "트러블슈팅 가이드")
         : $"{activeAlarmGuide.AlarmCode} | {LocalizeGuideText(activeAlarmGuide.Title)}";
 
-    public string AlarmGuideSeverity => activeAlarmGuide?.Severity.ToString().ToUpperInvariant() ?? "STANDBY";
+    public string AlarmGuideSeverity => LocalizeAlarmGuideSeverity(activeAlarmGuide?.Severity);
 
     public Brush AlarmGuideSeverityBrush => activeAlarmGuide?.Severity switch
     {
@@ -679,7 +679,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         ? L("No active alarm guide", "활성 알람 가이드 없음")
         : L(
             $"{AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count} checks complete | {AlarmGuideChoices.Count} response choices",
-            $"{AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count} checks 완료 | 대응 선택지 {AlarmGuideChoices.Count}개");
+            $"점검 {AlarmGuideChecks.Count(check => check.IsChecked)}/{AlarmGuideChecks.Count} 완료 | 대응 선택지 {AlarmGuideChoices.Count}개");
 
     public string SelectedAlarmGuideChoiceText => selectedAlarmGuideChoice == null
         ? L("Selected response: none", "선택한 대응: 없음")
@@ -693,7 +693,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             "이슈 리포트 저장 전 FAULT 재현을 먼저 실행하세요")
         : L(
             "Exports alarm, checklist, selected response, step snapshot, and engineering trace",
-            "알람, 체크리스트, 선택 대응, step snapshot, engineering trace를 저장합니다");
+            "알람, 점검 결과, 선택한 대응, 현재 공정 정보, Engineering Trace를 저장합니다");
 
     public string ServerOutboxStatus => activeAlarmGuide == null
         ? L(
@@ -701,13 +701,13 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             "서버 payload 저장 전 FAULT 재현을 먼저 실행하세요")
         : L(
             "Queues the same issue report payload to the local server outbox",
-            "같은 이슈 리포트 payload를 local server outbox에 저장합니다");
+            "동일한 이슈 리포트 Payload를 로컬 서버 전송 대기열에 저장합니다");
 
     public string WorkflowStepperLabel => L("ALARM WORKFLOW", "알람 처리 흐름");
 
     public string WorkflowAlarmStepTitle => L("1 ALARM", "1 알람");
 
-    public string WorkflowChecklistStepTitle => L("2 CHECK", "2 체크");
+    public string WorkflowChecklistStepTitle => L("2 CHECK", "2 점검");
 
     public string WorkflowResponseStepTitle => L("3 RESPONSE", "3 대응");
 
@@ -1594,12 +1594,13 @@ public sealed class OperatorConsoleViewModel : ObservableObject
                 selectedAlarmGuideChoice.RequiresEngineer);
 
         return new AlarmIssueReportExportRequest(
+            useKorean ? "ko" : "en",
             timeline.RecipeName,
             SelectedFaultScenario,
             activeAlarmGuide.AlarmCode,
-            activeAlarmGuide.Title,
+            LocalizeGuideText(activeAlarmGuide.Title),
             activeAlarmGuide.Severity.ToString(),
-            activeAlarmGuide.Summary,
+            LocalizeGuideText(activeAlarmGuide.Summary),
             CurrentStepName,
             currentStep.Index,
             timeline.Steps.Count,
@@ -1644,6 +1645,27 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         return useKorean ? korean : english;
     }
 
+    private string LocalizeAlarmGuideSeverity(AlarmGuideSeverity? severity)
+    {
+        if (severity == null)
+        {
+            return L("STANDBY", "대기");
+        }
+
+        if (!useKorean)
+        {
+            return severity.Value.ToString().ToUpperInvariant();
+        }
+
+        return severity.Value switch
+        {
+            EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Critical => "위험",
+            EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Warning => "경고",
+            EquipmentTwin.Core.Alarms.AlarmGuideSeverity.Info => "정보",
+            _ => "대기"
+        };
+    }
+
     private string LocalizeStepName(string stepName)
     {
         if (!useKorean)
@@ -1674,106 +1696,106 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
         return text switch
         {
-            "Pumpdown Timeout" => "Pumpdown 시간 초과",
+            "Pumpdown Timeout" => "Pumpdown 제한 시간 초과",
             "The synthetic chamber pressure did not reach the demo process setpoint before the pumpdown step timed out." =>
-                "Pumpdown step 제한 시간 안에 chamber pressure가 demo process setpoint에 도달하지 못했습니다.",
+                "모의 Pumpdown 공정의 제한 시간 안에 Chamber 압력이 목표값까지 낮아지지 않았습니다.",
             "Confirm the chamber door/interlock state is closed before retrying pumpdown." =>
-                "Pumpdown 재시도 전 chamber door/interlock 상태가 닫혀 있는지 확인합니다.",
+                "Pumpdown 재시도 전에 Chamber Door와 Interlock이 닫힘 상태인지 확인합니다.",
             "Confirm the vacuum pump command is ON in the HMI or trace log." =>
-                "HMI 또는 trace log에서 vacuum pump command가 ON인지 확인합니다.",
+                "HMI 또는 Trace Log에서 Vacuum Pump 명령이 ON인지 확인합니다.",
             "Compare the current pressure reading with the expected pumpdown trend." =>
-                "현재 pressure reading이 기대 pumpdown trend와 맞는지 비교합니다.",
+                "현재 압력값이 정상적인 Pumpdown 추세로 감소하는지 확인합니다.",
             "Check whether the synthetic exhaust path or gate valve state is blocking pumpdown." =>
-                "synthetic exhaust path 또는 gate valve 상태가 pumpdown을 막고 있는지 확인합니다.",
-            "Door/interlock was not ready" => "Door/interlock 준비 안 됨",
+                "모의 배기 경로 또는 Gate Valve 상태가 Pumpdown을 막고 있는지 확인합니다.",
+            "Door/interlock was not ready" => "Chamber Door 또는 Interlock 준비 안 됨",
             "Secure the chamber/interlock, reset the demo alarm, and retry pumpdown." =>
-                "Chamber/interlock을 확보한 뒤 demo alarm을 reset하고 pumpdown을 재시도합니다.",
-            "Pump command is ON but pressure remains high" => "Pump command ON인데 pressure 높음",
+                "Chamber Door와 Interlock을 정상 상태로 만든 뒤 알람을 Reset하고 Pumpdown을 재시도합니다.",
+            "Pump command is ON but pressure remains high" => "Pump 명령은 ON이지만 압력이 높게 유지됨",
             "Export the issue report with pressure snapshot and escalate to engineering review." =>
-                "Pressure snapshot이 포함된 issue report를 저장하고 engineering review로 escalate합니다.",
-            "Pressure reading looks inconsistent" => "Pressure reading이 일관되지 않음",
+                "압력 Snapshot이 포함된 Issue Report를 저장하고 엔지니어에게 검토를 요청합니다.",
+            "Pressure reading looks inconsistent" => "압력값이 비정상적으로 보임",
             "Capture the issue report and flag the pressure signal for sensor/IO path review." =>
-                "Issue report를 저장하고 pressure signal을 sensor/IO path review 대상으로 표시합니다.",
+                "Issue Report를 저장하고 압력 신호의 Sensor/IO 경로 검토를 요청합니다.",
             "Pump command is ON but chamber pressure does not trend downward." =>
-                "Pump command는 ON이지만 chamber pressure가 내려가는 trend를 보이지 않습니다.",
+                "Pump 명령이 ON인데도 Chamber 압력이 낮아지지 않습니다.",
             "Pressure value is frozen, out of range, or inconsistent with the expected pumpdown step." =>
-                "Pressure 값이 고정되어 있거나 범위 밖이거나 기대 pumpdown step과 맞지 않습니다.",
+                "압력값이 고정되거나 허용 범위를 벗어나거나 현재 Pumpdown 단계와 일치하지 않습니다.",
             "The same pumpdown timeout repeats after interlock reset." =>
-                "Interlock reset 후에도 같은 pumpdown timeout이 반복됩니다.",
+                "Interlock을 Reset한 뒤에도 같은 Pumpdown 시간 초과가 반복됩니다.",
 
-            "Temperature Not Stable" => "온도 안정화 실패",
+            "Temperature Not Stable" => "Wafer 온도 안정화 실패",
             "The synthetic wafer temperature did not reach the demo stabilization band before ALD cycles started." =>
-                "ALD cycle 시작 전 synthetic wafer temperature가 demo stabilization band에 도달하지 못했습니다.",
+                "ALD Cycle을 시작하기 전에 모의 Wafer 온도가 설정된 안정화 범위에 도달하지 않았습니다.",
             "Confirm the recipe temperature setpoint shown on the HMI." =>
-                "HMI에 표시된 recipe temperature setpoint를 확인합니다.",
+                "HMI에 표시된 Recipe 온도 설정값을 확인합니다.",
             "Confirm the current wafer temperature reading and whether it is trending toward setpoint." =>
-                "현재 wafer temperature reading과 setpoint 방향으로 이동 중인지 확인합니다.",
+                "현재 Wafer 온도가 설정값 방향으로 변하고 있는지 확인합니다.",
             "Confirm the alarm occurred during the temperature stabilization step." =>
-                "알람이 temperature stabilization step에서 발생했는지 확인합니다.",
-            "Temperature is still ramping" => "Temperature ramping 중",
+                "알람이 온도 안정화 단계에서 발생했는지 확인합니다.",
+            "Temperature is still ramping" => "온도가 아직 상승 또는 하강 중",
             "Hold the process and review whether the stabilization timeout is too short for this demo recipe." =>
-                "Process를 hold하고 이 demo recipe의 stabilization timeout이 너무 짧은지 검토합니다.",
-            "Temperature value is flat or unrealistic" => "Temperature 값이 flat이거나 비현실적",
+                "공정을 Hold하고 현재 Demo Recipe의 안정화 제한 시간이 너무 짧은지 검토합니다.",
+            "Temperature value is flat or unrealistic" => "온도값이 고정되었거나 현실적이지 않음",
             "Export the issue report and review the synthetic sensor or trace generation path." =>
-                "Issue report를 저장하고 synthetic sensor 또는 trace 생성 경로를 검토합니다.",
-            "Setpoint and reading look normal after reset" => "Reset 후 setpoint와 reading 정상",
+                "Issue Report를 저장하고 모의 Sensor 또는 Trace 생성 경로를 검토합니다.",
+            "Setpoint and reading look normal after reset" => "Reset 후 설정값과 현재값 모두 정상",
             "Reset the demo alarm and retry the normal process timeline." =>
-                "Demo alarm을 reset하고 normal process timeline을 재시도합니다.",
+                "알람을 Reset하고 정상 공정 Timeline을 다시 실행합니다.",
             "Temperature does not move toward the setpoint during stabilization." =>
-                "Stabilization 중 temperature가 setpoint 방향으로 움직이지 않습니다.",
+                "안정화 중 온도가 설정값 방향으로 변하지 않습니다.",
             "Temperature jumps abruptly without a matching process state change." =>
-                "Process state 변화 없이 temperature가 갑자기 점프합니다.",
+                "공정 상태 변화 없이 온도가 갑자기 크게 변합니다.",
             "The same stabilization alarm repeats after a retry." =>
-                "Retry 후에도 같은 stabilization alarm이 반복됩니다.",
+                "재시도 후에도 같은 온도 안정화 알람이 반복됩니다.",
 
-            "Gas Delivery Step Timeout" => "Gas Delivery Step 시간 초과",
+            "Gas Delivery Step Timeout" => "Gas 공급 단계 제한 시간 초과",
             "A synthetic precursor, reactant, or purge step failed to complete within the demo process timing rule." =>
-                "Synthetic precursor/reactant/purge step이 demo process timing rule 안에 완료되지 못했습니다.",
+                "모의 Precursor/Reactant/Purge 단계가 설정된 제한 시간 안에 완료되지 않았습니다.",
             "Confirm which valve or gas delivery step was active when the alarm occurred." =>
-                "알람 발생 시 어떤 valve 또는 gas delivery step이 active였는지 확인합니다.",
+                "알람이 발생했을 때 어떤 Valve와 Gas 공급 단계가 동작 중이었는지 확인합니다.",
             "Confirm the ALD cycle number shown in the HMI and report." =>
-                "HMI와 report에 표시된 ALD cycle number를 확인합니다.",
+                "HMI와 Issue Report에 표시된 ALD Cycle 번호를 확인합니다.",
             "Check whether chamber pressure changed as expected during the gas delivery step." =>
-                "Gas delivery step 중 chamber pressure가 기대대로 변했는지 확인합니다.",
+                "Gas 공급 단계에서 Chamber 압력이 예상대로 변했는지 확인합니다.",
             "Confirm the active recipe step matches the expected ALD dose/purge sequence." =>
-                "Active recipe step이 기대 ALD dose/purge sequence와 맞는지 확인합니다.",
-            "Expected valve was not active" => "기대 valve가 active 아님",
+                "현재 Recipe 단계가 예상한 ALD 주입/Purge 순서와 일치하는지 확인합니다.",
+            "Expected valve was not active" => "명령된 Valve가 동작하지 않음",
             "Capture the issue report and review command-to-valve mapping in the sequence logic." =>
-                "Issue report를 저장하고 sequence logic의 command-to-valve mapping을 검토합니다.",
-            "Valve active but process response missing" => "Valve active지만 process response 없음",
+                "Issue Report를 저장하고 Sequence Logic의 Command-to-Valve 연결을 검토합니다.",
+            "Valve active but process response missing" => "Valve는 동작하지만 공정 응답이 없음",
             "Escalate with the process snapshot, active valve state, and trace log." =>
-                "Process snapshot, active valve state, trace log와 함께 escalate합니다.",
-            "State looks normal after reset" => "Reset 후 state 정상",
+                "공정 Snapshot, 활성 Valve 상태, Trace Log와 함께 엔지니어에게 검토를 요청합니다.",
+            "State looks normal after reset" => "Reset 후 장비 상태 정상",
             "Reset the demo alarm and rerun the fault scenario or normal timeline for comparison." =>
-                "Demo alarm을 reset하고 비교를 위해 fault scenario 또는 normal timeline을 다시 실행합니다.",
+                "알람을 Reset하고 비교를 위해 Fault Scenario 또는 정상 Timeline을 다시 실행합니다.",
             "Valve state does not match the active ALD step." =>
-                "Valve state가 active ALD step과 맞지 않습니다.",
+                "Valve 상태가 현재 ALD 단계와 일치하지 않습니다.",
             "Gas delivery step fails repeatedly on the same cycle." =>
-                "같은 cycle에서 gas delivery step이 반복 실패합니다.",
+                "같은 ALD Cycle에서 Gas 공급 단계가 반복해서 실패합니다.",
             "Pressure or film trend is inconsistent with the active dose/purge step." =>
-                "Pressure 또는 film trend가 active dose/purge step과 맞지 않습니다.",
+                "압력 또는 막 두께 추세가 현재 주입/Purge 단계와 일치하지 않습니다.",
 
             "Sequence State Mismatch" => "Sequence 상태 불일치",
             "The synthetic process reached an unexpected sequence state or a generic step-level fault without a more specific guide." =>
-                "Synthetic process가 예상하지 못한 sequence state에 도달했거나 더 구체적인 guide가 없는 step-level fault가 발생했습니다.",
+                "모의 공정이 예상하지 못한 Sequence 상태에 도달했거나 전용 가이드가 없는 Step 오류가 발생했습니다.",
             "Confirm the current process state and the last accepted operator command." =>
-                "현재 process state와 마지막으로 accepted된 operator command를 확인합니다.",
+                "현재 공정 상태와 마지막으로 정상 처리된 작업자 명령을 확인합니다.",
             "Confirm the previous successful step before the mismatch." =>
-                "Mismatch 이전에 성공한 마지막 step을 확인합니다.",
+                "상태 불일치 직전의 마지막 정상 Step을 확인합니다.",
             "Review the engineering trace for the first rejected or failed transition." =>
-                "Engineering trace에서 처음 rejected/failed된 transition을 확인합니다.",
-            "Mismatch followed an operator command" => "Operator command 이후 mismatch 발생",
+                "Engineering Trace에서 처음 거부되거나 실패한 상태 전환을 확인합니다.",
+            "Mismatch followed an operator command" => "작업자 명령 후 상태 불일치 발생",
             "Record the command and state snapshot, then review whether the command should be blocked earlier in the HMI." =>
-                "Command와 state snapshot을 기록하고, 해당 command를 HMI에서 더 일찍 block해야 하는지 검토합니다.",
-            "Cause is not clear from the HMI" => "HMI만으로 원인 불명확",
+                "명령과 상태 Snapshot을 기록하고 해당 명령을 HMI에서 더 일찍 차단해야 하는지 검토합니다.",
+            "Cause is not clear from the HMI" => "HMI만으로 원인을 확인할 수 없음",
             "Export the issue report and escalate with trace, current state, and previous step." =>
-                "Issue report를 저장하고 trace/current state/previous step과 함께 escalate합니다.",
+                "Issue Report를 저장하고 Trace, 현재 상태, 이전 Step과 함께 엔지니어에게 검토를 요청합니다.",
             "The same sequence mismatch is reproducible." =>
-                "같은 sequence mismatch가 재현됩니다.",
+                "같은 Sequence 상태 불일치가 반복 재현됩니다.",
             "The HMI allows an operation that should be blocked by the current state." =>
-                "현재 state에서 block되어야 할 operation을 HMI가 허용합니다.",
+                "현재 상태에서 차단되어야 하는 조작을 HMI가 허용합니다.",
             "The engineering trace shows a rejected transition that is not explained by the guide." =>
-                "Engineering trace에 guide로 설명되지 않는 rejected transition이 보입니다.",
+                "Engineering Trace에 가이드로 설명되지 않는 거부된 상태 전환이 기록됩니다.",
 
             _ => text
         };

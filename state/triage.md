@@ -999,3 +999,23 @@ Completion status:
 다음:
 
 - `목표 071: 알람 작업지시서 한국어 문장 품질 정리` 진행.
+
+## 2026-07-10 Triage Update after Goal 071
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 알람 작업지시서 한국어 문장 품질 | 완료 | 영어 JSON 원본 유지 |
+| P1 | 한국어 Markdown 이슈 리포트 | 완료 | Language 기반 렌더링 유지 |
+| P1 | 리포트/Payload 계약 자동 테스트 | 다음 | Goal 072에서 CI 연결 |
+| P2 | `.resx` localization | 보류 | 언어 또는 화면 수 증가 시 검토 |
+
+완료:
+
+- 4개 가이드 56개 문장 정리.
+- 한국어 Severity/Workflow/Markdown 정리.
+- JSON Language 추가와 기계용 Severity 유지.
+- 한영 Screenshot, Export smoke, build, tests 통과.
+
+다음:
+
+- `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트` 진행.

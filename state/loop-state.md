@@ -1793,3 +1793,35 @@ Direction change:
 
 - 장비 외형과 공정 동작 시각화가 연결됐다.
 - 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 높인다.
+
+## 2026-07-10 Loop Update: Goal 071 완료
+
+완료한 goal:
+
+- `목표 071: 알람 작업지시서 한국어 문장 품질 정리`
+
+변경 내용:
+
+- 4개 알람 가이드의 56개 사용자 문장 한국어 정리.
+- 한국어 Severity/점검/Workflow 문구 정리.
+- 한국어 Markdown 이슈 리포트 생성.
+- Export Payload에 Language 추가.
+- JSON Severity와 AlarmCode는 기계용 값으로 유지.
+
+검증:
+
+- 가이드 4개, 문장 56개 매핑 누락 0개.
+- 지정 번역투 표현 0개.
+- 한영 Screenshot 각각 5개 통과.
+- 한국어 Markdown/JSON Export Service smoke 통과.
+- 전체 solution Release build, Core tests, WPF smoke 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트`
+
+이유:
+
+- 이번에는 임시 smoke 프로그램으로 문서와 Payload를 확인했다.
+- 다음에는 같은 검증을 CI에서 반복 가능하게 만들어 계약 회귀를 막는다.
