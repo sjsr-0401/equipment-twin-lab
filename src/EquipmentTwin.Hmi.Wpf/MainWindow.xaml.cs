@@ -1,8 +1,7 @@
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using EquipmentTwin.Hmi.Wpf.Services;
 using EquipmentTwin.Hmi.Wpf.ViewModels;
 
 namespace EquipmentTwin.Hmi.Wpf;
@@ -15,33 +14,21 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         screenshotRequest = ScreenshotCaptureRequest.Parse(Environment.GetCommandLineArgs());
-        if (screenshotRequest is not null)
-        {
-            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
-        }
-
         InitializeComponent();
 
         var viewModel = new OperatorConsoleViewModel();
-        if (screenshotRequest is not null)
+        if (screenshotRequest?.Language == "ko")
         {
-            PrepareCaptureState(viewModel, screenshotRequest);
+            viewModel.ToggleLanguageCommand.Execute(null);
         }
 
         DataContext = viewModel;
 
         if (screenshotRequest is not null)
         {
-            if (screenshotRequest.State == "alarm")
-            {
-                WorkspaceTabs.SelectedIndex = 1;
-            }
-
-            WindowState = System.Windows.WindowState.Normal;
-            Width = 1600;
-            Height = 900;
+            WindowState = System.Windows.WindowState.Maximized;
             ShowInTaskbar = false;
-            ShowActivated = false;
+            Topmost = true;
             ContentRendered += CaptureScreenshotOnContentRendered;
         }
     }
@@ -60,12 +47,19 @@ public partial class MainWindow : Window
         try
         {
             File.Delete(errorPath);
+            Activate();
+            PrepareCaptureState((OperatorConsoleViewModel)DataContext, screenshotRequest);
+            if (screenshotRequest.State == "alarm")
+            {
+                WorkspaceTabs.SelectedIndex = 1;
+            }
+
             await Dispatcher.InvokeAsync(UpdateLayout, DispatcherPriority.Render);
-            await Task.Delay(250);
+            await Task.Delay(1000);
             await Dispatcher.InvokeAsync(UpdateLayout, DispatcherPriority.Render);
             await Dispatcher.InvokeAsync(static () => { }, DispatcherPriority.ApplicationIdle);
 
-            SaveRootLayoutPng(screenshotRequest.OutputPath);
+            WindowScreenshotService.SavePng(this, screenshotRequest.OutputPath);
             Application.Current.Shutdown(0);
         }
         catch (Exception exception)
@@ -103,10 +97,6 @@ public partial class MainWindow : Window
                 throw new InvalidOperationException($"Unsupported capture state: {request.State}");
         }
 
-        if (request.Language == "ko")
-        {
-            viewModel.ToggleLanguageCommand.Execute(null);
-        }
     }
 
     private static void Advance(OperatorConsoleViewModel viewModel, int count)
@@ -115,22 +105,6 @@ public partial class MainWindow : Window
         {
             viewModel.StepForwardCommand.Execute(null);
         }
-    }
-
-    private void SaveRootLayoutPng(string outputPath)
-    {
-        RootLayout.UpdateLayout();
-
-        var width = Math.Max(1, (int)Math.Ceiling(RootLayout.ActualWidth));
-        var height = Math.Max(1, (int)Math.Ceiling(RootLayout.ActualHeight));
-        var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
-        bitmap.Render(RootLayout);
-
-        Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-        using var stream = File.Create(outputPath);
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-        encoder.Save(stream);
     }
 
     private void MinimizeButton_Click(object sender, RoutedEventArgs e)

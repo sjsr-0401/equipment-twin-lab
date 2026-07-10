@@ -331,7 +331,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid x:Name="RootLayout">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="44"/>
             <RowDefinition Height="*"/>

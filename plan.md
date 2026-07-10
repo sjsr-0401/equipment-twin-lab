@@ -3409,3 +3409,30 @@ CLI = 자동화/리포트/검증
 ```text
 Goal 051: WPF Alarm Recovery Procedure Panel
 ```
+
+## 2026-07-10 Goal 067: 자동 Screenshot 기반 WPF Visual QA 2차 완료
+
+목표:
+
+- Windows DPI 배율에 관계없이 WPF 대표 화면을 반복 가능하게 캡처한다.
+- 해상도만 맞고 화면 일부가 비는 거짓 성공을 자동으로 막는다.
+
+구현:
+
+- 캡처 전용 WPF 창을 현재 모니터 작업 영역에 최대화했다.
+- 최종 합성된 client 영역을 `CopyFromScreen`으로 캡처한다.
+- 작업표시줄을 제외한 뒤 1600×900 PNG로 정규화한다.
+- PowerShell에 검정 표본과 네 개 핵심 화면 영역 검사를 추가했다.
+- 한국어/영어 각각 5개 대표 상태를 검증했다.
+
+설계 판단:
+
+- Core와 ViewModel은 캡처를 모르게 유지했다.
+- 캡처는 WPF/Windows adapter 역할의 service로 분리했다.
+- 실행마다 달라지는 시계와 trace가 있으므로 전체 pixel 100% 비교는 보류했다.
+
+다음 권장 Goal:
+
+```text
+Goal 068: WPF 한국어 일반 UI 라벨 일관성 정리
+```

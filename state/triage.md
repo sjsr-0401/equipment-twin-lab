@@ -921,3 +921,23 @@ Completion status:
 다음:
 
 - `목표 067: 자동 Screenshot 기반 WPF Visual QA 2차` 진행.
+
+## 2026-07-10 Triage Update after Goal 067
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | WPF screenshot 렌더 안정화 | 완료 | 최대화 + client 화면 캡처 유지 |
+| P1 | 한국어 일반 UI 라벨 일관성 | 다음 | 조작/영역 제목만 언어 전환 연결 |
+| P2 | golden-image pixel regression | 보류 | 시간/trace 마스킹 정책이 필요할 때 검토 |
+| P2 | 전체 fault screenshot matrix | 보류 | 대표 GAS-301 외 확장 필요성 판단 |
+
+완료:
+
+- 한국어/영어 5개 상태 자동 캡처.
+- 작업표시줄 제외와 1600×900 정규화.
+- 검정 표본 및 네 화면 anchor 검사.
+- build/tests/일반 WPF smoke test 통과.
+
+다음:
+
+- `목표 068: WPF 한국어 일반 UI 라벨 일관성 정리` 진행.
