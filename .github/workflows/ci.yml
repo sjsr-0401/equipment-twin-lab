@@ -211,7 +211,8 @@ jobs:
           grep -q "UseWPF" src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           grep -q "MOLY ALD WPF HMI" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "FaultReplay" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
-          grep -q "Open optional Unity viewer folder" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "OpenUnityViewerButtonText" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "Open optional Unity viewer folder" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "TimelineProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "PressureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "TemperatureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml

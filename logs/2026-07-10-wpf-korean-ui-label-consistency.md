@@ -30,6 +30,8 @@
 - `src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs`
   - 한국어 버튼, 제목, 운전 상태, 계측 상태 문구를 정리했다.
   - 번역된 계측 상태가 기존 성공/경고/알람 색상을 유지하도록 상태 색상 mapping을 보강했다.
+- `.github/workflows/ci.yml`
+  - Unity Viewer 버튼 검사를 XAML 고정 문구가 아니라 XAML binding과 ViewModel 영어 원문으로 나눴다.
 - `goals/068-wpf-korean-ui-label-consistency.md`
 - `logs/2026-07-10-wpf-korean-ui-label-consistency.md`
 - `plan.md`
@@ -76,6 +78,18 @@
 - 실제 XAML 줄을 다시 읽고 정확한 요소만 교체했다.
 
 기능 구현 자체에서 남은 blocker는 없다.
+
+### 첫 GitHub CI의 오래된 XAML 고정 문자열 검사
+
+첫 push의 .NET build와 모든 공정 테스트는 통과했지만, 마지막 파일 정합성 검사가 `MainWindow.xaml` 안에서 `Open optional Unity viewer folder` 문구를 찾다가 실패했다. 이번 작업에서 그 문구를 ViewModel 속성으로 옮겼기 때문에 기능이 사라진 것이 아니라 검사 위치가 달라진 것이다.
+
+해결:
+
+- XAML에서 `OpenUnityViewerButtonText` binding이 존재하는지 검사한다.
+- ViewModel에서 영어 원문 `Open optional Unity viewer folder`가 존재하는지 별도로 검사한다.
+- 이렇게 하면 버튼이 ViewModel과 연결됐는지와 영어 문구가 보존됐는지를 모두 확인할 수 있다.
+
+첫 로컬 Bash 재현 명령은 PowerShell에서 공백이 포함된 `grep` pattern을 전달하는 quoting 때문에 두 번째 검사가 잘려 실패했다. Bash command 전체를 하나의 문자열 변수로 전달하고 pattern을 작은따옴표로 묶어 다시 실행했으며 두 검사 모두 통과했다.
 
 ## 5. 보류한 판단
 
