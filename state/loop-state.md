@@ -1533,3 +1533,40 @@ Direction change:
 
 - 알람 대응과 서버 전송 workflow는 이제 상태가 연결됐다.
 - 다음에는 알람 코드가 장비 schematic의 실제 문제 영역과 연결되어야 오퍼레이터가 원인을 더 빨리 찾을 수 있다.
+
+## 2026-07-10 Loop Update: Goal 064 완료
+
+완료한 goal:
+
+- `목표 064: fault code별 schematic 진단 라인 강조`
+
+변경 내용:
+
+- 정상/GAS-301/TMP-201/VAC-101 진단 포커스 badge를 추가했다.
+- GAS-301은 Gas Box와 delivery line을 강조한다.
+- TMP-201은 Chamber와 heater를 강조한다.
+- VAC-101은 vacuum path와 Exhaust/Pump를 강조한다.
+- 관련 없는 모듈은 중립색을 유지한다.
+- 색상과 알람 코드/영역 텍스트를 함께 사용한다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- 정상/GAS/TMP/VAC/한글 ViewModel 상태 검증 통과.
+- `git diff --check` 통과.
+
+보류:
+
+- Core에 없는 FILM 계열 fault는 UI에도 만들지 않았다.
+- 기존 MotionAxis는 사용하지 않았다.
+
+현재 다음 추천 작업:
+
+- `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화`
+
+이유:
+
+- fault 위치는 이제 schematic에서 찾을 수 있다.
+- 다음에는 Load/Process/Unload step에 따라 wafer 위치와 gate 상태가 변해야 왼쪽 화면이 공정 흐름을 더 직접적으로 보여줄 수 있다.

@@ -23,6 +23,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     private static readonly Brush BackgroundBrush = Brush("#0B0F14");
     private static readonly Brush SurfaceBrush = Brush("#151C24");
     private static readonly Brush SurfaceRaisedBrush = Brush("#1D2733");
+    private static readonly Brush BorderBrush = Brush("#2F3C4C");
     private static readonly Brush TextPrimaryBrush = Brush("#EAF0F7");
     private static readonly Brush TextMutedBrush = Brush("#9AA8B7");
     private static readonly Brush PrimaryBrush = Brush("#2EA8FF");
@@ -407,6 +408,54 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public Brush ChamberBrush => isAlarmActive ? Brush("#172430") : Brush("#12212C");
 
+    public string SchematicDiagnosticText
+    {
+        get
+        {
+            if (!isAlarmActive)
+            {
+                return L("SCHEMATIC FOCUS · NORMAL", "SCHEMATIC 진단 · 정상");
+            }
+
+            var alarmCode = ActiveAlarmCode;
+            return alarmCode.ToUpperInvariant() switch
+            {
+                "GAS-301" => L(
+                    "FAULT FOCUS · GAS-301 · GAS BOX / DELIVERY",
+                    "FAULT 진단 · GAS-301 · GAS BOX / 공급 라인"),
+                "VAC-101" => L(
+                    "FAULT FOCUS · VAC-101 · EXHAUST / PUMP",
+                    "FAULT 진단 · VAC-101 · EXHAUST / PUMP"),
+                "TMP-201" => L(
+                    "FAULT FOCUS · TMP-201 · CHAMBER HEATER",
+                    "FAULT 진단 · TMP-201 · CHAMBER HEATER"),
+                _ => L(
+                    $"FAULT FOCUS · {alarmCode} · PROCESS SEQUENCE",
+                    $"FAULT 진단 · {alarmCode} · PROCESS SEQUENCE")
+            };
+        }
+    }
+
+    public Brush SchematicDiagnosticBrush => isAlarmActive ? AlarmBrush : SuccessBrush;
+
+    public Brush GasModuleBorderBrush => IsActiveAlarmCode("GAS-301") ? AlarmBrush : BorderBrush;
+
+    public Brush GasDeliveryLineBrush => IsActiveAlarmCode("GAS-301")
+        ? AlarmBrush
+        : isAlarmActive ? TextMutedBrush : FlowBrush;
+
+    public Brush ChamberBorderBrush => IsActiveAlarmCode("TMP-201")
+        ? AlarmBrush
+        : isAlarmActive ? BorderBrush : FlowBrush;
+
+    public Brush HeaterDiagnosticBrush => IsActiveAlarmCode("TMP-201") ? AlarmBrush : WarningBrush;
+
+    public Brush ExhaustModuleBorderBrush => IsActiveAlarmCode("VAC-101") ? AlarmBrush : BorderBrush;
+
+    public Brush VacuumPathBrush => IsActiveAlarmCode("VAC-101")
+        ? AlarmBrush
+        : isAlarmActive ? TextMutedBrush : FlowBrush;
+
     public Brush PrecursorValveBrush => CurrentStep?.Valves.MetalPrecursor == true ? PrecursorBrush : SurfaceRaisedBrush;
 
     public Brush ReactantValveBrush => CurrentStep?.Valves.Reactant == true ? ReactantBrush : SurfaceRaisedBrush;
@@ -734,6 +783,9 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     private string ActiveAlarmCode => activeAlarmGuide?.AlarmCode
         ?? (CurrentStep == null ? "----" : FaultCode(CurrentStep.Step));
+
+    private bool IsActiveAlarmCode(string alarmCode) =>
+        isAlarmActive && string.Equals(ActiveAlarmCode, alarmCode, StringComparison.OrdinalIgnoreCase);
 
     private MolyAldTimelineStep? CurrentStep
     {
@@ -1711,6 +1763,14 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         OnPropertyChanged(nameof(AlarmCodeBrush));
         OnPropertyChanged(nameof(AlarmCardBrush));
         OnPropertyChanged(nameof(ChamberBrush));
+        OnPropertyChanged(nameof(SchematicDiagnosticText));
+        OnPropertyChanged(nameof(SchematicDiagnosticBrush));
+        OnPropertyChanged(nameof(GasModuleBorderBrush));
+        OnPropertyChanged(nameof(GasDeliveryLineBrush));
+        OnPropertyChanged(nameof(ChamberBorderBrush));
+        OnPropertyChanged(nameof(HeaterDiagnosticBrush));
+        OnPropertyChanged(nameof(ExhaustModuleBorderBrush));
+        OnPropertyChanged(nameof(VacuumPathBrush));
         OnPropertyChanged(nameof(PrecursorValveBrush));
         OnPropertyChanged(nameof(ReactantValveBrush));
         OnPropertyChanged(nameof(PurgeValveBrush));

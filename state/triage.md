@@ -858,3 +858,24 @@ Completion status:
 다음:
 
 - `목표 064: fault code별 schematic 진단 라인 강조` 진행.
+
+## 2026-07-10 Triage Update after Goal 064
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | fault code별 schematic 진단 라인 | 완료 | GAS/TMP/VAC mapping 유지 |
+| P1 | ALD wafer transfer 상태 시각화 | 다음 | timeline step 기반 위치/gate 표시 |
+| P1 | 최신 WPF screenshot 확인 | 확인 필요 | wafer transfer 추가 후 함께 확인 |
+| P2 | FILM fault 영역 강조 | 대기 | Core fault와 alarm guide가 생긴 뒤 연결 |
+| P2 | 색상 점멸/animation | 보류 | 정적 상태 가독성 확인 후 판단 |
+
+완료:
+
+- GAS-301 Gas Box/Delivery 강조.
+- TMP-201 Chamber/Heater 강조.
+- VAC-101 Exhaust/Pump/Vacuum path 강조.
+- 진단 focus badge와 색상 이중 표현.
+
+다음:
+
+- `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화` 진행.
