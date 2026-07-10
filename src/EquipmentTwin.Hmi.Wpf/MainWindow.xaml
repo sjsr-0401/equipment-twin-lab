@@ -520,7 +520,7 @@
                             Padding="14"/>
 
                     <TextBlock Grid.ColumnSpan="3"
-                               Text="EQUIPMENT MODULE LAYOUT"
+                               Text="{Binding EquipmentModuleLayoutLabel}"
                                Foreground="{StaticResource TextMuted}"
                                FontSize="11"
                                FontWeight="Bold"
@@ -824,7 +824,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="PROCESS TIMELINE" Foreground="{StaticResource TextMuted}" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ProcessTimelineLabel}" Foreground="{StaticResource TextMuted}" FontSize="14" FontWeight="Bold"/>
                         <TextBlock Grid.Column="1" Text="{Binding TimelineProgress, StringFormat={}{0:0}%}" Foreground="{StaticResource TextMuted}" Margin="12,0,0,0"/>
                     </Grid>
                     <ProgressBar Value="{Binding TimelineProgress, Mode=OneWay}" Maximum="100" Margin="0,8,0,0"/>
@@ -849,16 +849,16 @@
                 </Grid.RowDefinitions>
 
                 <UniformGrid Grid.Row="0" Columns="5" Margin="0,0,0,10">
-                    <Button Content="START" Command="{Binding StartCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Success}" Foreground="{StaticResource Background}"/>
-                    <Button Content="STOP" Command="{Binding PauseCommand}" Style="{StaticResource CommandButton}" Background="#A82D2D"/>
-                    <Button Content="STEP" Command="{Binding StepForwardCommand}" Style="{StaticResource CommandButton}"/>
-                    <Button Content="FAULT REPLAY" Command="{Binding FaultReplayCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Warning}" Foreground="{StaticResource Background}"/>
-                    <Button Content="RESET" Command="{Binding ResetCommand}" Style="{StaticResource CommandButton}"/>
+                    <Button Content="{Binding StartButtonText}" Command="{Binding StartCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Success}" Foreground="{StaticResource Background}"/>
+                    <Button Content="{Binding StopButtonText}" Command="{Binding PauseCommand}" Style="{StaticResource CommandButton}" Background="#A82D2D"/>
+                    <Button Content="{Binding StepButtonText}" Command="{Binding StepForwardCommand}" Style="{StaticResource CommandButton}"/>
+                    <Button Content="{Binding FaultReplayButtonText}" Command="{Binding FaultReplayCommand}" Style="{StaticResource CommandButton}" Background="{StaticResource Warning}" Foreground="{StaticResource Background}"/>
+                    <Button Content="{Binding ResetButtonText}" Command="{Binding ResetCommand}" Style="{StaticResource CommandButton}"/>
                 </UniformGrid>
 
                 <Border Grid.Row="1" Background="{StaticResource SurfaceRaised}" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="FAULT SCENARIO SELECTOR" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Text="{Binding FaultScenarioSelectorLabel}" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
                         <ComboBox ItemsSource="{Binding FaultScenarios}"
                                   SelectedItem="{Binding SelectedFaultScenario, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Margin="0,8,0,6"
@@ -874,11 +874,11 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="CURRENT STEP" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
+                            <TextBlock Text="{Binding CurrentStepLabel}" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
                             <TextBlock Text="{Binding CurrentStepName}" FontSize="23" FontWeight="Bold" Margin="0,3,0,0"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
-                            <TextBlock Text="RECIPE / CYCLE" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right"/>
+                            <TextBlock Text="{Binding RecipeCycleLabel}" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right"/>
                             <TextBlock Text="{Binding RecipeCycleText}" Foreground="{StaticResource TextMuted}" FontSize="12" HorizontalAlignment="Right" TextAlignment="Right" Margin="0,6,0,0"/>
                         </StackPanel>
                     </Grid>
@@ -886,7 +886,7 @@
 
                 <Border Grid.Row="3" Background="{StaticResource Surface}" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="PROCESS INSTRUMENTS" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Text="{Binding ProcessInstrumentsLabel}" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
                         <Grid Margin="0,8,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="42"/>
@@ -899,21 +899,21 @@
                                 <ColumnDefinition Width="85"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Text="Pressure" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Text="{Binding PressureLabel}" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
                             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding PressureValue}" FontSize="18" FontWeight="Bold"/>
                                 <ProgressBar Value="{Binding PressureProgress, Mode=OneWay}" Maximum="100"/>
                             </StackPanel>
                             <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding PressureStatus}" Foreground="{Binding PressureStatusBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
-                            <TextBlock Grid.Row="1" Text="Temp" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="{Binding TempLabel}" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
                             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding TemperatureValue}" FontSize="18" FontWeight="Bold"/>
                                 <ProgressBar Value="{Binding TemperatureProgress, Mode=OneWay}" Maximum="100" Foreground="{StaticResource Warning}"/>
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding TemperatureStatus}" Foreground="{Binding TemperatureStatusBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
-                            <TextBlock Grid.Row="2" Text="Film" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="2" Text="{Binding FilmLabel}" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"/>
                             <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding FilmValue}" FontSize="18" FontWeight="Bold"/>
                                 <ProgressBar Value="{Binding FilmProgress, Mode=OneWay}" Maximum="100" Foreground="{StaticResource Success}"/>
@@ -991,7 +991,7 @@
                         <Border Grid.RowSpan="2" Width="36" Height="36" BorderBrush="{Binding AlarmIconBrush}" BorderThickness="2" CornerRadius="18" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <TextBlock Text="{Binding AlarmIcon}" Foreground="{Binding AlarmIconBrush}" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Grid.Column="1" Text="ALARM PRIORITY" Foreground="{StaticResource TextPrimary}" Opacity="0.7" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Grid.Column="1" Text="{Binding AlarmPriorityLabel}" Foreground="{StaticResource TextPrimary}" Opacity="0.7" FontWeight="Bold" FontSize="12"/>
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding AlarmTitle}" FontSize="24" FontWeight="Bold" Margin="0,4,0,0"/>
                         <StackPanel Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBlock Text="{Binding AlarmDetail}" FontSize="12" TextAlignment="Right"/>
@@ -1429,7 +1429,7 @@
                                   HorizontalScrollBarVisibility="Disabled">
                 <Border Background="{StaticResource Surface}" CornerRadius="8" Padding="12">
                     <StackPanel>
-                        <TextBlock Text="OPERATOR ACTION LOG" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Text="{Binding OperatorActionLogLabel}" Foreground="{StaticResource TextMuted}" FontWeight="Bold" FontSize="12"/>
                         <ItemsControl ItemsSource="{Binding OperatorLog}" Margin="0,8,0,0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -1441,7 +1441,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button Content="Open optional Unity viewer folder"
+                        <Button Content="{Binding OpenUnityViewerButtonText}"
                                 Command="{Binding OpenUnityViewerCommand}"
                                 Style="{StaticResource CommandButton}"
                                 Margin="0,10,0,0"

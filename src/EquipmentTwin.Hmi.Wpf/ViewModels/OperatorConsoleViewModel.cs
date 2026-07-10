@@ -167,7 +167,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public string Subtitle => L(
         "Main operator console | Core-driven synthetic public-reference process",
-        "메인 오퍼레이터 콘솔 | Core 기반 synthetic public-reference process");
+        "메인 오퍼레이터 콘솔 | Core 기반 공개 자료 참조 합성 공정");
 
     public string LanguageToggleText => useKorean ? "EN" : "한국어";
 
@@ -179,23 +179,25 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public string SchematicTitle => L(
         "Synthetic Moly ALD — Process Schematic",
-        "Synthetic Moly ALD — 공정 Schematic");
+        "Synthetic Moly ALD — 공정 구성도");
 
     public string SchematicSubtitle => L(
         "public-reference HMI | not vendor CAD or process copy",
-        "공개 자료 기반 HMI | vendor CAD/process copy 아님");
+        "공개 자료 기반 HMI | 제조사 CAD/공정 복제 아님");
 
-    public string ProcessTimelineLabel => L("PROCESS TIMELINE", "공정 Timeline");
+    public string EquipmentModuleLayoutLabel => L("EQUIPMENT MODULE LAYOUT", "장비 모듈 구성");
 
-    public string StartButtonText => "START";
+    public string ProcessTimelineLabel => L("PROCESS TIMELINE", "공정 진행도");
 
-    public string StopButtonText => "STOP";
+    public string StartButtonText => L("START", "시작");
 
-    public string StepButtonText => "STEP";
+    public string StopButtonText => L("STOP", "정지");
+
+    public string StepButtonText => L("STEP", "다음 STEP");
 
     public string FaultReplayButtonText => L("FAULT REPLAY", "FAULT 재현");
 
-    public string ResetButtonText => "RESET";
+    public string ResetButtonText => L("RESET", "초기화");
 
     public string FaultScenarioSelectorLabel => L("FAULT SCENARIO SELECTOR", "FAULT 시나리오 선택");
 
@@ -311,17 +313,19 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
     }
 
-    public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "Escalation 조건");
+    public string EscalationConditionsLabel => L("ESCALATION CONDITIONS", "에스컬레이션 조건");
 
-    public string OperatorActionLogLabel => L("OPERATOR ACTION LOG", "Operator Action Log");
+    public string OperatorActionLogLabel => L("OPERATOR ACTION LOG", "오퍼레이터 작업 로그");
 
     public string OpenUnityViewerButtonText => L("Open optional Unity viewer folder", "Unity viewer 폴더 열기");
 
     public string TimelineDebugTableLabel => L(
         "TIMELINE DEBUG TABLE — Core-generated process steps",
-        "Timeline Debug Table — Core 생성 공정 Step");
+        "공정 Timeline 디버그 표 — Core 생성 Step");
 
-    public string EngineeringTraceConsoleLabel => "ENGINEERING TRACE CONSOLE";
+    public string EngineeringTraceConsoleLabel => L(
+        "ENGINEERING TRACE CONSOLE",
+        "엔지니어링 Trace 콘솔");
 
     public string RunStateText
     {
@@ -329,12 +333,12 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             if (isAlarmActive)
             {
-                return L("HELD | OPERATOR ACTION REQUIRED", "HELD | 오퍼레이터 조치 필요");
+                return L("HELD | OPERATOR ACTION REQUIRED", "정지 유지 | 오퍼레이터 조치 필요");
             }
 
             return isRunning
-                ? L("RUNNING | INTERLOCK OK", "RUNNING | Interlock OK")
-                : L("PAUSED | READY", "PAUSED | 준비");
+                ? L("RUNNING | INTERLOCK OK", "운전 중 | Interlock 정상")
+                : L("PAUSED | READY", "일시정지 | 준비");
         }
     }
 
@@ -372,11 +376,31 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public double FilmProgress => CurrentStep == null || timeline == null ? 0 : ClampPercent(CurrentStep.EstimatedThicknessAngstrom / timeline.TargetThicknessAngstrom * 100.0);
 
-    public string PressureStatus => CurrentStep == null ? "-" : RangeStatus(CurrentStep.ChamberPressureMtorr, 800, 900, "LOW", "OK", "HI");
+    public string PressureStatus => CurrentStep == null
+        ? "-"
+        : RangeStatus(
+            CurrentStep.ChamberPressureMtorr,
+            800,
+            900,
+            L("LOW", "낮음"),
+            L("OK", "정상"),
+            L("HI", "높음"));
 
-    public string TemperatureStatus => CurrentStep == null ? "-" : RangeStatus(CurrentStep.WaferTemperatureC, 245, 255, "COOL", "OK", "HOT");
+    public string TemperatureStatus => CurrentStep == null
+        ? "-"
+        : RangeStatus(
+            CurrentStep.WaferTemperatureC,
+            245,
+            255,
+            L("COOL", "낮음"),
+            L("OK", "정상"),
+            L("HOT", "높음"));
 
-    public string FilmStatus => CurrentStep == null ? "-" : CurrentStep.EstimatedThicknessAngstrom >= (timeline?.TargetThicknessAngstrom ?? 0) ? "TARGET" : "GROWING";
+    public string FilmStatus => CurrentStep == null
+        ? "-"
+        : CurrentStep.EstimatedThicknessAngstrom >= (timeline?.TargetThicknessAngstrom ?? 0)
+            ? L("TARGET", "목표")
+            : L("GROWING", "성장 중");
 
     public Brush PressureStatusBrush => StatusBrush(PressureStatus);
 
@@ -389,7 +413,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     public Brush AlarmIconBrush => isAlarmActive ? WarningBrush : SuccessBrush;
 
     public string AlarmTitle => isAlarmActive
-        ? L("ALARM ACTIVE", "ALARM 발생")
+        ? L("ALARM ACTIVE", "알람 발생")
         : L("NO ALARM", "알람 없음");
 
     public string AlarmDetail => isAlarmActive && CurrentStep != null
@@ -414,7 +438,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             if (!isAlarmActive)
             {
-                return L("SCHEMATIC FOCUS · NORMAL", "SCHEMATIC 진단 · 정상");
+                return L("SCHEMATIC FOCUS · NORMAL", "구성도 진단 · 정상");
             }
 
             var alarmCode = ActiveAlarmCode;
@@ -1959,9 +1983,9 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     private static Brush StatusBrush(string status)
     {
-        return status is "OK" or "TARGET" ? SuccessBrush :
-            status is "GROWING" or "WAIT" ? PrimaryBrush :
-            status is "LOW" or "COOL" ? WarningBrush :
+        return status is "OK" or "TARGET" or "정상" or "목표" ? SuccessBrush :
+            status is "GROWING" or "WAIT" or "성장 중" or "대기" ? PrimaryBrush :
+            status is "LOW" or "COOL" or "낮음" ? WarningBrush :
             AlarmBrush;
     }
 

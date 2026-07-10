@@ -941,3 +941,22 @@ Completion status:
 다음:
 
 - `목표 068: WPF 한국어 일반 UI 라벨 일관성 정리` 진행.
+
+## 2026-07-10 Triage Update after Goal 068
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 한국어 일반 UI 라벨 일관성 | 완료 | ViewModel binding 유지 |
+| P1 | 알람 작업지시서 한국어 문장 품질 | 다음 | summary/check/choice/escalation 정리 |
+| P2 | `.resx` 기반 localization | 보류 | 화면/언어 수가 늘 때 재검토 |
+| P2 | debug table/trace payload 번역 | 제외 | 개발자 진단 원문 유지 |
+
+완료:
+
+- 한국어 버튼, 일반 제목, 운전/계측 상태 정리.
+- 영어 화면 회귀 없음 확인.
+- 한국어/영어 Screenshot 및 전체 build/tests/smoke test 통과.
+
+다음:
+
+- `목표 069: 알람 작업지시서 한국어 문장 품질 정리` 진행.
