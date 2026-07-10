@@ -35,4 +35,3 @@ dotnet run --project .\tests\EquipmentTwin.Core.Tests\EquipmentTwin.Core.Tests.c
 
 - `Goal 070: 알람 작업지시서 한국어 문장 품질 정리`
 - 장비 외형 다음으로 작업자가 실제로 읽는 알람 요약, 체크리스트, 대응 선택지의 혼합 문장을 다듬는다.
-
