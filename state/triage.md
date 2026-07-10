@@ -838,3 +838,23 @@ Completion status:
 다음:
 
 - `목표 063: Mock Server 상태와 workflow 전송 단계 연결` 진행.
+
+## 2026-07-10 Triage Update after Goal 063
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 서버 상태와 workflow 전송 단계 연결 | 완료 | 상태 우선순위 유지 |
+| P1 | fault code별 schematic 진단 라인 | 다음 | GAS/VAC/TMP/FILM 영역별 강조 |
+| P1 | 최신 WPF screenshot 확인 | 확인 필요 | 다음 schematic 변경 후 함께 확인 |
+| P2 | WPF ViewModel 전용 영구 테스트 | 대기 | 표시 로직이 더 커질 때 별도 test project 검토 |
+| P2 | 자동 health polling | 보류 | 수동 health check 유지 |
+
+완료:
+
+- Workflow 전송 카드에 CHECKING/OFFLINE/ONLINE/HTTP OK 상태 연결.
+- Offline red, Online blue, send success green 규칙 적용.
+- .NET 8 임시 검증으로 영어/한국어 상태와 색상 확인.
+
+다음:
+
+- `목표 064: fault code별 schematic 진단 라인 강조` 진행.

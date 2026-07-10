@@ -1497,3 +1497,39 @@ Direction change:
 
 - 화면 밀도와 스크롤 구조는 1차 정리됐다.
 - 다음에는 서버가 꺼져 있을 때 stepper 6단계가 단순 대기가 아니라 `OFFLINE` 원인을 직접 보여주도록 연결하는 것이 좋다.
+
+## 2026-07-10 Loop Update: Goal 063 완료
+
+완료한 goal:
+
+- `목표 063: Mock Server 상태와 workflow 전송 단계 연결`
+
+변경 내용:
+
+- workflow 6번 전송 카드에 Mock Server health 상태를 연결했다.
+- 연결 확인 중, OFFLINE, ONLINE, 전송 중, 전송 성공 상태를 구분한다.
+- OFFLINE은 빨간색, ONLINE은 파란색, 실제 전송 성공은 초록색으로 표시한다.
+- 서버 준비 전/후와 payload 준비 전/후 안내 문구를 구분했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- .NET 8 상태 전이 직접 검증 통과.
+- 영어/한국어 상태 표시 검증 통과.
+- `git diff --check` 통과.
+
+막힌 점과 해결:
+
+- Windows PowerShell 5.1 reflection 검증은 .NET 8 runtime mismatch로 실패했다.
+- Git에서 제외된 `net8.0-windows` 임시 검증 프로그램으로 전환해 모든 상태를 확인했다.
+
+현재 다음 추천 작업:
+
+- `목표 064: fault code별 schematic 진단 라인 강조`
+
+이유:
+
+- 알람 대응과 서버 전송 workflow는 이제 상태가 연결됐다.
+- 다음에는 알람 코드가 장비 schematic의 실제 문제 영역과 연결되어야 오퍼레이터가 원인을 더 빨리 찾을 수 있다.

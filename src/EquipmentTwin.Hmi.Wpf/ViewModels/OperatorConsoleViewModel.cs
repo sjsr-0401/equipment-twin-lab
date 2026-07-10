@@ -632,6 +632,21 @@ public sealed class OperatorConsoleViewModel : ObservableObject
                 return L("SENDING", "전송 중");
             }
 
+            if (isCheckingMockServerHealth)
+            {
+                return L("CHECKING", "확인 중");
+            }
+
+            if (HasKnownMockServerHealth && !mockServerHealthOnline)
+            {
+                return L("OFFLINE", "연결 실패");
+            }
+
+            if (mockServerHealthOnline)
+            {
+                return L("ONLINE", "연결 가능");
+            }
+
             if (!string.IsNullOrWhiteSpace(lastMockServerSendStatus))
             {
                 return L("CHECK", "확인 필요");
@@ -641,17 +656,72 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         }
     }
 
-    public string WorkflowSendStepDetail => lastMockServerSendSucceeded
-        ? L("Mock server received", "Mock Server 수신")
-        : string.IsNullOrWhiteSpace(lastServerOutboxPath)
-            ? L("Queue payload first", "payload 먼저 저장")
-            : L("Send to mock server", "Mock Server로 전송");
+    public string WorkflowSendStepDetail
+    {
+        get
+        {
+            if (lastMockServerSendSucceeded)
+            {
+                return L("Mock server received", "Mock Server 수신");
+            }
 
-    public Brush WorkflowSendStepBrush => lastMockServerSendSucceeded
-        ? SuccessBrush
-        : isSendingServerPayload || !string.IsNullOrWhiteSpace(lastMockServerSendStatus)
-            ? WarningBrush
-            : TextMutedBrush;
+            if (isSendingServerPayload)
+            {
+                return L("Sending queued payload", "대기열 payload 전송 중");
+            }
+
+            if (isCheckingMockServerHealth)
+            {
+                return L("Checking /health", "/health 확인 중");
+            }
+
+            if (HasKnownMockServerHealth && !mockServerHealthOnline)
+            {
+                return L("Start Mock Server", "Mock Server 실행 필요");
+            }
+
+            if (mockServerHealthOnline)
+            {
+                return string.IsNullOrWhiteSpace(lastServerOutboxPath)
+                    ? L("Server ready; queue payload", "서버 준비됨; payload 저장 필요")
+                    : L("Server ready to receive", "서버 전송 준비 완료");
+            }
+
+            return string.IsNullOrWhiteSpace(lastServerOutboxPath)
+                ? L("Queue payload first", "payload 먼저 저장")
+                : L("Check server, then send", "서버 확인 후 전송");
+        }
+    }
+
+    public Brush WorkflowSendStepBrush
+    {
+        get
+        {
+            if (lastMockServerSendSucceeded)
+            {
+                return SuccessBrush;
+            }
+
+            if (isSendingServerPayload || isCheckingMockServerHealth)
+            {
+                return WarningBrush;
+            }
+
+            if (HasKnownMockServerHealth && !mockServerHealthOnline)
+            {
+                return AlarmBrush;
+            }
+
+            if (mockServerHealthOnline)
+            {
+                return PrimaryBrush;
+            }
+
+            return string.IsNullOrWhiteSpace(lastMockServerSendStatus)
+                ? TextMutedBrush
+                : WarningBrush;
+        }
+    }
 
     public Brush AlarmGuideCardBrush => activeAlarmGuide == null ? SurfaceBrush : SurfaceRaisedBrush;
 
@@ -659,6 +729,8 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         activeAlarmGuide != null &&
         AlarmGuideChecks.Count > 0 &&
         AlarmGuideChecks.All(check => !check.Required || check.IsChecked);
+
+    private bool HasKnownMockServerHealth => !string.IsNullOrWhiteSpace(mockServerHealthStatus);
 
     private string ActiveAlarmCode => activeAlarmGuide?.AlarmCode
         ?? (CurrentStep == null ? "----" : FaultCode(CurrentStep.Step));
