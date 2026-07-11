@@ -1855,3 +1855,34 @@ Direction change:
 
 - Payload 구조를 자동으로 보호할 수 있게 됐다.
 - 다음에는 실제 전송 실패 후 재시도와 상태 전이를 구현할 차례다.
+
+## 2026-07-11 Loop Update: Goal 073 완료
+
+완료한 goal:
+
+- `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리`
+
+변경 내용:
+
+- Outbox에 queued/sending/failed/sent 상태 전이 추가.
+- 전송 시도 횟수, 시각, 오류, 성공 시각 영속화.
+- 실패 payload 수동 재전송과 성공 payload 중복 차단.
+- WPF 상태 카드와 상태별 버튼 문구 추가.
+- WPF 계약 테스트를 4개로 확장.
+
+검증:
+
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF 계약 테스트 4개 통과.
+- Screenshot 자동화는 대화형 화면 핸들 접근 실패로 실행 환경에서 확인하지 못함.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 074: Mock Server 중복 수신 방지와 전송 Receipt`
+
+이유:
+
+- 클라이언트의 성공 후 중복 클릭은 막았다.
+- 다음에는 네트워크 응답 유실이나 재전송에도 서버가 같은 envelope를 한 번만 처리하도록 보강한다.

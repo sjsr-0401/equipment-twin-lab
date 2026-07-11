@@ -53,6 +53,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     private string selectedFaultScenario = string.Empty;
     private string? lastIssueReportPath;
     private string? lastServerOutboxPath;
+    private AlarmIssueReportOutboxResult? lastServerOutboxState;
     private string? lastServerPayloadPreview;
     private string? lastMockServerSendStatus;
     private bool lastMockServerSendSucceeded;
@@ -253,9 +254,69 @@ public sealed class OperatorConsoleViewModel : ObservableObject
 
     public string OpenLatestServerPayloadButtonText => L("OPEN LATEST PAYLOAD", "최신 payload 열기");
 
-    public string SendLatestServerPayloadButtonText => isSendingServerPayload
-        ? L("SENDING...", "전송 중...")
-        : L("SEND TO MOCK SERVER", "Mock Server로 전송");
+    public string OutboxDeliveryStateLabel => L("OUTBOX DELIVERY STATE", "전송 대기열 상태");
+
+    public string LatestServerOutboxStateText => lastServerOutboxState == null
+        ? L("Status: no payload", "상태: payload 없음")
+        : L(
+            $"Status: {lastServerOutboxState.Status.ToUpperInvariant()}",
+            $"상태: {LocalizeOutboxStatus(lastServerOutboxState.Status)}");
+
+    public string LatestServerOutboxAttemptText
+    {
+        get
+        {
+            if (lastServerOutboxState == null)
+            {
+                return L("Attempts: 0 | Last attempt: -", "시도 횟수: 0회 | 마지막 시도: -");
+            }
+
+            var lastAttempt = lastServerOutboxState.LastAttemptAt?.ToLocalTime().ToString("HH:mm:ss") ?? "-";
+            return L(
+                $"Attempts: {lastServerOutboxState.AttemptCount} | Last attempt: {lastAttempt}",
+                $"시도 횟수: {lastServerOutboxState.AttemptCount}회 | 마지막 시도: {lastAttempt}");
+        }
+    }
+
+    public string LatestServerOutboxErrorText => string.IsNullOrWhiteSpace(lastServerOutboxState?.LastError)
+        ? L("Last error: -", "마지막 오류: -")
+        : L(
+            $"Last error: {lastServerOutboxState.LastError}",
+            $"마지막 오류: {lastServerOutboxState.LastError}");
+
+    public Brush LatestServerOutboxStateBrush => lastServerOutboxState?.Status switch
+    {
+        AlarmIssueReportOutboxStatuses.Sent => SuccessBrush,
+        AlarmIssueReportOutboxStatuses.Failed => AlarmBrush,
+        AlarmIssueReportOutboxStatuses.Sending => WarningBrush,
+        AlarmIssueReportOutboxStatuses.Queued => PrimaryBrush,
+        _ => TextMutedBrush
+    };
+
+    public bool CanSendLatestServerPayload =>
+        !isSendingServerPayload &&
+        !string.IsNullOrWhiteSpace(lastServerOutboxPath) &&
+        File.Exists(lastServerOutboxPath) &&
+        lastServerOutboxState?.Status is not AlarmIssueReportOutboxStatuses.Sent and
+        not AlarmIssueReportOutboxStatuses.Sending;
+
+    public string SendLatestServerPayloadButtonText
+    {
+        get
+        {
+            if (isSendingServerPayload)
+            {
+                return L("SENDING...", "전송 중...");
+            }
+
+            return lastServerOutboxState?.Status switch
+            {
+                AlarmIssueReportOutboxStatuses.Failed => L("RETRY SEND", "재전송"),
+                AlarmIssueReportOutboxStatuses.Sent => L("ALREADY SENT", "전송 완료"),
+                _ => L("SEND TO MOCK SERVER", "Mock Server로 전송")
+            };
+        }
+    }
 
     public string LatestMockServerSendStatus => string.IsNullOrWhiteSpace(lastMockServerSendStatus)
         ? L(
@@ -782,14 +843,19 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         get
         {
-            if (lastMockServerSendSucceeded)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sent)
             {
                 return L("HTTP OK", "전송 성공");
             }
 
-            if (isSendingServerPayload)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sending || isSendingServerPayload)
             {
                 return L("SENDING", "전송 중");
+            }
+
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Failed)
+            {
+                return L("FAILED", "전송 실패");
             }
 
             if (isCheckingMockServerHealth)
@@ -820,14 +886,26 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         get
         {
-            if (lastMockServerSendSucceeded)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sent)
             {
                 return L("Mock server received", "Mock Server 수신");
             }
 
-            if (isSendingServerPayload)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sending || isSendingServerPayload)
             {
                 return L("Sending queued payload", "대기열 payload 전송 중");
+            }
+
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Failed)
+            {
+                return L(
+                    $"Retry available; attempt {lastServerOutboxState.AttemptCount}",
+                    $"재전송 가능; {lastServerOutboxState.AttemptCount}회 시도");
+            }
+
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Queued)
+            {
+                return L("Queued payload ready", "대기열 payload 전송 준비");
             }
 
             if (isCheckingMockServerHealth)
@@ -857,14 +935,26 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         get
         {
-            if (lastMockServerSendSucceeded)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sent)
             {
                 return SuccessBrush;
             }
 
-            if (isSendingServerPayload || isCheckingMockServerHealth)
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Failed)
+            {
+                return AlarmBrush;
+            }
+
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Sending ||
+                isSendingServerPayload ||
+                isCheckingMockServerHealth)
             {
                 return WarningBrush;
+            }
+
+            if (lastServerOutboxState?.Status == AlarmIssueReportOutboxStatuses.Queued)
+            {
+                return PrimaryBrush;
             }
 
             if (HasKnownMockServerHealth && !mockServerHealthOnline)
@@ -1313,6 +1403,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         lastIssueReportPath = null;
         lastServerOutboxPath = null;
+        lastServerOutboxState = null;
         lastServerPayloadPreview = null;
         lastMockServerSendStatus = null;
         lastMockServerSendSucceeded = false;
@@ -1418,6 +1509,7 @@ public sealed class OperatorConsoleViewModel : ObservableObject
         {
             var result = issueReportOutboxService.QueueAlarmIssueReport(request);
             lastServerOutboxPath = result.Path;
+            lastServerOutboxState = result;
             lastServerPayloadPreview = ReadServerPayloadPreview(result.Path);
             lastMockServerSendSucceeded = false;
             lastMockServerSendStatus = null;
@@ -1527,6 +1619,34 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             return;
         }
 
+        try
+        {
+            lastServerOutboxState = issueReportOutboxService.Read(lastServerOutboxPath);
+        }
+        catch (Exception ex)
+        {
+            lastMockServerSendSucceeded = false;
+            lastMockServerSendStatus = L(
+                $"Send blocked: {ex.Message}",
+                $"전송 차단: {ex.Message}");
+            AddLog("SEND BLOCKED", ex.Message);
+            Trace("BLOCK", $"SendLatestServerPayload() could not read outbox: {ex.Message}");
+            RefreshServerOutboxProperties();
+            return;
+        }
+
+        if (lastServerOutboxState.Status == AlarmIssueReportOutboxStatuses.Sent)
+        {
+            lastMockServerSendSucceeded = true;
+            lastMockServerSendStatus = L(
+                "Send blocked: this payload was already sent.",
+                "전송 차단: 이미 전송 완료된 payload입니다.");
+            AddLog("SEND BLOCKED", "payload already sent");
+            Trace("BLOCK", "SendLatestServerPayload() blocked: outbox status is sent");
+            RefreshServerOutboxProperties();
+            return;
+        }
+
         isSendingServerPayload = true;
         lastMockServerSendSucceeded = false;
         lastMockServerSendStatus = L(
@@ -1534,10 +1654,22 @@ public sealed class OperatorConsoleViewModel : ObservableObject
             "최신 payload를 mock server로 전송 중...");
         RefreshServerOutboxProperties();
 
+        var attemptStarted = false;
         try
         {
+            lastServerOutboxState = issueReportOutboxService.BeginSendAttempt(lastServerOutboxPath);
+            attemptStarted = true;
+            lastServerPayloadPreview = ReadServerPayloadPreview(lastServerOutboxPath);
+            RefreshServerOutboxProperties();
+
             var result = await mockServerPayloadSender.SendAlarmIssueReportAsync(lastServerOutboxPath);
-            lastMockServerSendSucceeded = result.Success;
+            lastServerOutboxState = result.Success
+                ? issueReportOutboxService.MarkSent(lastServerOutboxPath)
+                : issueReportOutboxService.MarkFailed(
+                    lastServerOutboxPath,
+                    $"HTTP {result.StatusCode}: {result.ResponseBody}");
+            lastServerPayloadPreview = ReadServerPayloadPreview(lastServerOutboxPath);
+            lastMockServerSendSucceeded = lastServerOutboxState.Status == AlarmIssueReportOutboxStatuses.Sent;
             mockServerHealthOnline = result.Success;
             mockServerHealthStatus = result.Success
                 ? L(
@@ -1548,27 +1680,46 @@ public sealed class OperatorConsoleViewModel : ObservableObject
                     $"서버 응답: HTTP {result.StatusCode}");
             lastMockServerSendStatus = result.Success
                 ? L(
-                    $"Send success: HTTP {result.StatusCode} -> {result.Endpoint}",
-                    $"전송 성공: HTTP {result.StatusCode} -> {result.Endpoint}")
+                    $"Send success: HTTP {result.StatusCode} -> {result.Endpoint} | attempt {lastServerOutboxState.AttemptCount}",
+                    $"전송 성공: HTTP {result.StatusCode} -> {result.Endpoint} | {lastServerOutboxState.AttemptCount}번째 시도")
                 : L(
-                    $"Send failed: HTTP {result.StatusCode} -> {result.Endpoint}",
-                    $"전송 실패: HTTP {result.StatusCode} -> {result.Endpoint}");
+                    $"Send failed: HTTP {result.StatusCode} -> {result.Endpoint} | retry available",
+                    $"전송 실패: HTTP {result.StatusCode} -> {result.Endpoint} | 재전송 가능");
 
             AddLog(result.Success ? "SEND OK" : "SEND FAIL", $"HTTP {result.StatusCode}");
-            Trace("SERVER", $"SendLatestServerPayload() status={result.StatusCode} endpoint={result.Endpoint} response={result.ResponseBody}");
+            Trace(
+                "SERVER",
+                $"SendLatestServerPayload() status={result.StatusCode} endpoint={result.Endpoint} " +
+                $"attempt={lastServerOutboxState.AttemptCount} outbox={lastServerOutboxState.Status} response={result.ResponseBody}");
         }
         catch (Exception ex)
         {
+            if (attemptStarted)
+            {
+                try
+                {
+                    lastServerOutboxState = issueReportOutboxService.MarkFailed(lastServerOutboxPath, ex.Message);
+                    lastServerPayloadPreview = ReadServerPayloadPreview(lastServerOutboxPath);
+                }
+                catch (Exception stateException)
+                {
+                    Trace("ERROR", $"MarkFailed() {stateException.GetType().Name}: {stateException.Message}");
+                }
+            }
+
             lastMockServerSendSucceeded = false;
             mockServerHealthOnline = false;
             mockServerHealthStatus = L(
                 $"Offline: {ex.Message}. Start EquipmentTwin.MockServer first.",
                 $"연결 실패: {ex.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
             lastMockServerSendStatus = L(
-                $"Send failed: {ex.Message}. Start EquipmentTwin.MockServer first.",
-                $"전송 실패: {ex.Message}. EquipmentTwin.MockServer를 먼저 실행하세요.");
+                $"Send failed: {ex.Message}. Retry is available after the server recovers.",
+                $"전송 실패: {ex.Message}. 서버 복구 후 재전송할 수 있습니다.");
             AddLog("SEND ERROR", ex.Message);
-            Trace("ERROR", $"SendLatestServerPayload() {ex.GetType().Name}: {ex.Message}");
+            Trace(
+                "ERROR",
+                $"SendLatestServerPayload() {ex.GetType().Name}: {ex.Message} " +
+                $"attempt={lastServerOutboxState?.AttemptCount.ToString() ?? "-"} outbox={lastServerOutboxState?.Status ?? "unknown"}");
         }
         finally
         {
@@ -1643,6 +1794,18 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     private string L(string english, string korean)
     {
         return useKorean ? korean : english;
+    }
+
+    private static string LocalizeOutboxStatus(string status)
+    {
+        return status switch
+        {
+            AlarmIssueReportOutboxStatuses.Queued => "대기",
+            AlarmIssueReportOutboxStatuses.Sending => "전송 중",
+            AlarmIssueReportOutboxStatuses.Sent => "전송 완료",
+            AlarmIssueReportOutboxStatuses.Failed => "전송 실패",
+            _ => status
+        };
     }
 
     private string LocalizeAlarmGuideSeverity(AlarmGuideSeverity? severity)
@@ -1854,6 +2017,11 @@ public sealed class OperatorConsoleViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(LatestServerPayloadPathText));
         OnPropertyChanged(nameof(LatestServerPayloadPreviewText));
+        OnPropertyChanged(nameof(LatestServerOutboxStateText));
+        OnPropertyChanged(nameof(LatestServerOutboxAttemptText));
+        OnPropertyChanged(nameof(LatestServerOutboxErrorText));
+        OnPropertyChanged(nameof(LatestServerOutboxStateBrush));
+        OnPropertyChanged(nameof(CanSendLatestServerPayload));
         OnPropertyChanged(nameof(CheckMockServerHealthButtonText));
         OnPropertyChanged(nameof(MockServerHealthBadgeText));
         OnPropertyChanged(nameof(MockServerHealthStatusText));

@@ -3574,3 +3574,29 @@ Goal 072: 알람 리포트와 서버 Payload 계약 자동 테스트
 ```text
 Goal 073: 서버 전송 실패 Retry와 Outbox 상태 관리
 ```
+
+## 2026-07-11 Goal 073: 서버 전송 실패 Retry와 Outbox 상태 관리 완료
+
+목표:
+
+- 서버 전송 결과를 Outbox JSON에 영속화한다.
+- 실패 payload는 수동 재전송하고, 성공 payload는 중복 전송하지 않는다.
+
+구현:
+
+- `queued`, `sending`, `failed`, `sent` 상태 전이 추가.
+- 시도 횟수, 마지막 시도 시각, 성공 시각, 마지막 오류 저장.
+- WPF에 상태 카드와 상태별 전송 버튼 추가.
+- 실패 → 재전송 → 성공 → 중복 차단 계약 테스트 추가.
+
+설계 판단:
+
+- Outbox JSON을 전송 상태의 source of truth로 사용한다.
+- 자동 재시도와 백그라운드 worker는 추가하지 않는다.
+- 클라이언트의 중복 클릭은 막되 서버 측 멱등성은 다음 Goal에서 구현한다.
+
+다음 권장 Goal:
+
+```text
+Goal 074: Mock Server 중복 수신 방지와 전송 Receipt
+```

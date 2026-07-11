@@ -6,7 +6,8 @@ var tests = new (string Name, Action Body)[]
 {
     ("Korean issue report localizes Markdown and preserves JSON contract", KoreanReportPreservesContract),
     ("English issue report keeps English Markdown", EnglishReportKeepsEnglishMarkdown),
-    ("Server outbox preserves envelope and payload contract", ServerOutboxPreservesContract)
+    ("Server outbox preserves envelope and payload contract", ServerOutboxPreservesContract),
+    ("Outbox tracks failed retry and sent states", OutboxTracksFailedRetryAndSentStates)
 };
 
 var failures = 0;
@@ -99,6 +100,10 @@ static void ServerOutboxPreservesContract()
         AssertEqual("alarm-issue-report", root.GetProperty("messageType").GetString(), "Outbox message type mismatch.");
         AssertEqual("queued", root.GetProperty("status").GetString(), "Outbox status mismatch.");
         AssertEqual("local-demo-outbox", root.GetProperty("target").GetString(), "Outbox target mismatch.");
+        AssertEqual(0, root.GetProperty("attemptCount").GetInt32(), "New payload attempt count must be zero.");
+        AssertEqual(JsonValueKind.Null, root.GetProperty("lastAttemptAt").ValueKind, "New payload last attempt must be null.");
+        AssertEqual(JsonValueKind.Null, root.GetProperty("sentAt").ValueKind, "New payload sent time must be null.");
+        AssertEqual(JsonValueKind.Null, root.GetProperty("lastError").ValueKind, "New payload last error must be null.");
         AssertEqual("ko", payload.GetProperty("language").GetString(), "Payload language mismatch.");
         AssertEqual("GAS-301", payload.GetProperty("alarmCode").GetString(), "Payload alarm code mismatch.");
         AssertEqual("Warning", payload.GetProperty("severity").GetString(), "Payload severity must remain canonical.");
@@ -108,6 +113,51 @@ static void ServerOutboxPreservesContract()
     finally
     {
         DeleteIfExists(result.Path);
+    }
+}
+
+static void OutboxTracksFailedRetryAndSentStates()
+{
+    var service = new AlarmIssueReportOutboxService();
+    var queued = service.QueueAlarmIssueReport(CreateRequest("ko"));
+
+    try
+    {
+        AssertEqual(AlarmIssueReportOutboxStatuses.Queued, queued.Status, "New payload must be queued.");
+        AssertEqual(0, queued.AttemptCount, "New payload attempt count mismatch.");
+
+        var firstAttempt = service.BeginSendAttempt(queued.Path);
+        AssertEqual(AlarmIssueReportOutboxStatuses.Sending, firstAttempt.Status, "First attempt must be sending.");
+        AssertEqual(1, firstAttempt.AttemptCount, "First attempt count mismatch.");
+        AssertTrue(firstAttempt.LastAttemptAt.HasValue, "First attempt timestamp missing.");
+        AssertTrue(firstAttempt.LastError == null, "First attempt must clear previous error.");
+
+        var failed = service.MarkFailed(queued.Path, "connection refused");
+        AssertEqual(AlarmIssueReportOutboxStatuses.Failed, failed.Status, "Failed attempt status mismatch.");
+        AssertEqual(1, failed.AttemptCount, "Failed attempt count mismatch.");
+        AssertEqual("connection refused", failed.LastError, "Failed attempt error mismatch.");
+
+        var retry = service.BeginSendAttempt(queued.Path);
+        AssertEqual(AlarmIssueReportOutboxStatuses.Sending, retry.Status, "Retry must enter sending state.");
+        AssertEqual(2, retry.AttemptCount, "Retry attempt count mismatch.");
+        AssertTrue(retry.LastError == null, "Retry must clear the previous error.");
+
+        var sent = service.MarkSent(queued.Path);
+        AssertEqual(AlarmIssueReportOutboxStatuses.Sent, sent.Status, "Successful retry must be sent.");
+        AssertEqual(2, sent.AttemptCount, "Sent attempt count mismatch.");
+        AssertTrue(sent.SentAt.HasValue, "Sent timestamp missing.");
+        AssertTrue(sent.LastError == null, "Sent payload must not keep an error.");
+
+        var persisted = service.Read(queued.Path);
+        AssertEqual(AlarmIssueReportOutboxStatuses.Sent, persisted.Status, "Sent state was not persisted.");
+        AssertEqual(2, persisted.AttemptCount, "Persisted attempt count mismatch.");
+        AssertThrows<InvalidOperationException>(
+            () => service.BeginSendAttempt(queued.Path),
+            "A sent payload must reject duplicate sending.");
+    }
+    finally
+    {
+        DeleteIfExists(queued.Path);
     }
 }
 
@@ -186,6 +236,29 @@ static void AssertDoesNotContain(string actual, string unexpected, string messag
     {
         throw new InvalidOperationException(message);
     }
+}
+
+static void AssertTrue(bool condition, string message)
+{
+    if (!condition)
+    {
+        throw new InvalidOperationException(message);
+    }
+}
+
+static void AssertThrows<TException>(Action action, string message)
+    where TException : Exception
+{
+    try
+    {
+        action();
+    }
+    catch (TException)
+    {
+        return;
+    }
+
+    throw new InvalidOperationException(message);
 }
 
 static void AssertEqual<T>(T expected, T actual, string message)

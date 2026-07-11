@@ -1038,3 +1038,23 @@ Completion status:
 다음:
 
 - `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리` 진행.
+
+## 2026-07-11 Triage Update after Goal 073
+
+| 우선순위 | 항목 | 상태 | 다음 조치 |
+|---|---|---|---|
+| P1 | 서버 전송 Retry/Outbox 상태 관리 | 완료 | 파일 상태를 source of truth로 유지 |
+| P1 | Mock Server 중복 수신 방지 | 다음 | envelopeId 기반 멱등 처리 |
+| P2 | 자동 재시도/지수 백오프 | 보류 | 실제 운영 요구와 정책 확정 후 구현 |
+| P2 | 다중 프로세스 파일 잠금 | 보류 | 동시 sender가 필요할 때 검토 |
+
+완료:
+
+- queued/sending/failed/sent 상태와 전송 메타데이터 영속화.
+- 실패 수동 재전송, 성공 중복 전송 차단.
+- WPF 상태/횟수/오류 표시.
+- 상태 전이 계약 테스트 추가.
+
+다음:
+
+- `목표 074: Mock Server 중복 수신 방지와 전송 Receipt` 진행.

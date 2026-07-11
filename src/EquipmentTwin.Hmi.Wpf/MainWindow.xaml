@@ -1981,13 +1981,46 @@
                                         <Border Background="{StaticResource Background}" BorderBrush="{StaticResource BorderSoft}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,8,0,0">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding LatestServerPayloadLabel}" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding LatestServerPayloadPathText}"
-                                                           Foreground="{StaticResource TextPrimary}"
-                                                           FontFamily="Consolas"
+                                                 <TextBlock Text="{Binding LatestServerPayloadPathText}"
+                                                            Foreground="{StaticResource TextPrimary}"
+                                                            FontFamily="Consolas"
                                                            FontSize="10"
                                                            TextTrimming="CharacterEllipsis"
-                                                           ToolTip="{Binding LatestServerPayloadPathText}"
-                                                           Margin="0,4,0,0"/>
+                                                            ToolTip="{Binding LatestServerPayloadPathText}"
+                                                            Margin="0,4,0,0"/>
+                                                <Border Background="{StaticResource SurfaceInset}"
+                                                        BorderBrush="{Binding LatestServerOutboxStateBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="4"
+                                                        Padding="8"
+                                                        Margin="0,8,0,0">
+                                                    <StackPanel>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding OutboxDeliveryStateLabel}"
+                                                                       Foreground="{StaticResource TextMuted}"
+                                                                       FontSize="10"
+                                                                       FontWeight="Bold"/>
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding LatestServerOutboxStateText}"
+                                                                       Foreground="{Binding LatestServerOutboxStateBrush}"
+                                                                       FontSize="11"
+                                                                       FontWeight="Bold"/>
+                                                        </Grid>
+                                                        <TextBlock Text="{Binding LatestServerOutboxAttemptText}"
+                                                                   Foreground="{StaticResource TextPrimary}"
+                                                                   FontSize="10"
+                                                                   Margin="0,6,0,0"/>
+                                                        <TextBlock Text="{Binding LatestServerOutboxErrorText}"
+                                                                   Foreground="{Binding LatestServerOutboxStateBrush}"
+                                                                   FontSize="10"
+                                                                   TextWrapping="Wrap"
+                                                                   Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
                                                 <Border Background="{StaticResource SurfaceInset}"
                                                         BorderBrush="{Binding MockServerHealthBrush}"
                                                         BorderThickness="1"
@@ -2050,9 +2083,10 @@
                                                             FontSize="10"
                                                             Background="{StaticResource SurfaceRaised}"/>
                                                 </UniformGrid>
-                                                <Button Content="{Binding SendLatestServerPayloadButtonText}"
-                                                        Command="{Binding SendLatestServerPayloadCommand}"
-                                                        Style="{StaticResource CommandButton}"
+                                                 <Button Content="{Binding SendLatestServerPayloadButtonText}"
+                                                         Command="{Binding SendLatestServerPayloadCommand}"
+                                                         IsEnabled="{Binding CanSendLatestServerPayload}"
+                                                         Style="{StaticResource CommandButton}"
                                                         Height="32"
                                                         Margin="0,8,0,0"
                                                         FontSize="10"
