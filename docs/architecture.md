@@ -812,7 +812,7 @@ Command Log
 
 ## Unity Process Player Skeleton
 
-Goal 027 adds the first Unity-side adapter for the process timeline.
+Goal 027은 process timeline을 위한 첫 Unity-side adapter를 추가했다.
 
 ```text
 Core process model
@@ -822,11 +822,11 @@ Core process model
     -> Unity MolyAldProcessHud
 ```
 
-Architecture rule:
+아키텍처 규칙:
 
-Unity is not the source of process truth. Unity replays the tested C# Core timeline.
+Unity는 process truth의 출처가 아니다. Unity는 테스트된 C# Core timeline을 replay한다.
 
-The Unity folder is deliberately lightweight:
+Unity folder는 의도적으로 가볍게 유지한다.
 
 ```text
 unity/EquipmentTwin.Unity
@@ -839,9 +839,9 @@ unity/EquipmentTwin.Unity
     moly-ald-timeline.sample.json
 ```
 
-Current visualization is `OnGUI` only. That is intentional. It verifies data loading and playback before 3D geometry work begins.
+현재 시각화는 `OnGUI`만 사용한다. 이것은 의도된 선택이다. 3D geometry 작업을 시작하기 전에 data loading과 playback을 먼저 검증하기 위해서다.
 
-Next Unity layer:
+다음 Unity layer:
 
 ```text
 MolyAldProcessPlayer.CurrentStep
@@ -854,7 +854,7 @@ MolyAldProcessPlayer.CurrentStep
 
 ## Unity Primitive Visual Layer
 
-Goal 028 adds a visual adapter over the existing Unity timeline player.
+Goal 028은 기존 Unity timeline player 위에 visual adapter를 추가했다.
 
 ```text
 MolyAldProcessPlayer.CurrentStep
@@ -866,20 +866,20 @@ MolyAldProcessPlayer.CurrentStep
     -> valve indicator primitives
 ```
 
-`MolyAldDemoBootstrap` exists to reduce manual Unity setup. A user can create one empty GameObject, attach the bootstrap component, and press Play.
+`MolyAldDemoBootstrap`은 Unity 수동 설정을 줄이기 위해 존재한다. 사용자는 빈 GameObject 하나를 만들고 bootstrap component를 붙인 뒤 Play를 누르면 된다.
 
-Important architecture boundary:
+중요한 아키텍처 경계:
 
-- Core/CLI still owns process calculation.
-- Unity still owns display only.
-- `MolyAldPrimitiveVisualizer` must not decide whether a process step passes or fails.
-- Visual behavior is derived from timeline values already produced by Core.
+- Core/CLI가 process calculation을 계속 담당한다.
+- Unity는 display만 담당한다.
+- `MolyAldPrimitiveVisualizer`는 process step이 pass인지 fail인지 판단하면 안 된다.
+- Visual behavior는 Core가 이미 만든 timeline value에서 파생된다.
 
-This keeps future CAD/Blender replacement simple: replace primitive renderers with imported model renderers, but keep `MolyAldProcessPlayer.CurrentStep` as the data source.
+이 경계를 지키면 나중에 CAD/Blender 교체가 단순해진다. Primitive renderer를 imported model renderer로 바꾸더라도, data source는 계속 `MolyAldProcessPlayer.CurrentStep`로 유지하면 된다.
 
 ## Unity Smoke Test Harness
 
-Goal 029 adds a local Unity validation harness.
+Goal 029는 local Unity validation harness를 추가했다.
 
 ```text
 PowerShell runner
@@ -890,26 +890,26 @@ PowerShell runner
     -> component/renderer checks
 ```
 
-The smoke test lives in an Editor-only assembly:
+Smoke test는 Editor-only assembly에 둔다.
 
 ```text
 Assets/EquipmentTwin/Editor/EquipmentTwin.Unity.Editor.asmdef
 Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs
 ```
 
-Why Editor-only:
+Editor-only인 이유:
 
-- menu items require `UnityEditor`;
-- batch smoke tests should not ship in runtime builds;
-- runtime process player/visualizer remain separate from validation tooling.
+- menu item은 `UnityEditor`가 필요하다.
+- batch smoke test는 runtime build에 포함되면 안 된다.
+- runtime process player/visualizer와 validation tooling을 분리해야 한다.
 
-The success marker is:
+성공 marker:
 
 ```text
 EQUIPMENT_TWIN_UNITY_SMOKE_TEST_PASS
 ```
 
-Goal 030 extends the harness with screenshot capture:
+Goal 030은 harness에 screenshot capture를 추가했다.
 
 ```text
 Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
@@ -919,21 +919,21 @@ Invoke-UnitySmokeTest.ps1 -CaptureScreenshot
     -> artifacts/unity-demo/moly-ald-demo.png
 ```
 
-The screenshot marker is:
+Screenshot marker:
 
 ```text
 EQUIPMENT_TWIN_UNITY_SCREENSHOT_SAVED
 ```
 
-Important boundary:
+중요한 경계:
 
-- CI still validates .NET and Unity file wiring.
-- Real Unity compilation requires an active Unity license.
-- The smoke-test harness makes that manual validation repeatable after license activation.
+- CI는 여전히 .NET과 Unity file wiring만 검증한다.
+- 실제 Unity compilation은 활성화된 Unity license가 필요하다.
+- Smoke-test harness는 license activation 이후 수동 검증을 반복 가능하게 만든다.
 
 ## Process Timeline JSON Export
 
-Goal 026 adds a stable JSON export between the C# process model and future Unity visualization.
+Goal 026은 C# process model과 향후 Unity visualization 사이에 안정적인 JSON export 경계를 추가했다.
 
 ```text
 MolyAldRunResult
@@ -942,34 +942,34 @@ MolyAldRunResult
     -> Unity process player
 ```
 
-Why this exists:
+이 기능이 필요한 이유:
 
-- Markdown reports are for humans.
-- Timeline JSON is for software consumers such as Unity.
-- Unity should not parse console text or Markdown tables.
+- Markdown report는 사람이 읽기 위한 것이다.
+- Timeline JSON은 Unity 같은 software consumer가 읽기 위한 것이다.
+- Unity가 console text나 Markdown table을 parsing하면 안 된다.
 
 Timeline schema:
 
-| JSON field | Purpose |
+| JSON field | 목적 |
 |---|---|
-| `schemaVersion` | Allows future Unity loaders to reject incompatible files |
-| `source` | States that this is a public/synthetic ALD timeline |
+| `schemaVersion` | 향후 Unity loader가 호환되지 않는 파일을 거부할 수 있게 함 |
+| `source` | 공개/합성 ALD timeline임을 표시 |
 | `recipeName` | Process recipe identifier |
-| `success` | Overall process execution result |
-| `finalStep` | Final process state |
-| `faultScenarioName` | Fault scenario name when a fault is injected |
-| `steps[]` | Replay frames for the process |
-| `steps[].valves` | Valve state bundle for Unity animation |
+| `success` | 전체 process 실행 결과 |
+| `finalStep` | 최종 process state |
+| `faultScenarioName` | fault가 주입된 경우 fault scenario 이름 |
+| `steps[]` | process replay frame 목록 |
+| `steps[].valves` | Unity animation에 사용할 valve state bundle |
 
-Design rule:
+설계 규칙:
 
-`MolyAldTimelineDocument` lives in Core, not only in CLI, because Unity or another adapter should be able to reuse the same schema without depending on console output.
+`MolyAldTimelineDocument`는 CLI가 아니라 Core에 둔다. Unity나 다른 adapter가 console output에 의존하지 않고 같은 schema를 재사용할 수 있어야 하기 때문이다.
 
 ## Public Molybdenum ALD Process Model
 
-Goal 025 adds a separate process-model layer for public/synthetic molybdenum ALD metallization.
+Goal 025는 공개/합성 molybdenum ALD metallization을 위한 별도 process-model layer를 추가했다.
 
-This layer is intentionally separate from the earlier `Templates` vision-inspection-cell model.
+이 layer는 이전 `Templates` vision-inspection-cell model과 의도적으로 분리했다.
 
 ```text
 processes/public-moly-ald-metallization.json
@@ -980,24 +980,24 @@ processes/public-moly-ald-metallization.json
     -> future Unity replay timeline
 ```
 
-Important boundary:
+중요한 경계:
 
-- This is not an ALTUS Halo or Halo HX clone.
-- It does not contain real Lam recipe values or internal equipment behavior.
-- It uses public ALD/metallization concepts and synthetic demo values.
+- 이것은 ALTUS Halo 또는 Halo HX clone이 아니다.
+- 실제 Lam recipe value나 내부 장비 동작을 포함하지 않는다.
+- 공개된 ALD/metallization 개념과 합성 demo 값을 사용한다.
 
-Software meaning:
+소프트웨어적 의미:
 
-- `MolyAldRecipe` is the operator/process-engineering input.
-- `MolyAldRunner` is the deterministic sequence controller.
-- `MolyAldStepLog` is the bridge to CLI reports and future Unity visualization.
-- Fault scenarios test how the process stops when a required condition is not met.
+- `MolyAldRecipe`는 operator/process-engineering input이다.
+- `MolyAldRunner`는 deterministic sequence controller다.
+- `MolyAldStepLog`는 CLI report와 향후 Unity visualization으로 이어지는 bridge다.
+- Fault scenario는 필요한 조건이 만족되지 않을 때 process가 어떻게 멈추는지 테스트한다.
 
 Unity mapping:
 
 | Core field | Unity visual |
 |---|---|
-| `Step` | Current process phase label |
+| `Step` | 현재 process phase label |
 | `Cycle` | ALD cycle counter |
 | `ChamberPressureMtorr` | Pressure gauge / chamber visual |
 | `WaferTemperatureC` | Temperature gauge / color |
@@ -1008,7 +1008,7 @@ Unity mapping:
 
 ## Portfolio Demo Boundary
 
-Goal 031 adds a portfolio-facing explanation layer without changing the Core/Unity runtime boundary.
+Goal 031은 Core/Unity runtime boundary를 바꾸지 않고 portfolio-facing explanation layer를 추가했다.
 
 ```text
 Core/CLI
@@ -1018,16 +1018,113 @@ Core/CLI
     -> screenshot/video/demo script
 ```
 
-The demo package is intentionally a documentation layer:
+Demo package는 의도적으로 documentation layer다.
 
-- `docs/portfolio-demo-package.md` explains the 3-minute demo flow.
-- `README.md` links the demo package for first-time visitors.
-- Core remains responsible for sequence and fault decisions.
-- Unity remains responsible for visualization and replay.
+- `docs/portfolio-demo-package.md`는 3분 demo flow를 설명한다.
+- `README.md`는 처음 방문하는 사람을 위해 demo package를 연결한다.
+- Core는 sequence와 fault decision을 계속 담당한다.
+- Unity는 visualization과 replay를 담당한다.
 
-Important interview boundary:
+면접에서 중요한 경계:
 
-- This project uses public/synthetic ALD concepts.
-- It is not a clone of ALTUS, Halo, Halo HX, or any real vendor equipment.
-- It does not contain real recipes, alarm tables, IO maps, or internal test procedures.
-- The value is the software architecture: state, IO, motion, process sequence, fault injection, reports, timeline export, and visual replay.
+- 이 프로젝트는 공개/합성 ALD 개념을 사용한다.
+- ALTUS, Halo, Halo HX 또는 실제 vendor 장비 clone이 아니다.
+- 실제 recipe, alarm table, IO map, 내부 test procedure를 포함하지 않는다.
+- 가치는 software architecture에 있다. 즉 state, IO, motion, process sequence, fault injection, report, timeline export, visual replay 구조를 보여주는 것이다.
+
+## 현재 Adapter 아키텍처: WPF HMI와 Mock Server
+
+현재 구조는 장비의 실제 동작 판단을 `EquipmentTwin.Core`에 두고, UI, CLI, 서버 시뮬레이션, 시각화는 Core 바깥의 adapter로 분리한다.
+
+```text
+                    EquipmentTwin.Core
+          상태 / IO / 모션 / 알람 / 공정 로직
+                         ^
+                         |
+        +----------------+----------------+
+        |                |                |
+ EquipmentTwin.Cli   EquipmentTwin.Hmi.Wpf   EquipmentTwin.Core.Tests
+ batch/report        operator HMI            회귀 검증
+
+ EquipmentTwin.MockServer
+ local HTTP receiver, Core 의존 없음
+
+ Unity viewer
+ 선택적 시각화 consumer, 제어 권한 없음
+```
+
+의존 규칙:
+
+- `EquipmentTwin.Core`는 WPF, Unity, HTTP, Windows UI, mock server를 참조하지 않는다.
+- `EquipmentTwin.Hmi.Wpf`는 Core를 참조한다. Core 공정 모델을 화면에 보여주고 조작해야 하기 때문이다.
+- `EquipmentTwin.Cli`는 Core를 참조한다. batch scenario 실행과 report 생성을 위해 Core 로직을 사용하기 때문이다.
+- `EquipmentTwin.Core.Tests`는 Core를 참조한다. 도메인 로직을 검증하는 테스트 프로젝트이기 때문이다.
+- `EquipmentTwin.MockServer`는 의도적으로 Core를 참조하지 않는다. Core 내부 장비 로직이 아니라, 서버로 나갈 JSON을 받는 외부 시스템 역할이기 때문이다.
+
+이 의존 방향이 중요한 이유는 UI를 바꿔도 장비 동작 로직을 다시 쓰지 않아도 되기 때문이다. 이 프로젝트는 이미 그걸 증명했다. 처음에는 Unity 중심의 시각화 방향이었다가 WPF HMI 중심으로 바뀌었지만, Core의 공정 실행 로직과 fault 로직은 계속 재사용됐다.
+
+### 컴포넌트별 책임
+
+| Component | 책임 | 가지면 안 되는 책임 |
+|---|---|---|
+| `EquipmentTwin.Core` | 상태머신, 가상 IO, 모션 모델, 알람, Moly ALD 공정 sequence, fault 결과 | WPF control, HTTP 호출, Unity object, 파일 다이얼로그 |
+| `EquipmentTwin.Hmi.Wpf` | 오퍼레이터 화면, 알람 대응 가이드, issue report export, server-outbox payload 생성, mock server 전송 버튼 | Core 상태 전이 규칙, 공정 판단의 진실 소스, vendor-specific recipe |
+| `EquipmentTwin.Cli` | 반복 가능한 command-line scenario 실행, Markdown/JSON report 생성 | 대화형 HMI 화면 상태 |
+| `EquipmentTwin.MockServer` | demo payload를 받는 local HTTP receiver | 실제 MES 동작, SECS/GEM, 공장 인증 |
+| Unity viewer | 선택적 visual replay, screenshot/demo layer | 장비 제어 판단 로직 |
+| `EquipmentTwin.Core.Tests` | Core 동작 회귀 검증 | UI 검증 |
+
+### 알람부터 서버 수신까지의 데이터 흐름
+
+현재 WPF demo 흐름은 다음과 같다.
+
+```text
+Operator가 fault scenario 선택
+    -> WPF가 Core service를 통해 MolyAldRunner 실행
+    -> Core가 process timeline과 실패 step 생성
+    -> WPF가 알람 코드에 맞는 alarm response guide 로드
+    -> Operator가 troubleshooting checklist 확인
+    -> WPF가 issue report를 artifacts/alarm-reports/에 저장
+    -> WPF가 server payload를 artifacts/server-outbox/에 queue
+    -> WPF가 최신 payload를 http://127.0.0.1:5088/alarm-issue-report 로 전송
+    -> EquipmentTwin.MockServer가 받은 payload를 artifacts/mock-server-received/에 저장
+```
+
+핵심 경계는 이렇다. Core는 공정에서 무슨 일이 일어났는지 판단한다. WPF는 그 결과를 사용자에게 어떻게 보여줄지, 그리고 issue report와 server payload로 어떻게 포장할지를 담당한다.
+
+### Local outbox와 mock server의 경계
+
+서버 전송 경로는 의도적으로 두 단계 demo pattern으로 만들었다.
+
+1. WPF가 local outbox 파일을 만든다.
+2. WPF가 그 최신 outbox 파일을 local mock server로 POST한다.
+
+이건 실제 factory integration layer가 아니다. 현재 구현하지 않은 것들은 다음과 같다.
+
+- MES 연동
+- SECS/GEM
+- 인증
+- retry/backoff 정책
+- payload schema version 협상
+- production network 장애 처리
+
+정직하게 말할 수 있는 범위는 다음과 같다.
+
+> HMI는 알람 issue payload를 생성하고, local server-outbox에 저장한 뒤, HTTP를 통해 받은 데이터를 기록하는 mock receiver로 전송할 수 있다.
+
+이 설명은 중요하다. 실제 공장 시스템을 구현했다고 과장하지 않으면서도, 장비 HMI와 외부 시스템 사이의 integration seam을 보여줄 수 있기 때문이다.
+
+### 면접용 설명
+
+짧게 설명하면 다음과 같다.
+
+> 장비 동작 로직과 화면/통합 layer를 분리했습니다. `EquipmentTwin.Core`에는 공정 상태, 가상 IO, 모션, 알람, ALD sequence 로직을 두고, WPF, CLI, 테스트, Unity, mock server는 Core 바깥 adapter로 분리했습니다. 그래서 시각화 방향을 Unity에서 WPF로 바꿔도 공정 로직은 다시 작성하지 않았습니다. 현재 WPF HMI는 알람을 재현하고, 작업자 체크리스트를 안내하고, issue report를 export하고, 서버로 보낼 payload를 queue한 뒤, local mock receiver로 전송할 수 있습니다.
+
+이 구조가 보여주는 역량:
+
+- 의존 방향 제어
+- 테스트 가능한 domain logic
+- UI framework에 덜 종속되는 구조
+- 오퍼레이터 관점의 알람 대응 workflow
+- 서버 연동 경계 설계
+- synthetic demo와 실제 factory system의 정직한 분리

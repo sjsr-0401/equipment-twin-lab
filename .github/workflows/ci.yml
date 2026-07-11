@@ -35,6 +35,9 @@ jobs:
       - name: Run console tests
         run: dotnet run --project tests/EquipmentTwin.Core.Tests/EquipmentTwin.Core.Tests.csproj --no-restore --configuration Release
 
+      - name: Run WPF report contract tests
+        run: dotnet run --project tests/EquipmentTwin.Hmi.Wpf.Tests/EquipmentTwin.Hmi.Wpf.Tests.csproj --no-restore --configuration Release
+
       - name: Run normal scenario through CLI
         run: dotnet run --project src/EquipmentTwin.Cli/EquipmentTwin.Cli.csproj --no-restore --configuration Release -- scenarios/normal-cycle.json
 
@@ -211,7 +214,8 @@ jobs:
           grep -q "UseWPF" src/EquipmentTwin.Hmi.Wpf/EquipmentTwin.Hmi.Wpf.csproj
           grep -q "MOLY ALD WPF HMI" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "FaultReplay" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
-          grep -q "Open optional Unity viewer folder" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "OpenUnityViewerButtonText" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
+          grep -q "Open optional Unity viewer folder" src/EquipmentTwin.Hmi.Wpf/ViewModels/OperatorConsoleViewModel.cs
           grep -q "TimelineProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "PressureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml
           grep -q "TemperatureProgress, Mode=OneWay" src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml

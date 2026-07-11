@@ -25,7 +25,7 @@
 ## 2. 이 프로젝트를 만드는 이유
 
 - 장비가 없어도 장비 제어 SW의 정상 시퀀스와 장애 대응을 반복 검증한다.
-- RayWork에서 쌓은 실무 경험을 회사 코드를 공개하지 않고 일반화해 보여준다.
+- 이전 장비 SW 실무 경험을 회사 코드를 공개하지 않고 일반화해 보여준다.
 - 기존 `YOLO26`, `IndustrialCommHub`, `SmartDetector`, `TradeWork`의 강점을 하나의 제조 시스템으로 연결한다.
 - 단순 3D 애니메이션이 아니라 실제 제어 SW와 통신하는 Software-in-the-Loop 환경을 만든다.
 - 매일 작업 내용을 초보자도 다시 이해할 수 있도록 문서화해 소프트웨어 감각을 복원한다.
@@ -38,7 +38,7 @@
 4. **동일한 입력은 동일한 결과를 만든다.** 난수 시드와 시뮬레이션 시간을 통제한다.
 5. **고장 상황을 정상 상황만큼 중요하게 다룬다.**
 6. **테스트되지 않은 기능은 완료로 표시하지 않는다.**
-7. **RayWork 또는 회사 소유 코드를 복사하지 않는다.** 개념과 경험만 일반화한다.
+7. **회사 소유 코드나 내부 자산을 복사하지 않는다.** 개념과 경험만 일반화한다.
 8. **매일 작업 종료 시 초보자용 설명을 남긴다.**
 
 ## 4. 1차 목표 장비
@@ -474,7 +474,7 @@ docs: explain plc handshake for beginners
 - 모바일 앱
 - 멀티플레이 및 클라우드 서비스
 - 초반부터 정교한 CAD 모델 제작
-- RayWork 소스 또는 회사 자산의 재사용·공개
+- 회사 소스 또는 내부 자산의 재사용·공개
 
 ## 18. 주요 위험과 대응
 
@@ -3408,4 +3408,195 @@ CLI = 자동화/리포트/검증
 
 ```text
 Goal 051: WPF Alarm Recovery Procedure Panel
+```
+
+## 2026-07-10 Goal 067: 자동 Screenshot 기반 WPF Visual QA 2차 완료
+
+목표:
+
+- Windows DPI 배율에 관계없이 WPF 대표 화면을 반복 가능하게 캡처한다.
+- 해상도만 맞고 화면 일부가 비는 거짓 성공을 자동으로 막는다.
+
+구현:
+
+- 캡처 전용 WPF 창을 현재 모니터 작업 영역에 최대화했다.
+- 최종 합성된 client 영역을 `CopyFromScreen`으로 캡처한다.
+- 작업표시줄을 제외한 뒤 1600×900 PNG로 정규화한다.
+- PowerShell에 검정 표본과 네 개 핵심 화면 영역 검사를 추가했다.
+- 한국어/영어 각각 5개 대표 상태를 검증했다.
+
+설계 판단:
+
+- Core와 ViewModel은 캡처를 모르게 유지했다.
+- 캡처는 WPF/Windows adapter 역할의 service로 분리했다.
+- 실행마다 달라지는 시계와 trace가 있으므로 전체 pixel 100% 비교는 보류했다.
+
+다음 권장 Goal:
+
+```text
+Goal 068: WPF 한국어 일반 UI 라벨 일관성 정리
+```
+
+## 2026-07-10 Goal 068: WPF 한국어 일반 UI 라벨 일관성 정리 완료
+
+목표:
+
+- 한국어 모드에서 일반 조작과 상태 문구를 빠르게 이해할 수 있게 한다.
+- 장비/공정/개발자 도메인 용어는 원래 표현을 유지한다.
+
+구현:
+
+- 고정 영어 XAML을 기존 ViewModel 다국어 속성 binding으로 교체했다.
+- 시작/정지/다음 Step/Fault 재현/초기화 버튼을 한국어로 표시한다.
+- 장비 모듈 구성, 공정 진행도, 현재 Step, 공정 계측값, 알람 우선순위 제목을 한국어로 표시한다.
+- 일시정지/운전 중/정지 유지와 계측 상태를 한국어로 표시한다.
+- 번역된 상태에도 기존 성공/경고/알람 색상을 유지한다.
+
+설계 판단:
+
+- Core는 번역을 모르게 유지했다.
+- XAML은 Binding만 하고 언어 판단은 ViewModel이 담당한다.
+- 현재 규모에서는 별도 localization framework를 추가하지 않았다.
+
+다음 권장 Goal:
+
+```text
+Goal 069: 알람 작업지시서 한국어 문장 품질 정리
+```
+
+## 2026-07-10 Goal 069 우선순위 변경: WPF 장비 Schematic 시각 깊이 고도화 완료
+
+사용자 피드백:
+
+- 기존 왼쪽 화면은 장비라기보다 큰 빈 사각형과 단순 도형으로 보였다.
+- 포트폴리오 대표 화면으로 사용하려면 부품의 역할과 연결이 더 명확해야 했다.
+
+구현:
+
+- Load Port/FOUP/Slit Valve 형상 고도화.
+- Gas Box를 3채널 MFC + isolation valve manifold로 변경.
+- Chamber에 showerhead, process zone, pressure/temperature callout, wafer, susceptor, heater, bottom plenum 추가.
+- Exhaust path에 throttle valve와 vacuum pump 형상 추가.
+- metal gradient와 shadow로 모듈 깊이감 추가.
+- 기존 Valve/Gas/Vacuum/Wafer/Gate/Fault Binding 유지.
+
+설계 판단:
+
+- 실제 vendor CAD가 아닌 public-reference synthetic schematic을 유지한다.
+- Core에 없는 공정값은 화면에도 만들지 않는다.
+- 정적 외형은 XAML, 동적 상태는 ViewModel로 분리한다.
+
+다음 권장 Goal:
+
+```text
+Goal 070: 알람 작업지시서 한국어 문장 품질 정리
+```
+
+## 2026-07-10 Goal 070 우선순위 변경: WPF 장비 공정 동작 시각화 완료
+
+사용자 피드백:
+
+- 정적 schematic 개선만으로는 대표 포트폴리오 최종 품질에 부족했다.
+- 공정이 실제로 동작하는 장비처럼 보이는 시각 피드백이 필요했다.
+
+구현:
+
+- Gas flow와 Vacuum path에 이동 점선 animation 추가.
+- 활성 Valve의 절제된 pulse 추가.
+- Heater glow와 Vacuum Pump rotor 회전 추가.
+- Wafer transfer와 Gate open motion 추가.
+- Alarm 상태에서는 정상 공정 animation 정지.
+
+설계 판단:
+
+- Core timeline과 recipe는 수정하지 않았다.
+- ViewModel은 공정 상태를 animation 의미 상태로 변환한다.
+- XAML Storyboard가 실제 시각 동작을 담당한다.
+- 별도 timer, worker thread, animation engine은 추가하지 않았다.
+- Core에 없는 MFC/Pump 수치는 만들지 않았다.
+
+다음 권장 Goal:
+
+```text
+Goal 071: 알람 작업지시서 한국어 문장 품질 정리
+```
+
+## 2026-07-10 Goal 071: 알람 작업지시서 한국어 문장 품질 정리 완료
+
+목표:
+
+- 작업자가 알람 원인과 점검 순서를 번역투 없이 이해하게 한다.
+- 한국어 UI에서 저장한 이슈 리포트도 한국어 문서로 만든다.
+- 표시 언어 변경이 서버의 기계용 식별값을 깨지 않게 한다.
+
+구현:
+
+- 4개 알람 가이드의 사용자 문장 56개 한국어 정리.
+- Severity, 점검 진행 상태, Workflow 라벨 한국어 정리.
+- Export 요청에 `language=ko/en` 추가.
+- Markdown 제목, 표, 상태, 요청 조건을 언어별 렌더링.
+- JSON `severity=Warning`과 `alarmCode` 유지.
+
+설계 판단:
+
+- 영어 알람 JSON을 source of truth로 유지한다.
+- ViewModel은 표시 언어, Export Service는 문서 렌더링을 담당한다.
+- 서버 자동화는 번역 문장이 아니라 AlarmCode/Severity/수치 필드를 사용한다.
+
+다음 권장 Goal:
+
+```text
+Goal 072: 알람 리포트와 서버 Payload 계약 자동 테스트
+```
+
+## 2026-07-10 Goal 072: 알람 리포트와 서버 Payload 계약 자동 테스트 완료
+
+목표:
+
+- Goal 071에서 수동 smoke로 확인한 Markdown/JSON 계약을 CI 품질 관문으로 만든다.
+
+구현:
+
+- `EquipmentTwin.Hmi.Wpf.Tests` 콘솔 테스트 프로젝트 추가.
+- 한국어 Markdown + canonical JSON 계약 테스트.
+- 영어 Markdown 회귀 테스트.
+- Server Outbox Envelope/Payload 계약 테스트.
+- Solution과 GitHub Actions에 새 테스트 연결.
+
+설계 판단:
+
+- 외부 테스트 패키지를 추가하지 않고 기존 Core 테스트와 같은 실행 방식을 사용한다.
+- Core tests는 `net8.0`, WPF tests는 `net8.0-windows`로 분리한다.
+- 테스트가 만든 파일은 각 테스트가 직접 정리한다.
+
+다음 권장 Goal:
+
+```text
+Goal 073: 서버 전송 실패 Retry와 Outbox 상태 관리
+```
+
+## 2026-07-11 Goal 073: 서버 전송 실패 Retry와 Outbox 상태 관리 완료
+
+목표:
+
+- 서버 전송 결과를 Outbox JSON에 영속화한다.
+- 실패 payload는 수동 재전송하고, 성공 payload는 중복 전송하지 않는다.
+
+구현:
+
+- `queued`, `sending`, `failed`, `sent` 상태 전이 추가.
+- 시도 횟수, 마지막 시도 시각, 성공 시각, 마지막 오류 저장.
+- WPF에 상태 카드와 상태별 전송 버튼 추가.
+- 실패 → 재전송 → 성공 → 중복 차단 계약 테스트 추가.
+
+설계 판단:
+
+- Outbox JSON을 전송 상태의 source of truth로 사용한다.
+- 자동 재시도와 백그라운드 worker는 추가하지 않는다.
+- 클라이언트의 중복 클릭은 막되 서버 측 멱등성은 다음 Goal에서 구현한다.
+
+다음 권장 Goal:
+
+```text
+Goal 074: Mock Server 중복 수신 방지와 전송 Receipt
 ```

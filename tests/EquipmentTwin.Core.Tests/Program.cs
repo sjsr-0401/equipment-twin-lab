@@ -79,6 +79,10 @@ var tests = new (string Name, Action Body)[]
     ("Moly ALD recipe rejects duplicate fault names", MolyAldRecipeRejectsDuplicateFaultNames),
     ("Moly ALD timeline document maps run result", MolyAldTimelineDocumentMapsRunResult),
     ("Moly ALD timeline JSON uses Unity friendly shape", MolyAldTimelineJsonUsesUnityFriendlyShape),
+    ("Alarm response guide JSON loads Moly ALD file", AlarmResponseGuideJsonLoadsMolyAldFile),
+    ("Alarm response guide rejects duplicate alarm codes", AlarmResponseGuideRejectsDuplicateAlarmCodes),
+    ("Alarm response guide rejects missing checks", AlarmResponseGuideRejectsMissingChecks),
+    ("Moly ALD fault codes are covered by alarm guides", MolyAldFaultCodesAreCoveredByAlarmGuides),
     ("Scenario JSON loads normal cycle file", ScenarioJsonLoadsNormalCycleFile),
     ("Scenario runner completes normal cycle file", ScenarioRunnerCompletesNormalCycleFile),
     ("Scenario runner handles loading timeout file", ScenarioRunnerHandlesLoadingTimeoutFile),
@@ -1283,6 +1287,89 @@ static void MolyAldTimelineJsonUsesUnityFriendlyShape()
     AssertEqual(false, failedStep.GetProperty("valves").GetProperty("purge").GetBoolean(), "JSON purge valve mismatch.");
 }
 
+static void AlarmResponseGuideJsonLoadsMolyAldFile()
+{
+    var catalog = LoadAlarmResponseGuideCatalog("moly-ald-alarm-guides.json");
+
+    var pumpGuide = catalog.FindGuide("VAC-101");
+
+    AssertEqual("Pumpdown Timeout", pumpGuide.Title, "Pumpdown guide title mismatch.");
+    AssertEqual(AlarmGuideSeverity.Warning, pumpGuide.Severity, "Pumpdown guide severity mismatch.");
+    AssertTrue(pumpGuide.Checks.Count >= 3, "Pumpdown guide should include multiple operator checks.");
+    AssertTrue(pumpGuide.Choices.Any(choice => choice.RequiresEngineer), "Pumpdown guide should include an engineering escalation path.");
+    AssertTrue(catalog.HasGuide("gas-301"), "Guide lookup must be case-insensitive.");
+}
+
+static void AlarmResponseGuideRejectsDuplicateAlarmCodes()
+{
+    AssertThrows<InvalidOperationException>(
+        () => AlarmResponseGuideCatalog.FromJson(
+            """
+            {
+              "schemaVersion": "equipment-twin.alarm-guides.v1",
+              "source": "duplicate-test",
+              "guides": [
+                {
+                  "alarmCode": "DUP-001",
+                  "title": "First guide",
+                  "severity": "Warning",
+                  "summary": "First duplicate guide.",
+                  "checks": [
+                    { "id": "check-1", "label": "Check first condition.", "required": true }
+                  ]
+                },
+                {
+                  "alarmCode": "DUP-001",
+                  "title": "Second guide",
+                  "severity": "Warning",
+                  "summary": "Second duplicate guide.",
+                  "checks": [
+                    { "id": "check-2", "label": "Check second condition.", "required": true }
+                  ]
+                }
+              ]
+            }
+            """),
+        "Alarm response guide catalog must reject duplicate alarm codes.");
+}
+
+static void AlarmResponseGuideRejectsMissingChecks()
+{
+    AssertThrows<InvalidOperationException>(
+        () => AlarmResponseGuideCatalog.FromJson(
+            """
+            {
+              "schemaVersion": "equipment-twin.alarm-guides.v1",
+              "source": "missing-check-test",
+              "guides": [
+                {
+                  "alarmCode": "CHK-001",
+                  "title": "Missing checks",
+                  "severity": "Warning",
+                  "summary": "Guide without operator checks should be rejected.",
+                  "checks": []
+                }
+              ]
+            }
+            """),
+        "Alarm response guide must require at least one operator check.");
+}
+
+static void MolyAldFaultCodesAreCoveredByAlarmGuides()
+{
+    var recipe = LoadMolyAldRecipe("public-moly-ald-metallization.json");
+    var catalog = LoadAlarmResponseGuideCatalog("moly-ald-alarm-guides.json");
+    var faultGuideCodes = recipe.FaultScenarios
+        .Select(fault => MolyAldAlarmGuideCodes.FromFaultKind(fault.Kind))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+    var missing = catalog.MissingGuideCodes(faultGuideCodes);
+
+    AssertEqual(0, missing.Count, $"Guide catalog is missing ALD fault guide code(s): {string.Join(", ", missing)}");
+    AssertEqual(0, catalog.MissingGuideCodes(MolyAldAlarmGuideCodes.AllFaultGuideCodes()).Count, "All known Moly ALD fault guide codes must be covered.");
+}
+
 static void ScenarioJsonLoadsNormalCycleFile()
 {
     var scenario = LoadScenario("normal-cycle.json");
@@ -1541,6 +1628,14 @@ static MolyAldRecipe LoadMolyAldRecipe(string fileName)
     var path = Path.Combine(root, "processes", fileName);
     var json = File.ReadAllText(path);
     return MolyAldRecipe.FromJson(json);
+}
+
+static AlarmResponseGuideCatalog LoadAlarmResponseGuideCatalog(string fileName)
+{
+    var root = FindRepositoryRoot();
+    var path = Path.Combine(root, "alarm-guides", fileName);
+    var json = File.ReadAllText(path);
+    return AlarmResponseGuideCatalog.FromJson(json);
 }
 
 static string FindRepositoryRoot()

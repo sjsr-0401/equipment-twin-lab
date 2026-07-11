@@ -1,4 +1,4 @@
-# Loop State
+﻿# Loop State
 
 마지막 갱신: 2026-07-01
 
@@ -19,7 +19,7 @@
 ## 사용자의 목표
 
 - 장비 SW 엔지니어로 현업 복귀 가능한 역량을 보여준다.
-- RayWork에서 했던 실무 경험을 방어 가능하게 정리한다.
+- 이전 장비 SW 실무 경험을 방어 가능하게 정리한다.
 - 사이드 프로젝트를 제조 공정 관점에서 실용적인 대표 프로젝트로 만든다.
 - 매일 작업 내용을 초보자도 이해할 수 있게 문서화한다.
 
@@ -270,7 +270,7 @@
   - Core console tests
   - normal process CLI
   - pumpdown fault CLI expected failure
-- Next required action:
+- 다음 필요 조치:
   - commit Goal 025
   - push branch
   - open draft PR #23
@@ -284,7 +284,7 @@
 - push CI: success
 - pull_request CI: success
 
-Next recommended goal:
+다음 추천 goal:
 
 ```text
 Goal 026: Process Timeline JSON Export
@@ -302,7 +302,7 @@ Goal 026: Process Timeline JSON Export
   - normal process report/timeline CLI success
   - pumpdown fault timeline CLI expected failure success
 
-Next required action:
+다음 필요 조치:
 
 - run full CI-like validation
 - commit
@@ -319,7 +319,7 @@ Next required action:
 - push CI: success
 - pull_request CI: success
 
-Next recommended goal:
+다음 추천 goal:
 
 ```text
 Goal 027: Unity Process Player Skeleton
@@ -331,12 +331,12 @@ Goal 027: Unity Process Player Skeleton
 - Current branch: `goal/027-unity-process-player-skeleton`.
 - Goal 027 adds first Unity-side process player skeleton.
 - Unity folder: `unity/EquipmentTwin.Unity`.
-- Current validation boundary:
+- 현재 검증 경계:
   - .NET build/tests still run in CI.
   - Unity skeleton file presence is checked in CI.
   - Unity Editor compile/play is still a manual next-step validation.
 
-Next required action:
+다음 필요 조치:
 
 - run full local validation
 - commit
@@ -350,7 +350,7 @@ Completion update:
 - Commit: `308d167 feat: add unity process player skeleton`
 - Local validation passed.
 - PR CI passed on run `28501761492`.
-- Next recommended goal: `Goal 028: Unity Chamber/Wafer/Valve Visual`.
+- 다음 추천 goal: `Goal 028: Unity Chamber/Wafer/Valve Visual`.
 
 ## 2026-07-01 Update: Goal 028 in progress
 
@@ -360,12 +360,12 @@ Completion update:
 - New visual components:
   - `MolyAldPrimitiveVisualizer`
   - `MolyAldDemoBootstrap`
-- Current validation boundary:
+- 현재 검증 경계:
   - .NET build/tests still run locally and in CI.
   - Unity runtime script file presence is checked in CI.
   - Unity Editor compile/play is still manual.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -380,7 +380,7 @@ Completion update:
 - Local validation passed.
 - PR CI passed on run `28502801252`.
 - Unity batchmode compile was blocked by inactive Unity license.
-- Next recommended goal: `Goal 029: Unity Hub license activation + Play Mode smoke test checklist`.
+- 다음 추천 goal: `Goal 029: Unity Hub license activation + Play Mode smoke test checklist`.
 
 ## 2026-07-01 Update: Goal 029 in progress
 
@@ -393,13 +393,13 @@ Completion update:
   - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/MolyAldEditorSmokeTest.cs`
   - `unity/EquipmentTwin.Unity/Assets/EquipmentTwin/Editor/EquipmentTwin.Unity.Editor.asmdef`
 
-Current validation boundary:
+현재 검증 경계:
 
 - .NET build/tests can be validated normally.
 - Unity smoke-test script can be syntax/wiring checked.
 - Actual Unity compile/run still requires Unity Hub license activation.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -414,7 +414,7 @@ Completion update:
 - Local validation passed.
 - PR CI passed on run `28503702866`.
 - Unity smoke-test runner reaches Unity but is blocked by inactive license.
-- Next recommended goal: `Goal 030: Unity Hub license activation and first demo screenshot`.
+- 다음 추천 goal: `Goal 030: Unity Hub license activation and first demo screenshot`.
 
 ## 2026-07-01 Update: Goal 030 in progress
 
@@ -426,12 +426,12 @@ Completion update:
 - Default output:
   - `artifacts/unity-demo/moly-ald-demo.png`
 
-Current validation boundary:
+현재 검증 경계:
 
 - Script syntax and file wiring can be validated now.
 - Actual screenshot capture requires Unity Hub license activation.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -446,7 +446,7 @@ Completion update:
 - Local validation passed.
 - PR CI passed on run `28504193106`.
 - Screenshot runner reaches Unity but actual PNG generation is blocked by inactive Unity license.
-- Next recommended goal: `Goal 031: Unity license activation, real screenshot capture, README demo image`.
+- 다음 추천 goal: `Goal 031: Unity license activation, real screenshot capture, README demo image`.
 
 ## 2026-07-01 Update: Goal 031 in progress
 
@@ -457,13 +457,13 @@ Completion update:
   - `docs/portfolio-demo-package.md`
   - `goals/031-portfolio-demo-package.md`
 
-Current validation boundary:
+현재 검증 경계:
 
 - .NET build/tests and CLI process run can be validated normally.
 - CI can verify the portfolio/demo documents exist.
 - Actual Unity screenshot generation still requires Unity Hub license activation.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -487,7 +487,7 @@ Completion update:
   - push run `28506128034`
   - pull_request run `28506142593`
 - Unity screenshot generation remains blocked by inactive Unity license.
-- Next recommended goal: `Goal 032: Unity license activation result capture and README demo image`.
+- 다음 추천 goal: `Goal 032: Unity license activation result capture and README demo image`.
 
 ## 2026-07-01 Update: Goal 032 in progress
 
@@ -507,7 +507,7 @@ Fixes made during Goal 032:
 - added explicit visual refresh for Editor batch screenshot;
 - copied representative image into tracked docs.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -524,7 +524,7 @@ Completion update:
 - PR CI passed:
   - push run `28513825158`
   - pull_request run `28513842354`
-- Next recommended goal: `Goal 033: Unity demo polish and 3-minute recording checklist`.
+- 다음 추천 goal: `Goal 033: Unity demo polish and 3-minute recording checklist`.
 
 ## 2026-07-01 Update: Goal 033 in progress
 
@@ -545,7 +545,7 @@ Completion update:
   - public moly ALD process report/timeline CLI
   - Unity screenshot capture with success markers
 
-Next required action:
+다음 필요 조치:
 
 - commit Goal 033
 - push branch
@@ -561,7 +561,7 @@ Completion update:
 - PR CI passed:
   - push run `28514554674`
   - pull_request run `28514568014`
-- Next recommended goal: `Goal 034: record the 3-minute demo video or design CAD/Blender model swap points`.
+- 다음 추천 goal: `Goal 034: record the 3-minute demo video or design CAD/Blender model swap points`.
 
 ## 2026-07-01 Update: Goal 034 in progress
 
@@ -577,7 +577,7 @@ Completion update:
   - `docs/unity-model-swap-boundary.md`
   - `goals/034-unity-visual-adapter-boundary.md`
 
-Next required action:
+다음 필요 조치:
 
 - commit Goal 034
 - push branch
@@ -601,7 +601,7 @@ Completion update:
 - PR CI passed:
   - push run `28515480062`
   - pull_request run `28515494369`
-- Next recommended goal: `Goal 035: record the actual 3-minute demo or add imported-model auto-binding after a real asset exists`.
+- 다음 추천 goal: `Goal 035: record the actual 3-minute demo or add imported-model auto-binding after a real asset exists`.
 
 ## 2026-07-01 Update: Goal 035 in progress
 
@@ -623,7 +623,7 @@ Completion update:
   - `.\scripts\Invoke-PortfolioDemoRehearsal.ps1 -SkipUnity`
   - `.\scripts\Invoke-PortfolioDemoRehearsal.ps1`
 
-Next required action:
+다음 필요 조치:
 
 - commit Goal 035
 - push branch
@@ -638,7 +638,7 @@ Completion update:
 - PR CI passed:
   - push run `28516872338`
   - pull_request run `28516885953`
-- Next recommended goal: `Goal 036: record the actual 3-minute demo and fix explanation or visual gaps`.
+- 다음 추천 goal: `Goal 036: record the actual 3-minute demo and fix explanation or visual gaps`.
 
 ## 2026-07-01 Update: Goal 036 in progress
 
@@ -651,12 +651,12 @@ Completion update:
   - `goals/036-demo-narration-cue-cards.md`
 - `Invoke-PortfolioDemoRehearsal.ps1` now creates `artifacts/demo-rehearsal/recording-cue-cards.md` after the rehearsal report.
 
-Current validation boundary:
+현재 검증 경계:
 
 - The cue card can prepare what to say during recording.
 - It does not record screen/video/audio.
 
-Next required action:
+다음 필요 조치:
 
 - run local validation
 - commit
@@ -680,7 +680,7 @@ Completion update:
 - PR CI passed:
   - push run `28522333300`
   - pull_request run `28522335584`
-- Next recommended goal: `Goal 037: record the actual 3-minute demo and fix explanation or visual gaps`.
+- 다음 추천 goal: `Goal 037: record the actual 3-minute demo and fix explanation or visual gaps`.
 
 ## 2026-07-02 Update: Goal 037 in progress
 
@@ -706,7 +706,7 @@ Local validation so far:
 - Unity screenshot capture passed.
 - Full demo rehearsal passed.
 
-Next required action:
+다음 필요 조치:
 
 - update final state/log if needed;
 - commit, push, open draft PR, watch CI.
@@ -724,7 +724,7 @@ Completion update:
 - PR CI passed:
   - push run `28563274336`
   - pull_request run `28563282879`
-- Next recommended goal: `Goal 038: record the actual 3-minute demo and fix explanation or visual gaps`.
+- 다음 추천 goal: `Goal 038: record the actual 3-minute demo and fix explanation or visual gaps`.
 
 ## 2026-07-02 Update: Goal 038 in progress
 
@@ -764,7 +764,7 @@ Local validation so far:
 - `process batch` generated `artifacts/moly-ald-fault-matrix-report.md` and returned exit code 0.
 - `git diff --check` passed.
 
-Next recommended goal after completion:
+완료 후 다음 추천 goal:
 
 - Add one new synthetic ALD fault kind, or improve report readability with a simple local dashboard.
 
@@ -822,7 +822,7 @@ Key decision:
 - Stop growing UI text through 3D `TextMesh`.
 - Move operator panel/timeline/alarm UI to Unity Canvas in the next implementation goal.
 
-Next recommended goal:
+다음 추천 goal:
 
 - `Goal 041: Canvas Operator Panel Implementation`
 
@@ -855,7 +855,7 @@ Local validation:
 Known limitation:
 
 - Buttons are not interactive yet.
-- Next recommended goal: `Goal 042: HMI Typography and Instrument Panel`.
+- 다음 추천 goal: `Goal 042: HMI Typography and Instrument Panel`.
 
 ## 2026-07-02 Update: Goal 042 in progress
 
@@ -889,7 +889,7 @@ Validation so far:
 Known limitation:
 
 - Buttons are still visual only.
-- Next recommended goal: `Goal 043: Process Schematic Main View`.
+- 다음 추천 goal: `Goal 043: Process Schematic Main View`.
 
 ## 2026-07-02 Update: Goal 043 complete
 
@@ -913,7 +913,7 @@ Implementation notes:
   - exhaust/gate/pump path.
 - Active valve and film fill are driven by `MolyAldVisualState`.
 
-Validation:
+검증:
 
 - Release build passed.
 - Core console test passed: 81 tests.
@@ -958,11 +958,11 @@ Known limitation:
 - Fault selector remains next.
 ## 2026-07-02 Loop Update: Goal 045 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 045: Canvas Button Interaction and Fault Selector`
 
-What changed:
+변경 내용:
 
 - Canvas command buttons are now actual Unity `Button` components.
 - `START`, `STOP`, `FAULT`, and `RESET` are connected to `MolyAldProcessPlayer`.
@@ -970,33 +970,33 @@ What changed:
 - `EventSystem` is automatically created for click interaction.
 - Unity smoke test validates button creation and state transitions.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 046: Fault Mode Screenshot and Operator Action Log`
 
-Reason:
+이유:
 
 - Interaction exists now, but the portfolio artifact does not yet show the fault mode.
 - Next loop should make the `normal -> fault hold -> reset` demo visible and explainable.
 
 ## 2026-07-02 Loop Update: Goal 046 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 046: Fault Mode Screenshot and Operator Action Log`
 
-What changed:
+변경 내용:
 
 - HMI now has an `OPERATOR ACTION LOG` card.
 - START/STOP/FAULT/RESET actions can be recorded into Canvas action rows.
 - Fault screenshot generation is available through `Invoke-UnitySmokeTest.ps1 -CaptureFaultScreenshot`.
 - Normal and fault screenshots are available under `docs/demo`.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 047: Reset Recovery Screenshot and Fault Scenario Selector`
 
-Reason:
+이유:
 
 - Normal and fault hold screens exist now.
 - The next missing demo segment is reset/recovery.
@@ -1004,55 +1004,55 @@ Reason:
 
 ## 2026-07-02 Loop Update: Goal 047 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 047: Reset Recovery Screenshot and Fault Scenario Selector`
 
-What changed:
+변경 내용:
 
 - FAULT now uses the selected public scenario name `precursor-dose-timeout`.
 - Fault alarm detail and action log expose the selected scenario name.
 - Recovery screenshot generation is available through `Invoke-UnitySmokeTest.ps1 -CaptureRecoveryScreenshot`.
 - Normal, fault, and recovery screenshots are available under `docs/demo`.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 048: Fault Timeline Replay Binding`
 
-Reason:
+이유:
 
 - The HMI can now tell the operator story: normal run, named fault hold, reset recovery.
 - The next technical gap is process truth: Unity should replay the actual selected fault timeline instead of only applying a synthetic hold overlay.
 
 ## 2026-07-02 Loop Update: Goal 048 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 048: Fault Timeline Replay Binding`
 
-What changed:
+변경 내용:
 
 - Unity now loads selected public fault timeline JSON from `StreamingAssets/faults`.
 - `precursor-dose-timeout` replay moves the player to the first failed process step.
 - HMI shows `FAULT REPLAY` instead of only a synthetic hold label.
 - Smoke test validates `FaultTimelineReplayActive`, scenario name match, and failed-step positioning.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 049: Fault Scenario Selector UI`
 
-Reason:
+이유:
 
 - Replay binding is now present.
 - The next interaction gap is letting the operator choose which public fault scenario to replay from the HMI.
 
 ## 2026-07-03 Loop Update: Goal 049 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 049: Fault Scenario Selector UI`
 
-What changed:
+변경 내용:
 
 - HMI now has a `FAULT SCENARIO SELECTOR` card.
 - Four public fault scenarios are visible as operator-selectable chips.
@@ -1061,18 +1061,18 @@ What changed:
 - Selector changes are blocked while a replay alarm is active, so the HMI cannot show a different selected fault than the active replay timeline.
 - Normal, fault, and recovery screenshots were regenerated with the new selector UI.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 050: Fault Recovery Procedure Panel`
 
-Reason:
+이유:
 
 - The operator can now select and replay a fault.
 - The next portfolio improvement is to show what an operator should check after the alarm: alarm cause, affected subsystem, reset condition, and recovery steps.
 
 ## 2026-07-03 Loop Update: Goal 050 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 050: WPF Operator Console Shell`
 
@@ -1083,69 +1083,69 @@ Direction change:
 - Core remains the process truth.
 - CLI remains automation/report tooling.
 
-What changed:
+변경 내용:
 
 - Added `src/EquipmentTwin.Hmi.Wpf`.
 - Added a WPF operator console with process schematic, commands, fault selector, instruments, alarm card, operator log, and timeline debug table.
 - WPF calls `MolyAldRunner` directly and renders `MolyAldTimelineDocument`.
 - Added `scripts/Invoke-WpfHmi.ps1` and `docs/wpf-main-hmi.md`.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 051: WPF Alarm Recovery Procedure Panel`
 
-Reason:
+이유:
 
 - WPF can now run and replay faults.
 - The next HMI value is a recovery guide that explains what an operator should check after each fault.
 
 ## 2026-07-03 Loop Update: Goal 051 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 051: Fix WPF ProgressBar Binding Mode`
 
-What triggered it:
+이 작업을 한 이유:
 
 - Visual Studio stopped on a WPF binding exception while debugging the new WPF HMI.
 - The failing property was `OperatorConsoleViewModel.TimelineProgress`.
 
-What changed:
+변경 내용:
 
 - WPF progress bars now bind to calculated ViewModel properties with explicit `Mode=OneWay`.
 - A short WPF binding rule was added to `docs/wpf-main-hmi.md`.
 - CI now checks that the WPF progress indicators keep the one-way binding markers.
 
-Validation:
+검증:
 
 - WPF Release build passed.
 - Full solution Release build passed.
 - Core tests passed: 81 tests.
 - WPF startup smoke passed.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 052: WPF Alarm Recovery Procedure Panel`
 
-Reason:
+이유:
 
 - The WPF HMI is now startable/debuggable again.
 - The next value-add is showing operator-facing recovery steps after selected public faults.
 
 ## 2026-07-03 Loop Update: Goal 052 complete
 
-Current completed goal:
+완료한 goal:
 
 - `Goal 052: WPF UI Readability Fix`
 
-What triggered it:
+이 작업을 한 이유:
 
 - Manual WPF debugging exposed visible UI defects:
   - clipped `LOAD PORT` label;
   - timeline label and progress percentage too cramped;
   - default white DataGrid header/background conflict inside the dark theme.
 
-What changed:
+변경 내용:
 
 - Added explicit dark-theme styles for `DataGridColumnHeader`, `DataGridRow`, `DataGridCell`, `ComboBox`, and `ComboBoxItem`.
 - Enlarged the load-port block so the label is readable.
@@ -1153,43 +1153,736 @@ What changed:
 - Increased the bottom debug-table area.
 - Added WPF UI readability rules to `docs/wpf-main-hmi.md`.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
 - `Goal 053: WPF HMI Visual System R&D`
 
-Reason:
+이유:
 
 - The immediate readability bugs are fixed.
 - Before adding more WPF panels, the project needs a stronger visual system for typography, spacing, color semantics, and industrial-HMI layout.
 
 ## 2026-07-03 Loop Update: Goal 053 complete
 
-Current completed goal:
+완료한 goal:
 
-- `Goal 053: WPF HMI Visual System`
+- `목표 053: WPF HMI Visual System`
 
-Direction:
+방향:
 
-- Keep WPF as the main HMI/debug surface.
-- Use an `ISA-101 inspired` / `High-Performance HMI inspired` visual direction.
-- Do not claim certification or vendor equivalence.
+- WPF를 메인 HMI/debug 화면으로 유지한다.
+- `ISA-101 inspired` / `High-Performance HMI inspired` visual direction을 사용한다.
+- 공식 표준 인증이나 vendor 동등성을 주장하지 않는다.
 
-What changed:
+변경 내용:
 
-- WPF palette moved from colorful demo colors to gray-base HMI tokens.
-- Normal operation no longer uses large green/blue/yellow fills.
-- Red/amber are reserved for alarm/warning states.
-- Valve state uses `OPEN` / `CLOSED` text in addition to neutral visual state.
-- Instrument status uses symbols and text, such as `▲ HI` and `▼ COOL`.
-- Alarm card now has icon, priority, text, and code rather than relying only on color.
-- Added `docs/design/wpf-hmi-visual-system.md`.
+- WPF palette를 colorful demo color에서 gray-base HMI token으로 옮겼다.
+- 정상 운전 상태에서 큰 green/blue/yellow fill을 쓰지 않도록 조정했다.
+- Red/amber는 alarm/warning 상태에 집중해서 사용한다.
+- Valve state는 neutral visual state와 함께 `OPEN` / `CLOSED` text를 사용한다.
+- Instrument status는 `▲ HI`, `▼ COOL`처럼 symbol과 text를 같이 사용한다.
+- Alarm card는 색상만이 아니라 icon, priority, text, code를 함께 사용한다.
+- `docs/design/wpf-hmi-visual-system.md`를 추가했다.
 
-Current next recommendation:
+현재 다음 추천 작업:
 
-- `Goal 054: WPF HMI Instrument Trend Panel`
+- `목표 054: WPF HMI Instrument Trend Panel`
 
-Reason:
+이유:
 
-- The visual-system direction is now documented and reflected in the shell.
-- The next high-value HMI feature is trend visibility for pressure, temperature, and film thickness.
-- Evaluate simple custom drawing before adding LiveCharts2.
+- WPF visual system 방향이 문서화됐고 화면에도 반영됐다.
+- 다음으로 가치가 큰 HMI 기능은 pressure, temperature, film thickness의 trend 표시다.
+- LiveCharts2를 추가하기 전에 단순 custom drawing으로 충분한지 먼저 확인한다.
+
+## 2026-07-04 Loop Update: Goal 054 완료
+
+완료한 goal:
+
+- `목표 054: WPF 리포트 / Mock Server 안정화`
+
+이 작업을 한 이유:
+
+- WPF alarm guide, issue report export, server outbox, mock server, README, architecture 변경이 working tree에 많이 쌓여 있었다.
+- 새 기능을 추가하기 전에 현재 WPF-to-server demo path가 실제로 깨지지 않았는지 검증할 필요가 있었다.
+
+검증한 내용:
+
+- 전체 solution build 통과.
+- Core tests 통과.
+- WPF project build 통과.
+- Mock Server project build 통과.
+- Mock Server가 `GET /health`에 응답.
+- Mock Server가 `POST /alarm-issue-report` 수신.
+- 수신 payload 파일이 `artifacts/mock-server-received/` 아래에 생성됨.
+
+중요한 경계:
+
+- 아직 local demo 경계다. 실제 MES, SECS/GEM, vendor server integration이 아니다.
+- WPF 버튼 클릭 자동화는 보류했다. UI code는 build로 검증했고, HTTP endpoint는 실제 POST로 직접 검증했다.
+
+커밋 전 주의:
+
+- `unity/EquipmentTwin.Unity/ProjectSettings/PackageManagerSettings.asset`는 untracked 상태이며, 커밋 전에 포함 여부를 확인해야 한다.
+
+현재 다음 추천 작업:
+
+- `목표 055: WPF HMI 계측값 Trend Panel`
+
+이유:
+
+- Alarm/report/server 흐름이 검증됐다.
+- 다음으로 가치가 큰 HMI 기능은 pressure, temperature, film thickness의 trend 표시다.
+- Chart dependency를 추가하기 전에 단순 custom drawing으로 시작한다.
+
+## 2026-07-04 Loop Update: Goal 055 완료
+
+완료한 goal:
+
+- `목표 055: WPF HMI 계측값 Trend Panel`
+
+변경 내용:
+
+- WPF `PROCESS INSTRUMENTS` 카드에 작은 `RECENT TREND` 영역을 추가했다.
+- Pressure, Temp, Film이 작은 WPF `Polyline` sparkline으로 표시된다.
+- Trend row는 `MolyAldTimelineDocument.Steps` 중 현재 step까지의 데이터를 사용해 생성된다.
+- Chart library는 추가하지 않았다.
+- `EquipmentTwin.Core`는 변경하지 않았다.
+
+검증:
+
+- WPF project build 통과.
+- Core tests 통과.
+- 전체 solution build 통과.
+- WPF startup smoke에서 조기 종료 없이 유지됨.
+
+현재 다음 추천 작업:
+
+- `목표 056: WPF HMI 수동 화면 검수와 커밋 정리`
+
+이유:
+
+- UI layout 변경이므로 실제 화면 육안 검수가 필요하다.
+- 커밋 전에 untracked Unity `PackageManagerSettings.asset` 파일이 공개 repo에 들어가야 하는지 결정해야 한다.
+
+## 2026-07-05 Loop Update: Goal 056 완료
+
+완료한 goal:
+
+- `목표 056: WPF 화면 검수와 커밋 정리`
+
+변경 내용:
+
+- `.gitignore`에 `private/`, `private-notes/`를 명시했다.
+- `.gitignore`에 Unity local 생성 folder인 `Library/`, `Temp/`, `Obj/`, `Logs/`, `UserSettings/`를 명시했다.
+- `PackageManagerSettings.asset`를 확인했고, 개인 정보 파일이 아니라 Unity project setting으로 판단했다.
+- 최근 state 문서 일부에 남아 있던 영어 설명을 한국어 중심으로 정리했다.
+
+검증:
+
+- 전체 solution build 통과.
+- Core tests 통과.
+- `git diff --check` 통과. Windows line ending 경고만 있음.
+- `private-notes/`가 repo `.gitignore` 규칙으로 ignore되는 것 확인.
+
+막힌 점:
+
+- WPF 자동 screenshot 검수는 완료하지 못했다.
+- `dotnet run` 캡처는 console window를 잡았고, `.exe` 직접 실행은 process는 살아 있으나 visible window handle을 찾지 못했다.
+
+현재 다음 추천 작업:
+
+- `목표 057: WPF 실제 화면 확인 후 trend panel spacing 조정`
+
+이유:
+
+- 자동 visual QA가 막혔으므로 사용자가 직접 WPF를 실행한 화면을 기준으로 spacing/readability를 조정하는 것이 현실적이다.
+
+## 2026-07-08 Loop Update: Goal 057 완료
+
+완료한 goal:
+
+- `목표 057: WPF 읽기 전용 TextBox 바인딩 예외 수정`
+
+변경 내용:
+
+- `LatestServerPayloadPreviewText`를 표시하는 WPF `TextBox.Text` 바인딩에 `Mode=OneWay`를 명시했다.
+- ViewModel의 읽기 전용 계산 속성에 `TextBox.Text` 기본 `TwoWay` 바인딩이 걸리면서 발생한 runtime 예외를 수정했다.
+- 공개 작업 로그에는 작업 사실만 남기고, 자세한 학습 메모는 `private-notes/` 아래에 따로 작성했다.
+
+검증:
+
+- WPF project build 통과.
+- 전체 solution build 통과.
+- Core tests 통과.
+- `git diff --check -- src/EquipmentTwin.Hmi.Wpf/MainWindow.xaml` 통과.
+
+막힌 점:
+
+- 처음 검증 때 build/test 병렬 실행으로 `obj` DLL file lock이 발생했다.
+- 코드 문제가 아니라 검증 방식 문제였고, 순차 실행으로 해결했다.
+
+현재 다음 추천 작업:
+
+- `목표 058: WPF 실제 화면 기준 레이아웃/가독성 조정`
+
+이유:
+
+- 실행 예외는 수정됐다.
+- 다음은 사용자가 보낸 실제 screenshot 기준으로 하단 잘림, 콤보박스 색상, 한영 라벨 혼합, 간격 문제를 정리하는 것이 맞다.
+
+## 2026-07-10 Loop Update: Goal 058 완료
+
+완료한 goal:
+
+- `목표 058: WPF HMI 오른쪽 패널 탭 구조 적용`
+
+변경 내용:
+
+- 오른쪽 기능 패널에 WPF `TabControl`을 적용했다.
+- `운전 Overview`, `알람 / 리포트`, `작업 로그` 탭으로 화면을 나눴다.
+- 탭 제목은 한국어/영어 전환에 맞춰 바뀌도록 ViewModel property로 만들었다.
+- 왼쪽 장비 schematic은 항상 보이도록 유지했다.
+
+검증:
+
+- WPF project build 통과.
+- 전체 solution build 통과.
+- Core tests 통과.
+
+보류한 판단:
+
+- 왼쪽 장비 schematic 개선은 다음 goal로 분리했다.
+- 서버 전송 흐름 stepper UI도 다음 UI/UX 개선 후보로 남겼다.
+
+현재 다음 추천 작업:
+
+- `목표 059: 왼쪽 장비 schematic을 cabinet/module/gas-line/pump 구조로 개선`
+
+이유:
+
+- 오른쪽 정보 구조는 탭으로 정리됐다.
+- 포트폴리오 첫인상에서 가장 약한 부분은 아직 왼쪽 장비 화면이다.
+
+## 2026-07-10 Loop Update: Goal 059 완료
+
+완료한 goal:
+
+- `목표 059: WPF 왼쪽 장비 schematic 고도화`
+
+변경 내용:
+
+- 왼쪽 schematic을 `Load Port`, `Gas Box`, `Process Chamber`, `Exhaust Module` 구조로 재배치했다.
+- 배관/연결선 역할의 shape를 추가해 장비가 연결된 시스템처럼 보이게 했다.
+- chamber 내부에 showerhead, wafer/film, susceptor heater 구조를 더 명확히 표현했다.
+- 알람 발생 시 chamber 전체를 빨갛게 칠하지 않고, flow/outline 중심으로 상태를 표현하도록 바꿨다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+
+보류한 판단:
+
+- 실제 CAD/3D 모델링은 하지 않았다.
+- fault 종류별 특정 line 강조와 active flow animation은 다음 UI 개선 후보로 둔다.
+
+현재 다음 추천 작업:
+
+- `목표 060: 알람/리포트/서버 전송 stepper UI`
+
+이유:
+
+- 왼쪽 장비 schematic은 1차 개선됐다.
+- 다음 병목은 오른쪽 알람/리포트 탭에서 사용자가 현재 진행 단계를 한눈에 파악하기 어렵다는 점이다.
+
+## 2026-07-10 Loop Update: Goal 060 완료
+
+완료한 goal:
+
+- `목표 060: WPF 알람/리포트/서버 전송 Stepper UI`
+
+변경 내용:
+
+- `알람/리포트` 탭 상단에 6단계 workflow stepper를 추가했다.
+- 단계는 알람, 체크, 대응, 리포트, 대기열, 전송으로 구성했다.
+- 각 단계는 상태 text, detail, 상태 color를 가진다.
+- 새 fault replay 또는 정상 timeline load 시 이전 workflow 표시 상태를 초기화한다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+
+보류한 판단:
+
+- Stepper card의 실제 화면 크기와 spacing은 screenshot 기준으로 추가 조정한다.
+- Mock Server online/offline health check는 아직 추가하지 않았다.
+
+현재 다음 추천 작업:
+
+- `목표 061: 실제 화면 기준 stepper와 schematic 시각 QA`
+
+이유:
+
+- 최근 작업은 UI 구조 변경이 많다.
+- 실제 화면 screenshot을 기준으로 글자 잘림, scroll 위치, 카드 밀도, schematic 균형을 조정해야 한다.
+
+## 2026-07-10 Loop Update: Goal 061 완료
+
+완료한 goal:
+
+- `목표 061: WPF Mock Server 연결 상태 표시`
+
+변경 내용:
+
+- WPF 알람/리포트 탭의 server payload 영역에 Mock Server 연결 상태 카드를 추가했다.
+- `서버 확인` 버튼으로 `http://127.0.0.1:5088/health`를 확인할 수 있게 했다.
+- payload 전송 성공/실패 결과가 Mock Server 연결 상태에도 반영되도록 했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- `git diff --check` 통과.
+
+보류한 판단:
+
+- 자동 polling은 넣지 않았다.
+- 지금 단계에서는 사용자가 명시적으로 누르는 health check가 더 단순하고 설명하기 쉽다.
+
+현재 다음 추천 작업:
+
+- `목표 062: 실제 화면 기준 stepper/server card/schematic 시각 QA`
+
+이유:
+
+- 서버 상태 카드를 추가하면서 오른쪽 알람/리포트 탭 밀도가 다시 높아졌다.
+- 다음은 기능 추가보다 실제 화면에서 잘림, 간격, scroll 위치를 조정하는 작업이 맞다.
+
+## 2026-07-10 Loop Update: Goal 062 완료
+
+완료한 goal:
+
+- `목표 062: WPF stepper/server card/schematic 시각 QA`
+
+변경 내용:
+
+- WPF가 최대화 상태로 시작하도록 했다.
+- 하단 debug 영역을 최소/최대 높이를 가진 비율 행으로 바꿨다.
+- 왼쪽 schematic의 고정 행 높이와 chamber 여백을 줄였다.
+- 알람/리포트 탭의 중첩 ScrollViewer를 제거했다.
+- 긴 workflow detail과 파일 경로는 말줄임+ToolTip으로 표시한다.
+- Mock Server 상태 메시지가 카드 전체 폭을 사용하도록 재배치했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- `git diff --check` 통과.
+
+막힌 점:
+
+- Windows 화면 캡처 계층 오류로 최신 WPF screenshot 자동 캡처는 실패했다.
+- 첫 build는 화면 확인용 WPF 프로세스가 DLL을 잠가 실패했고, 해당 프로세스를 종료한 뒤 재실행해 통과했다.
+
+현재 다음 추천 작업:
+
+- `목표 063: Mock Server 상태와 workflow 전송 단계 연결`
+
+이유:
+
+- 화면 밀도와 스크롤 구조는 1차 정리됐다.
+- 다음에는 서버가 꺼져 있을 때 stepper 6단계가 단순 대기가 아니라 `OFFLINE` 원인을 직접 보여주도록 연결하는 것이 좋다.
+
+## 2026-07-10 Loop Update: Goal 063 완료
+
+완료한 goal:
+
+- `목표 063: Mock Server 상태와 workflow 전송 단계 연결`
+
+변경 내용:
+
+- workflow 6번 전송 카드에 Mock Server health 상태를 연결했다.
+- 연결 확인 중, OFFLINE, ONLINE, 전송 중, 전송 성공 상태를 구분한다.
+- OFFLINE은 빨간색, ONLINE은 파란색, 실제 전송 성공은 초록색으로 표시한다.
+- 서버 준비 전/후와 payload 준비 전/후 안내 문구를 구분했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- .NET 8 상태 전이 직접 검증 통과.
+- 영어/한국어 상태 표시 검증 통과.
+- `git diff --check` 통과.
+
+막힌 점과 해결:
+
+- Windows PowerShell 5.1 reflection 검증은 .NET 8 runtime mismatch로 실패했다.
+- Git에서 제외된 `net8.0-windows` 임시 검증 프로그램으로 전환해 모든 상태를 확인했다.
+
+현재 다음 추천 작업:
+
+- `목표 064: fault code별 schematic 진단 라인 강조`
+
+이유:
+
+- 알람 대응과 서버 전송 workflow는 이제 상태가 연결됐다.
+- 다음에는 알람 코드가 장비 schematic의 실제 문제 영역과 연결되어야 오퍼레이터가 원인을 더 빨리 찾을 수 있다.
+
+## 2026-07-10 Loop Update: Goal 064 완료
+
+완료한 goal:
+
+- `목표 064: fault code별 schematic 진단 라인 강조`
+
+변경 내용:
+
+- 정상/GAS-301/TMP-201/VAC-101 진단 포커스 badge를 추가했다.
+- GAS-301은 Gas Box와 delivery line을 강조한다.
+- TMP-201은 Chamber와 heater를 강조한다.
+- VAC-101은 vacuum path와 Exhaust/Pump를 강조한다.
+- 관련 없는 모듈은 중립색을 유지한다.
+- 색상과 알람 코드/영역 텍스트를 함께 사용한다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- 정상/GAS/TMP/VAC/한글 ViewModel 상태 검증 통과.
+- `git diff --check` 통과.
+
+보류:
+
+- Core에 없는 FILM 계열 fault는 UI에도 만들지 않았다.
+- 기존 MotionAxis는 사용하지 않았다.
+
+현재 다음 추천 작업:
+
+- `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화`
+
+이유:
+
+- fault 위치는 이제 schematic에서 찾을 수 있다.
+- 다음에는 Load/Process/Unload step에 따라 wafer 위치와 gate 상태가 변해야 왼쪽 화면이 공정 흐름을 더 직접적으로 보여줄 수 있다.
+
+## 2026-07-10 Loop Update: Goal 065 완료
+
+완료한 goal:
+
+- `목표 065: ALD timeline 기반 Wafer Transfer 상태 시각화`
+
+변경 내용:
+
+- Load Port, transfer track, Process Chamber에 Wafer 상태 표시를 추가했다.
+- LoadWafer/공정 중/TransferOut/Complete를 서로 다른 Wafer 위치로 표현한다.
+- transfer gate OPEN/CLOSED를 색과 텍스트로 표시한다.
+- 알람 중 Wafer Chamber Hold와 Gate CLOSED를 표시한다.
+- Wafer 이송 경로를 Exhaust/Pump 배기 경로와 분리했다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- Load/PumpDown/TransferOut/Complete/Alarm/한글 상태 검증 통과.
+- WPF 구현의 MotionAxis 참조 없음 확인.
+- `git diff --check` 통과.
+
+보류:
+
+- 연속 좌표나 WPF animation은 추가하지 않았다.
+- 실제 transfer robot/load lock 제어 모델은 아니다.
+
+현재 다음 추천 작업:
+
+- `목표 066: WPF Demo 상태 자동 Screenshot Capture`
+
+이유:
+
+- 왼쪽 schematic의 정적 fault 위치와 Wafer/Gate 상태가 모두 연결됐다.
+- 다음에는 정상/알람/이송 상태를 반복 가능한 PNG로 생성해 실제 화면 품질을 자동 검수할 필요가 있다.
+
+## 2026-07-10 Loop Update: Goal 066 완료
+
+완료한 goal:
+
+- `목표 066: WPF Demo 상태 자동 Screenshot Capture`
+
+변경 내용:
+
+- load/process/alarm/transfer-out/complete 5개 WPF 상태를 자동 PNG로 저장한다.
+- 기존 Reset/Step/Fault Replay 명령으로 상태를 재현한다.
+- 한국어/영어 캡처를 지원한다.
+- 알람 캡처는 알람/리포트 탭을 열어 작업지시서를 보여준다.
+- 5개 PNG의 1600×900 해상도를 PowerShell에서 자동 검증한다.
+- 산출 이미지는 Git에서 제외된 `artifacts/wpf-demo-screenshots/`에 저장한다.
+
+검증:
+
+- WPF Release build 통과.
+- 전체 solution Release build 통과.
+- Core tests 통과.
+- 5개 한국어 PNG 자동 생성과 1600×900 검증 통과.
+- Load/Alarm/Transfer Out 이미지 직접 확인 통과.
+- 일반 WPF 실행 smoke test 통과.
+- `git diff --check` 통과.
+
+막힌 점과 해결:
+
+- 첫 알람 캡처는 상태 변경 직후 일부 Visual이 비어 저장됐다.
+- 단순 250ms 대기만으로는 탭 전환 캡처가 안정화되지 않았다.
+- 첫 렌더 전에 상태/탭을 준비하고 캡처 모드에서만 소프트웨어 렌더링을 적용해 해결했다.
+
+현재 다음 추천 작업:
+
+- `목표 067: 자동 Screenshot 기반 WPF Visual QA 2차`
+
+이유:
+
+- 최신 대표 화면을 반복 가능한 파일로 확보했다.
+- 이제 감으로 UI를 수정하지 않고 같은 1600×900 기준에서 상태별 잘림, 번역, 강조를 비교할 수 있다.
+
+## 2026-07-10 Loop Update: Goal 067 완료
+
+완료한 goal:
+
+- `목표 067: 자동 Screenshot 기반 WPF Visual QA 2차`
+
+변경 내용:
+
+- 160% Windows DPI에서 고정 DIP 창이 화면을 넘던 문제를 최대화 방식으로 해결했다.
+- WPF 내부 bitmap 대신 실제 client 화면을 `CopyFromScreen`으로 저장한다.
+- 현재 모니터 작업 영역으로 제한해 Windows 작업표시줄을 제외한다.
+- 1600×900, 검정 표본, 상단/왼쪽/오른쪽/하단 네 anchor를 자동 검사한다.
+- 한국어/영어 각각 5개 상태를 검증했다.
+
+검증:
+
+- 한국어 5종: 1600×900, 검정 표본 0/1200, anchor 4/4 통과.
+- 영어 5종: 1600×900, 검정 표본 0/1200, anchor 4/4 통과.
+- 전체 solution Release build 통과, 경고 0, 오류 0.
+- Core tests 전체 통과.
+- 일반 WPF 3초 smoke test 통과.
+
+막힌 점과 해결:
+
+- RenderTargetBitmap, VisualBrush, PrintWindow, 지연 증가, 초기/상태 화면 합성은 상태별 부분 누락을 완전히 막지 못했다.
+- Windows가 최종 합성한 실제 화면을 캡처하는 방식으로 전환했다.
+
+현재 다음 추천 작업:
+
+- `목표 068: WPF 한국어 일반 UI 라벨 일관성 정리`
+
+이유:
+
+- 캡처 기반이 안정되어 변경 전후를 같은 조건으로 비교할 수 있다.
+- 한국어 모드에 남은 일반 UI 제목과 버튼을 정리하되 Pump/Valve/Recipe/ALD 같은 도메인 용어는 유지한다.
+
+## 2026-07-10 Loop Update: Goal 068 완료
+
+완료한 goal:
+
+- `목표 068: WPF 한국어 일반 UI 라벨 일관성 정리`
+
+변경 내용:
+
+- XAML의 고정 영어 버튼/일반 제목을 기존 ViewModel binding으로 교체했다.
+- 한국어 모드에서 시작/정지/다음 Step/Fault 재현/초기화가 표시된다.
+- 일반 영역 제목, 운전 상태, 계측 상태를 한국어로 표시한다.
+- Load Port/Pump/Valve/Recipe/ALD/Trace 같은 도메인 용어는 유지했다.
+- 번역된 상태 문자열에도 기존 색상 의미를 유지했다.
+
+검증:
+
+- 한국어/영어 각각 5개 Screenshot: 1600×900, 검정 표본 0/1200, anchor 4/4 통과.
+- 전체 solution Release build 통과, 경고 0, 오류 0.
+- Core tests 전체 통과.
+- 일반 WPF 3초 smoke test 통과.
+- `git diff --check` 통과.
+
+막힌 점과 해결:
+
+- 첫 일괄 patch는 XAML 예상 문맥이 실제 구조와 달라 적용되지 않았다.
+- 파일 변경이 없음을 확인한 뒤 ViewModel/XAML을 분리해 정확한 줄만 수정했다.
+
+현재 다음 추천 작업:
+
+- `목표 069: 알람 작업지시서 한국어 문장 품질 정리`
+
+이유:
+
+- UI chrome과 상태 라벨은 정리됐다.
+- 다음에는 작업자가 실제로 읽는 알람 요약/체크리스트/대응 선택지의 혼합 문장을 자연스럽게 만들어야 한다.
+
+## 2026-07-10 Loop Update: Goal 069 완료
+
+완료한 goal:
+
+- `목표 069: WPF 장비 Schematic 시각 깊이 고도화`
+
+우선순위 변경:
+
+- 기존 추천은 알람 작업지시서 문장 정리였다.
+- 사용자의 직접 피드백에 따라 포트폴리오 첫인상에 더 큰 영향을 주는 장비 화면 고도화를 먼저 수행했다.
+
+변경 내용:
+
+- Load Port/FOUP/Slit Valve를 모듈 형태로 개선했다.
+- Gas Box를 MFC/Isolation Valve 3채널 manifold로 개선했다.
+- Chamber 단면에 showerhead/process zone/wafer/susceptor/heater/plenum을 추가했다.
+- 실제 Pressure/Temperature 값을 chamber에 표시했다.
+- Exhaust path에 throttle valve와 vacuum pump 형상을 추가했다.
+- 기존 동적 상태 Binding은 모두 유지했다.
+
+검증:
+
+- 한국어/영어 각각 5개 Screenshot: 1600×900, 검정 표본 0/1200, anchor 4/4 통과.
+- Load/Process/GAS-301/Transfer Out 화면 직접 확인.
+- 전체 solution Release build 통과, 경고 0, 오류 0.
+- Core tests 전체 통과.
+- 일반 WPF 3초 smoke test 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 070: 알람 작업지시서 한국어 문장 품질 정리`
+
+이유:
+
+- 장비 외형은 구성요소와 연결이 읽히는 수준으로 개선됐다.
+- 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 개선한다.
+
+## 2026-07-10 Loop Update: Goal 070 완료
+
+완료한 goal:
+
+- `목표 070: WPF 장비 공정 동작 시각화`
+
+우선순위 변경:
+
+- 기존 추천은 알람 작업지시서 문장 정리였다.
+- 사용자가 대표 화면을 최종 품질까지 높이도록 요청해 장비 animation을 먼저 수행했다.
+
+변경 내용:
+
+- Gas/Vacuum flow animation 추가.
+- Valve pulse, Heater glow, Pump rotor rotation 추가.
+- Wafer transfer와 Gate motion 추가.
+- Alarm 중 정상 공정 animation 정지.
+- Core 상태를 ViewModel 의미 속성으로 변환하고 XAML Storyboard에 연결했다.
+
+검증:
+
+- 한국어/영어 각각 5개 Screenshot 검증 통과.
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF smoke test 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 071: 알람 작업지시서 한국어 문장 품질 정리`
+
+이유:
+
+- 장비 외형과 공정 동작 시각화가 연결됐다.
+- 다음에는 작업자가 실제로 읽는 대응 문장의 품질을 높인다.
+
+## 2026-07-10 Loop Update: Goal 071 완료
+
+완료한 goal:
+
+- `목표 071: 알람 작업지시서 한국어 문장 품질 정리`
+
+변경 내용:
+
+- 4개 알람 가이드의 56개 사용자 문장 한국어 정리.
+- 한국어 Severity/점검/Workflow 문구 정리.
+- 한국어 Markdown 이슈 리포트 생성.
+- Export Payload에 Language 추가.
+- JSON Severity와 AlarmCode는 기계용 값으로 유지.
+
+검증:
+
+- 가이드 4개, 문장 56개 매핑 누락 0개.
+- 지정 번역투 표현 0개.
+- 한영 Screenshot 각각 5개 통과.
+- 한국어 Markdown/JSON Export Service smoke 통과.
+- 전체 solution Release build, Core tests, WPF smoke 통과.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트`
+
+이유:
+
+- 이번에는 임시 smoke 프로그램으로 문서와 Payload를 확인했다.
+- 다음에는 같은 검증을 CI에서 반복 가능하게 만들어 계약 회귀를 막는다.
+
+## 2026-07-10 Loop Update: Goal 072 완료
+
+완료한 goal:
+
+- `목표 072: 알람 리포트와 서버 Payload 계약 자동 테스트`
+
+변경 내용:
+
+- WPF 계약 테스트 프로젝트 추가.
+- 한국어/영어 Markdown 계약 테스트 추가.
+- JSON/Outbox Envelope/Payload 계약 테스트 추가.
+- Solution과 GitHub Actions에 테스트 연결.
+
+검증:
+
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF 계약 테스트 3개 통과.
+- 생성 파일 자동 정리.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리`
+
+이유:
+
+- Payload 구조를 자동으로 보호할 수 있게 됐다.
+- 다음에는 실제 전송 실패 후 재시도와 상태 전이를 구현할 차례다.
+
+## 2026-07-11 Loop Update: Goal 073 완료
+
+완료한 goal:
+
+- `목표 073: 서버 전송 실패 Retry와 Outbox 상태 관리`
+
+변경 내용:
+
+- Outbox에 queued/sending/failed/sent 상태 전이 추가.
+- 전송 시도 횟수, 시각, 오류, 성공 시각 영속화.
+- 실패 payload 수동 재전송과 성공 payload 중복 차단.
+- WPF 상태 카드와 상태별 버튼 문구 추가.
+- WPF 계약 테스트를 4개로 확장.
+
+검증:
+
+- 전체 solution Release build 경고 0, 오류 0.
+- Core tests 전체 통과.
+- WPF 계약 테스트 4개 통과.
+- Screenshot 자동화는 대화형 화면 핸들 접근 실패로 실행 환경에서 확인하지 못함.
+- `git diff --check` 통과.
+
+현재 다음 추천 작업:
+
+- `목표 074: Mock Server 중복 수신 방지와 전송 Receipt`
+
+이유:
+
+- 클라이언트의 성공 후 중복 클릭은 막았다.
+- 다음에는 네트워크 응답 유실이나 재전송에도 서버가 같은 envelope를 한 번만 처리하도록 보강한다.
